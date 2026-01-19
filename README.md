@@ -1,6 +1,6 @@
-# 🏥 NextJs Auth Example
+# 🏥 SMARS application
 
-This example is a themed around a medical records app. It is built with Next.js 15, Prisma, and Resend. It features a robust authentication flow, 6-digit email verification, and a dashboard.
+This example is a medical records app. It is built with Next.js 15, Prisma, and Resend.
 
 ---
 
@@ -11,8 +11,8 @@ Follow these steps to get your local development environment running.
 ### 1. Clone and Install
 
 ```bash
-git clone https://github.com/Landon345/nextjs-auth-example.git
-cd nextjs-auth-example
+git clone https://github.com/Landon345/csci411-smars.git
+cd csci411-smars
 pnpm install
 ```
 
