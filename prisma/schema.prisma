@@ -1,0 +1,47 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Roles {
+  patient
+  doctor
+}
+
+model User {
+  UserID        String    @id @default(uuid())
+  Email         String    @unique @db.VarChar(255)
+  Password      String?   @db.VarChar(255)
+  FirstName     String    @db.VarChar(255)
+  LastName      String    @db.VarChar(255)
+  Phone         String?   @db.VarChar(23)
+  SSN           String    @unique @db.VarChar(11)
+  Role          Roles     @default(patient)
+  CreatedAt     DateTime  @default(now()) @db.Timestamp(6)
+  UpdatedAt     DateTime  @updatedAt
+  EmailVerified DateTime? // Null means not verified
+  VerifyCode    String?   @db.VarChar(6) // The 6-digit code
+  VerifyExpires DateTime? // When the code expires
+  Session       Session[]
+
+  @@index([FirstName, CreatedAt(sort: Desc)])
+  @@index([LastName, CreatedAt(sort: Desc)])
+  @@index([Password, CreatedAt(sort: Desc)])
+}
+
+model Session {
+  SessionID String   @id @default(uuid())
+  User      User     @relation(fields: [UserID], references: [UserID])
+  UserID    String
+  Expires   DateTime @default(dbgenerated("(NOW() + '02:00:00'::interval)"))
+}
