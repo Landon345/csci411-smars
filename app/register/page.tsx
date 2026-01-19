@@ -70,7 +70,7 @@ export default function Register() {
               Create Account
             </h1>
             <p className="text-sm text-zinc-500 dark:text-zinc-400">
-              Secure your StrideSync medical profile.
+              Secure your Smars medical profile.
             </p>
           </div>
 

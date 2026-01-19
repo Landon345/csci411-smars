@@ -44,9 +44,9 @@ export async function POST(request: Request) {
 
     // 5. Send Email via Resend
     await resend.emails.send({
-      from: "StrideSync <onboarding@resend.dev>", // Use your verified domain in prod
+      from: "Smars <onboarding@resend.dev>", // Use your verified domain in prod
       to: Email,
-      subject: "Verify your StrideSync Account",
+      subject: "Verify your Smars Account",
       html: `
         <div style="font-family: sans-serif; padding: 20px;">
           <h1>Welcome, ${FirstName}!</h1>

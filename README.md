@@ -47,7 +47,7 @@ pnpm exec prisma generate
 
 ## 🔐 Authentication & OTP Flow
 
-StrideSync uses a multi-layered verification system to protect patient data:
+Smars uses a multi-layered verification system to protect patient data:
 
 - **Registration:** User data is captured; passwords are hashed via `bcryptjs`.
 - **OTP Generation:** A 6-digit code is generated and stored in the DB with a 15-minute expiration.
