@@ -45,6 +45,12 @@ pnpm exec prisma db push
 pnpm exec prisma generate
 ```
 
+Run locally
+
+```bash
+pnpm dev
+```
+
 ## 🔐 Authentication & OTP Flow
 
 Smars uses a multi-layered verification system to protect patient data:
@@ -54,3 +60,16 @@ Smars uses a multi-layered verification system to protect patient data:
 - **Email Delivery:** The code is sent via **Resend** to the user's inbox.
 - **Session:** An encrypted JWT is generated using `jose` and stored in a secure **HttpOnly** cookie.
 - **Verification:** The user must enter the code at `/verify-email` to unlock dashboard access.
+
+### Development Workflow
+
+Create a branch with the naming convention:
+
+- `feat/issue#-description`
+- `fix/issue#-description`
+
+Example
+
+```bash
+git checkout -b feat/5-doctor-dashboard
+```

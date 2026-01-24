@@ -79,9 +79,9 @@ export async function POST(request: Request) {
 
     response.cookies.set("auth_token", sessionToken, {
       expires,
-      httpOnly: true,
-      secure: true,
-      sameSite: "lax",
+      httpOnly: true, // prevents JavaScript from accessing the cookie, mitigates XSS attacks
+      secure: true, // Ensures cookie is only sent over HTTPS
+      sameSite: "lax", // Prevents CSRF while allowing normal navigation
     });
 
     return response;
