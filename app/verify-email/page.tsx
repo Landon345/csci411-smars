@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useRouter } from "next/navigation";
+import Link from "next/link"; // Import Link for navigation
 
 // 1. Zod Schema for 6-Digit Code
 const verifySchema = z.object({
@@ -33,7 +34,6 @@ export default function VerifyEmail() {
   const onSubmit = async (data: VerifyInput) => {
     setServerError(null);
     try {
-      // We will build this API route next
       const response = await fetch("/api/verify-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -45,7 +45,6 @@ export default function VerifyEmail() {
         throw new Error(errorData.error || "Invalid verification code");
       }
 
-      // Success! Redirect to dashboard
       router.push("/dashboard");
       router.refresh();
     } catch (err) {
@@ -87,14 +86,12 @@ export default function VerifyEmail() {
             </p>
           </div>
 
-          {/* Error Message */}
           {serverError && (
             <div className="rounded-lg bg-red-50 p-3 text-sm text-red-500 dark:bg-red-950/30 dark:text-red-400 text-center">
               {serverError}
             </div>
           )}
 
-          {/* Form */}
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div className="space-y-2">
               <label className="text-xs font-medium uppercase tracking-wider text-zinc-500">
@@ -127,8 +124,8 @@ export default function VerifyEmail() {
             </button>
           </form>
 
-          {/* Resend Link */}
-          <div className="text-center">
+          {/* Development Links */}
+          <div className="flex flex-col space-y-4 text-center">
             <button
               type="button"
               className="text-xs text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors"
@@ -137,6 +134,16 @@ export default function VerifyEmail() {
               Did not receive the code?{" "}
               <span className="underline">Resend</span>
             </button>
+
+            {/* QUICK LINK BYPASS */}
+            <div className="border-t border-zinc-100 pt-4 dark:border-zinc-800">
+              <Link
+                href="/dashboard"
+                className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400 hover:text-orange-500 transition-colors"
+              >
+                Skip Verification (Dev Only) →
+              </Link>
+            </div>
           </div>
         </div>
       </div>

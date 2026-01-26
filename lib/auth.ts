@@ -19,7 +19,6 @@ export async function decrypt(input: string): Promise<any> {
   const { payload } = await jwtVerify(input, SECRET_KEY, {
     algorithms: ["HS256"],
   });
-  console.log("payload", payload);
   return payload;
 }
 

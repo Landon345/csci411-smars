@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { decrypt } from "@/lib/auth";
 import LogoutButton from "@/components/LogoutButton";
+import { UserSessionType } from "../api/register/route";
 
 export default async function Dashboard() {
   // 1. Get the session cookie
@@ -16,7 +17,7 @@ export default async function Dashboard() {
   if (!session || !session.user) redirect("/login");
 
   // Access user data from the session payload
-  const { FirstName, LastName } = session.user;
+  const { FirstName, LastName } = session.user as UserSessionType;
 
   return (
     <div className="flex min-h-screen bg-zinc-50 dark:bg-black font-sans">

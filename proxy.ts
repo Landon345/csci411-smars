@@ -8,13 +8,11 @@ export async function proxy(request: NextRequest) {
 
   // If trying to access dashboard without a token, redirect to login
   if (isDashboardPage && !token) {
-    console.log("running proxy, no token");
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
   // Verify token if it exists
   if (token) {
-    console.log("running proxy, with token");
     try {
       await decrypt(token);
     } catch (e) {

@@ -6,6 +6,19 @@ import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+export interface UserSessionType {
+  UserID: string;
+  Email: string;
+  FirstName: string;
+  LastName: string;
+  // You might want to add Role here since we discussed RBAC
+  Role: "DOCTOR" | "PATIENT";
+}
+export interface UserSessionTokenType {
+  user: UserSessionType;
+  expires: Date;
+}
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -62,15 +75,18 @@ export async function POST(request: Request) {
     // 6. Create Session (So they are "logged in" to access the Verify page)
     // We add 'Verified: false' to the session payload if you want to restrict other pages
     const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
-    const sessionToken = await encrypt({
+    const sessionPayload: UserSessionTokenType = {
       user: {
         UserID: newUser.UserID,
         Email: newUser.Email,
         FirstName: newUser.FirstName,
         LastName: newUser.LastName,
+        Role: newUser.Role as "DOCTOR" | "PATIENT", // Cast if Prisma returns a generic string enum
       },
       expires,
-    });
+    };
+
+    const sessionToken = await encrypt(sessionPayload);
 
     const response = NextResponse.json(
       { message: "Registration successful" },
