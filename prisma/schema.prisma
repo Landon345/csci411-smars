@@ -16,6 +16,7 @@ datasource db {
 enum Roles {
   patient
   doctor
+  admin
 }
 
 model User {

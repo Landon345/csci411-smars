@@ -27,6 +27,7 @@ export async function login(user: {
   Email: string;
   FirstName: string;
   LastName: string;
+  Role: string;
 }) {
   // Create the session
   const expires = new Date(Date.now() + 2 * 60 * 60 * 1000);

@@ -14,7 +14,28 @@ export async function proxy(request: NextRequest) {
   // Verify token if it exists
   if (token) {
     try {
-      await decrypt(token);
+      const session = await decrypt(token);
+      const role = session?.user?.Role;
+
+      // Role-based route protection
+      if (isDashboardPage && role) {
+        const path = request.nextUrl.pathname;
+
+        // /dashboard/admin/* — admin only
+        if (path.startsWith("/dashboard/admin") && role !== "admin") {
+          return NextResponse.redirect(new URL("/dashboard", request.url));
+        }
+
+        // /dashboard/patients — doctor and admin only
+        if (path.startsWith("/dashboard/patients") && role !== "doctor" && role !== "admin") {
+          return NextResponse.redirect(new URL("/dashboard", request.url));
+        }
+
+        // /dashboard/records — patient only
+        if (path.startsWith("/dashboard/records") && role !== "patient") {
+          return NextResponse.redirect(new URL("/dashboard", request.url));
+        }
+      }
     } catch (e) {
       // If token is invalid and they are on a protected page, redirect
       if (isDashboardPage) {

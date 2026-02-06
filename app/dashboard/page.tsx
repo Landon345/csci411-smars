@@ -1,91 +1,47 @@
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import Link from "next/link";
-import { decrypt } from "@/lib/auth";
-import LogoutButton from "@/components/LogoutButton";
-import { UserSessionType } from "../api/register/route";
+import { getSession } from "@/lib/session";
+import { prisma } from "@/lib/prisma";
 
 export default async function Dashboard() {
-  // 1. Get the session cookie
-  const cookieStore = await cookies();
-  const token = cookieStore.get("auth_token")?.value;
+  const user = await getSession();
+  if (!user) redirect("/login");
 
-  // 2. Validate and Decrypt
-  if (!token) redirect("/login");
+  const role = user.Role;
 
-  const session = await decrypt(token);
-  if (!session || !session.user) redirect("/login");
+  // Fetch role-specific counts
+  let patientCount = 0;
+  let totalUsers = 0;
 
-  // Access user data from the session payload
-  const { FirstName, LastName } = session.user as UserSessionType;
+  if (role === "doctor") {
+    patientCount = await prisma.user.count({ where: { Role: "patient" } });
+  } else if (role === "admin") {
+    totalUsers = await prisma.user.count();
+    patientCount = await prisma.user.count({ where: { Role: "patient" } });
+  }
 
   return (
-    <div className="flex min-h-screen bg-zinc-50 dark:bg-black font-sans">
-      {/* Sidebar */}
-      <aside className="w-64 border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6">
-        <div className="mb-10 flex items-center space-x-2">
-          <div className="h-8 w-8 rounded-lg bg-zinc-900 dark:bg-zinc-100 flex items-center justify-center text-white dark:text-black font-bold italic">
-            S
-          </div>
-          <span className="font-medium text-zinc-900 dark:text-zinc-50">
-            S.M.A.R.S
+    <>
+      <header className="mb-8">
+        <h1 className="text-2xl font-medium tracking-tight">
+          Welcome back,{" "}
+          <span className="text-zinc-500">
+            {user.FirstName} {user.LastName}
           </span>
-        </div>
+        </h1>
+        <p className="text-sm text-zinc-500">
+          You have successfully authenticated into your medical portal.
+        </p>
+      </header>
 
-        <nav className="space-y-1">
-          <Link
-            href="/dashboard"
-            className="flex items-center px-3 py-2 text-sm font-medium rounded-lg bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-50"
-          >
-            Overview
-          </Link>
-          <Link
-            href="/dashboard/records"
-            className="flex items-center px-3 py-2 text-sm font-medium rounded-lg text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors"
-          >
-            Medical Records
-          </Link>
-          <Link
-            href="/dashboard/settings"
-            className="flex items-center px-3 py-2 text-sm font-medium rounded-lg text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors"
-          >
-            Settings
-          </Link>
-        </nav>
-      </aside>
+      <div className="p-8 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 mb-6">
+        <p className="text-sm text-zinc-500">
+          Your session is active and encrypted.
+        </p>
+      </div>
 
-      {/* Main Content */}
-      <main className="flex-1 p-10">
-        <header className="flex items-center justify-between mb-8">
-          <div>
-            {/* PERSONALIZED WELCOME MESSAGE */}
-            <h1 className="text-2xl font-medium tracking-tight">
-              Welcome back,{" "}
-              <span className="text-zinc-500">
-                {FirstName} {LastName}
-              </span>
-            </h1>
-            <p className="text-sm text-zinc-500">
-              You have successfully authenticated into your medical portal.
-            </p>
-          </div>
-          <div className="flex gap-3">
-            <LogoutButton />
-            <button className="h-9 px-4 rounded-lg bg-zinc-900 dark:bg-zinc-50 text-white dark:text-black text-sm font-medium">
-              New Record
-            </button>
-          </div>
-        </header>
-
-        {/* Stats Grid and Tables follow... */}
-        <div className="p-8 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950">
-          <p className="text-sm text-zinc-500">
-            Your session is active and encrypted.
-          </p>
-        </div>
-
-        {/* Stats Grid */}
-        <div className="grid grid-cols-3 gap-6 mb-10">
+      {/* Patient view */}
+      {role === "patient" && (
+        <div className="grid grid-cols-3 gap-6">
           {[
             { label: "Heart Rate", value: "72 bpm", status: "Normal" },
             { label: "Blood Pressure", value: "120/80", status: "Optimal" },
@@ -107,17 +63,53 @@ export default async function Dashboard() {
             </div>
           ))}
         </div>
+      )}
 
-        {/* Placeholder Table */}
-        <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 overflow-hidden">
-          <div className="p-4 border-b border-zinc-200 dark:border-zinc-800">
-            <h3 className="text-sm font-medium">Recent Activity</h3>
-          </div>
-          <div className="p-8 text-center text-zinc-500 text-sm">
-            No recent records to display.
+      {/* Doctor view */}
+      {role === "doctor" && (
+        <div className="grid grid-cols-2 gap-6">
+          <div className="p-6 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950">
+            <p className="text-xs font-medium uppercase tracking-wider text-zinc-400 mb-1">
+              Total Patients
+            </p>
+            <p className="text-2xl font-medium text-zinc-900 dark:text-zinc-50">
+              {patientCount}
+            </p>
           </div>
         </div>
-      </main>
-    </div>
+      )}
+
+      {/* Admin view */}
+      {role === "admin" && (
+        <div className="grid grid-cols-2 gap-6">
+          <div className="p-6 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950">
+            <p className="text-xs font-medium uppercase tracking-wider text-zinc-400 mb-1">
+              Total Users
+            </p>
+            <p className="text-2xl font-medium text-zinc-900 dark:text-zinc-50">
+              {totalUsers}
+            </p>
+          </div>
+          <div className="p-6 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950">
+            <p className="text-xs font-medium uppercase tracking-wider text-zinc-400 mb-1">
+              Total Patients
+            </p>
+            <p className="text-2xl font-medium text-zinc-900 dark:text-zinc-50">
+              {patientCount}
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Recent Activity */}
+      <div className="mt-6 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 overflow-hidden">
+        <div className="p-4 border-b border-zinc-200 dark:border-zinc-800">
+          <h3 className="text-sm font-medium">Recent Activity</h3>
+        </div>
+        <div className="p-8 text-center text-zinc-500 text-sm">
+          No recent records to display.
+        </div>
+      </div>
+    </>
   );
 }
