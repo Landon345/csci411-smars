@@ -11,7 +11,7 @@ interface UserRow {
   CreatedAt: string;
 }
 
-export default function AdminPage() {
+export default function AdminUserManagement() {
   const [users, setUsers] = useState<UserRow[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -23,7 +23,6 @@ export default function AdminPage() {
     try {
       const res = await fetch("/api/admin/users");
       if (!res.ok) {
-        // If not authorized, the middleware will redirect, but handle gracefully
         return;
       }
       const data = await res.json();
@@ -57,10 +56,10 @@ export default function AdminPage() {
 
   return (
     <>
-      <header className="mb-8">
-        <h1 className="text-2xl font-medium tracking-tight">
+      <header className="mb-4">
+        <h2 className="text-xl font-medium tracking-tight">
           User Management
-        </h1>
+        </h2>
         <p className="text-sm text-zinc-500">
           Manage user accounts and roles.
         </p>

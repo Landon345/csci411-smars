@@ -2,10 +2,10 @@ import { redirect } from "next/navigation";
 import { getSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 
-export default async function PatientsPage() {
+export default async function AdminPatientsPage() {
   const user = await getSession();
   if (!user) redirect("/login");
-  if (user.Role !== "doctor" && user.Role !== "admin") redirect("/dashboard");
+  if (user.Role !== "admin") redirect("/dashboard");
 
   const patients = await prisma.user.findMany({
     where: { Role: "patient" },

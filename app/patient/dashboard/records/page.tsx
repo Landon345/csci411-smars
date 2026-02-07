@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/session";
 
-export default async function RecordsPage() {
+export default async function PatientRecordsPage() {
   const user = await getSession();
   if (!user) redirect("/login");
   if (user.Role !== "patient") redirect("/dashboard");
