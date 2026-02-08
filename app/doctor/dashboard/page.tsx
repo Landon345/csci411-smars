@@ -8,6 +8,16 @@ export default async function DoctorDashboard() {
 
   const patientCount = await prisma.user.count({ where: { Role: "patient" } });
 
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const upcomingCount = await prisma.appointment.count({
+    where: {
+      DoctorID: user.UserID,
+      Status: "scheduled",
+      Date: { gte: today },
+    },
+  });
+
   return (
     <>
       <header className="mb-8">
@@ -35,6 +45,14 @@ export default async function DoctorDashboard() {
           </p>
           <p className="text-2xl font-medium text-zinc-900 dark:text-zinc-50">
             {patientCount}
+          </p>
+        </div>
+        <div className="p-6 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950">
+          <p className="text-xs font-medium uppercase tracking-wider text-zinc-400 mb-1">
+            Upcoming Appointments
+          </p>
+          <p className="text-2xl font-medium text-zinc-900 dark:text-zinc-50">
+            {upcomingCount}
           </p>
         </div>
       </div>

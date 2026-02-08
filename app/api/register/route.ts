@@ -11,7 +11,6 @@ export interface UserSessionType {
   Email: string;
   FirstName: string;
   LastName: string;
-  // You might want to add Role here since we discussed RBAC
   Role: "patient" | "doctor" | "admin";
 }
 export interface UserSessionTokenType {
@@ -60,25 +59,30 @@ export async function POST(request: Request) {
       },
     });
 
-    // 5. Send Email via Resend
-    await resend.emails.send({
-      from: "Smars <onboarding@resend.dev>", // Use your verified domain in prod
-      to: Email,
-      subject: "Verify your Smars Account",
-      html: `
-        <div style="font-family: sans-serif; padding: 20px;">
-          <h1>Welcome, ${FirstName}!</h1>
-          <p>Please use the code below to verify your account:</p>
-          <div style="background: #f4f4f5; padding: 15px; border-radius: 8px; font-size: 24px; font-weight: bold; letter-spacing: 5px; text-align: center; margin: 20px 0;">
-            ${verifyCode}
+    // 5. Send Email via Resend (Production Only)
+    if (process.env.NODE_ENV === "production") {
+      await resend.emails.send({
+        from: "Smars <onboarding@resend.dev>",
+        to: Email,
+        subject: "Verify your Smars Account",
+        html: `
+          <div style="font-family: sans-serif; padding: 20px;">
+            <h1>Welcome, ${FirstName}!</h1>
+            <p>Please use the code below to verify your account:</p>
+            <div style="background: #f4f4f5; padding: 15px; border-radius: 8px; font-size: 24px; font-weight: bold; letter-spacing: 5px; text-align: center; margin: 20px 0;">
+              ${verifyCode}
+            </div>
+            <p>This code will expire in 15 minutes.</p>
           </div>
-          <p>This code will expire in 15 minutes.</p>
-        </div>
-      `,
-    });
+        `,
+      });
+    } else {
+      console.log("--- DEVELOPMENT MODE: EMAIL LOG ---");
+      console.log(`Verification code for ${Email}: ${verifyCode}`);
+      console.log("-----------------------------------");
+    }
 
-    // 6. Create Session (So they are "logged in" to access the Verify page)
-    // We add 'Verified: false' to the session payload if you want to restrict other pages
+    // 6. Create Session
     const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
     const sessionPayload: UserSessionTokenType = {
       user: {
