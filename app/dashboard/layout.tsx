@@ -1,6 +1,4 @@
-import { prisma } from "@/lib/prisma";
-
-export default async function SetupLayout({
+export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;

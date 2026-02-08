@@ -4,22 +4,38 @@ import { decrypt } from "@/lib/auth";
 export async function proxy(request: NextRequest) {
   // --- 1. AUTHENTICATION LOGIC --
   const token = request.cookies.get("auth_token")?.value;
-  const isDashboardPage = request.nextUrl.pathname.startsWith("/dashboard");
+  const path = request.nextUrl.pathname;
 
-  // If trying to access dashboard without a token, redirect to login
-  if (isDashboardPage && !token) {
+  const isProtectedRoute =
+    path.startsWith("/dashboard") ||
+    path.startsWith("/patient") ||
+    path.startsWith("/doctor") ||
+    path.startsWith("/admin");
+
+  // If trying to access a protected route without a token, redirect to login
+  if (isProtectedRoute && !token) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  // Verify token if it exists
-  if (token) {
+  // Verify token if it exists and route is protected
+  if (token && isProtectedRoute) {
     try {
-      await decrypt(token);
-    } catch (e) {
-      // If token is invalid and they are on a protected page, redirect
-      if (isDashboardPage) {
-        return NextResponse.redirect(new URL("/login", request.url));
+      const session = await decrypt(token);
+      const role = session?.user?.Role;
+
+      // Role-based route protection by prefix
+      if (path.startsWith("/patient") && role !== "patient") {
+        return NextResponse.redirect(new URL("/dashboard", request.url));
       }
+      if (path.startsWith("/doctor") && role !== "doctor") {
+        return NextResponse.redirect(new URL("/dashboard", request.url));
+      }
+      if (path.startsWith("/admin") && role !== "admin") {
+        return NextResponse.redirect(new URL("/dashboard", request.url));
+      }
+    } catch {
+      // If token is invalid and they are on a protected page, redirect
+      return NextResponse.redirect(new URL("/login", request.url));
     }
   }
 

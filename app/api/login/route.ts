@@ -35,6 +35,7 @@ export async function POST(request: NextRequest) {
       Email: user.Email,
       FirstName: user.FirstName,
       LastName: user.LastName,
+      Role: user.Role,
     });
 
     return NextResponse.json({ success: true });

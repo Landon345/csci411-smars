@@ -1,6 +1,6 @@
 # 🏥 SMARS application
 
-This example is a medical records app. It is built with Next.js 15, Prisma, and Resend.
+This is a Secure Medical Appointment & Record System app. It is built with Next.js 15, Prisma, and Resend.
 
 ---
 

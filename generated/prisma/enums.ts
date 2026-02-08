@@ -11,7 +11,8 @@
 
 export const Roles = {
   patient: 'patient',
-  doctor: 'doctor'
+  doctor: 'doctor',
+  admin: 'admin'
 } as const
 
 export type Roles = (typeof Roles)[keyof typeof Roles]

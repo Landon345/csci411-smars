@@ -19,6 +19,7 @@ const registerSchema = z.object({
     .or(z.literal("")),
   SSN: z.string().regex(/^\d{3}-\d{2}-\d{4}$/, "Must be in XXX-XX-XXXX format"),
   Password: z.string().min(8, "Password must be at least 8 characters"),
+  Role: z.enum(["patient", "doctor"]),
 });
 
 type RegisterInput = z.infer<typeof registerSchema>;
@@ -168,6 +169,38 @@ export default function Register() {
                   </p>
                 )}
               </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium uppercase tracking-wider text-zinc-500">
+                I am a...
+              </label>
+              <div className="flex gap-4">
+                <label className="flex items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300 cursor-pointer">
+                  <input
+                    type="radio"
+                    value="patient"
+                    {...register("Role")}
+                    defaultChecked
+                    className="accent-zinc-900 dark:accent-zinc-50"
+                  />
+                  Patient
+                </label>
+                <label className="flex items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300 cursor-pointer">
+                  <input
+                    type="radio"
+                    value="doctor"
+                    {...register("Role")}
+                    className="accent-zinc-900 dark:accent-zinc-50"
+                  />
+                  Doctor
+                </label>
+              </div>
+              {errors.Role && (
+                <p className="text-[10px] text-red-500">
+                  {errors.Role.message}
+                </p>
+              )}
             </div>
 
             <div className="space-y-1.5">

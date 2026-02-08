@@ -12,7 +12,7 @@ export interface UserSessionType {
   FirstName: string;
   LastName: string;
   // You might want to add Role here since we discussed RBAC
-  Role: "DOCTOR" | "PATIENT";
+  Role: "patient" | "doctor" | "admin";
 }
 export interface UserSessionTokenType {
   user: UserSessionType;
@@ -22,7 +22,11 @@ export interface UserSessionTokenType {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { FirstName, LastName, Email, Password, Phone, SSN } = body;
+    const { FirstName, LastName, Email, Password, Phone, SSN, Role } = body;
+
+    // Validate role — only patient or doctor allowed via registration
+    const validRoles = ["patient", "doctor"] as const;
+    const userRole = validRoles.includes(Role) ? Role : "patient";
 
     // 1. Check if user exists
     const existingUser = await prisma.user.findUnique({ where: { Email } });
@@ -49,6 +53,7 @@ export async function POST(request: Request) {
         Password: hashedPassword,
         Phone,
         SSN,
+        Role: userRole,
         VerifyCode: verifyCode,
         VerifyExpires: verifyExpires,
         EmailVerified: null,
@@ -81,7 +86,7 @@ export async function POST(request: Request) {
         Email: newUser.Email,
         FirstName: newUser.FirstName,
         LastName: newUser.LastName,
-        Role: newUser.Role as "DOCTOR" | "PATIENT", // Cast if Prisma returns a generic string enum
+        Role: newUser.Role as "patient" | "doctor" | "admin",
       },
       expires,
     };
