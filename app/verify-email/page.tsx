@@ -6,7 +6,11 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useRouter } from "next/navigation";
-import Link from "next/link"; // Import Link for navigation
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
 
 // 1. Zod Schema for 6-Digit Code
 const verifySchema = z.object({
@@ -81,54 +85,50 @@ export default function VerifyEmail() {
             <h1 className="text-2xl font-medium tracking-tight text-zinc-900 dark:text-zinc-50">
               Check your email
             </h1>
-            <p className="text-sm text-zinc-500 dark:text-zinc-400">
+            <p className="text-sm text-muted-foreground">
               We have sent a 6-digit verification code to your email address.
             </p>
           </div>
 
           {serverError && (
-            <div className="rounded-lg bg-red-50 p-3 text-sm text-red-500 dark:bg-red-950/30 dark:text-red-400 text-center">
+            <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive text-center">
               {serverError}
             </div>
           )}
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div className="space-y-2">
-              <label className="text-xs font-medium uppercase tracking-wider text-zinc-500">
-                Verification Code
-              </label>
-              <input
+              <Label htmlFor="code">Verification Code</Label>
+              <Input
                 {...register("code")}
+                id="code"
                 type="text"
                 maxLength={6}
                 placeholder="123456"
-                className={`w-full rounded-lg border bg-white px-4 py-3 text-center text-2xl font-bold tracking-[0.5em] outline-none transition-all dark:bg-zinc-950 dark:text-zinc-100 placeholder:tracking-normal ${
-                  errors.code
-                    ? "border-red-500 text-red-600"
-                    : "border-zinc-200 focus:border-zinc-900 dark:border-zinc-800 dark:focus:border-zinc-50"
-                }`}
+                className="text-center text-2xl font-bold tracking-[0.5em] placeholder:tracking-normal"
+                aria-invalid={!!errors.code}
               />
               {errors.code && (
-                <p className="text-center text-[10px] text-red-500">
+                <p className="text-center text-[10px] text-destructive">
                   {errors.code.message}
                 </p>
               )}
             </div>
 
-            <button
+            <Button
               type="submit"
               disabled={isSubmitting}
-              className="flex h-11 w-full items-center justify-center rounded-lg bg-zinc-900 px-4 text-sm font-medium text-zinc-50 transition-colors hover:bg-zinc-800 disabled:opacity-50 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200"
+              className="h-11 w-full"
             >
               {isSubmitting ? "Verifying..." : "Verify Code"}
-            </button>
+            </Button>
           </form>
 
           {/* Development Links */}
           <div className="flex flex-col space-y-4 text-center">
             <button
               type="button"
-              className="text-xs text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors"
+              className="text-xs text-muted-foreground hover:text-foreground transition-colors"
               onClick={() => alert("Resend logic goes here!")}
             >
               Did not receive the code?{" "}
@@ -136,10 +136,11 @@ export default function VerifyEmail() {
             </button>
 
             {/* QUICK LINK BYPASS */}
-            <div className="border-t border-zinc-100 pt-4 dark:border-zinc-800">
+            <div className="pt-4">
+              <Separator className="mb-4" />
               <Link
                 href="/dashboard"
-                className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400 hover:text-orange-500 transition-colors"
+                className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground hover:text-orange-500 transition-colors"
               >
                 Skip Verification (Dev Only) →
               </Link>

@@ -7,6 +7,10 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
 
 // 1. Define the Login Schema
 const loginSchema = z.object({
@@ -28,7 +32,6 @@ export default function SignIn() {
     resolver: zodResolver(loginSchema),
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const onSubmit = async (data: LoginInput) => {
     setServerError(null);
     try {
@@ -74,28 +77,23 @@ export default function SignIn() {
           </div>
 
           {serverError && (
-            <div className="rounded-lg bg-red-50 p-3 text-sm text-red-500 dark:bg-red-950/30 dark:text-red-400 text-center">
+            <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive text-center">
               {serverError}
             </div>
           )}
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-1.5">
-              <label className="text-xs font-medium uppercase tracking-wider text-zinc-500">
-                Email Address
-              </label>
-              <input
+              <Label htmlFor="email">Email Address</Label>
+              <Input
                 {...register("Email")}
+                id="email"
                 type="email"
                 placeholder="name@example.com"
-                className={`w-full rounded-lg border bg-white px-4 py-2.5 text-sm outline-none transition-all dark:bg-zinc-950 dark:text-zinc-100 ${
-                  errors.Email
-                    ? "border-red-500"
-                    : "border-zinc-200 focus:border-zinc-900 dark:border-zinc-800 dark:focus:border-zinc-50"
-                }`}
+                aria-invalid={!!errors.Email}
               />
               {errors.Email && (
-                <p className="text-[10px] text-red-500">
+                <p className="text-[10px] text-destructive">
                   {errors.Email.message}
                 </p>
               )}
@@ -103,59 +101,51 @@ export default function SignIn() {
 
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-medium uppercase tracking-wider text-zinc-500">
-                  Password
-                </label>
+                <Label htmlFor="password">Password</Label>
                 <Link
                   href="#"
-                  className="text-xs text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50"
+                  className="text-xs text-muted-foreground hover:text-foreground"
                 >
                   Forgot?
                 </Link>
               </div>
-              <input
+              <Input
                 {...register("Password")}
+                id="password"
                 type="password"
                 placeholder="••••••••"
-                className={`w-full rounded-lg border bg-white px-4 py-2.5 text-sm outline-none transition-all dark:bg-zinc-950 dark:text-zinc-100 ${
-                  errors.Password
-                    ? "border-red-500"
-                    : "border-zinc-200 focus:border-zinc-900 dark:border-zinc-800 dark:focus:border-zinc-50"
-                }`}
+                aria-invalid={!!errors.Password}
               />
               {errors.Password && (
-                <p className="text-[10px] text-red-500">
+                <p className="text-[10px] text-destructive">
                   {errors.Password.message}
                 </p>
               )}
             </div>
 
-            <button
+            <Button
               type="submit"
               disabled={isSubmitting}
-              className="mt-2 flex h-11 w-full items-center justify-center rounded-lg bg-zinc-900 px-4 text-sm font-medium text-zinc-50 transition-colors hover:bg-zinc-800 disabled:opacity-50 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200"
+              className="mt-2 h-11 w-full"
             >
               {isSubmitting ? "Signing in..." : "Sign In"}
-            </button>
+            </Button>
           </form>
 
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t border-zinc-200 dark:border-zinc-800" />
+              <Separator />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-zinc-50 px-2 text-zinc-500 dark:bg-black dark:text-zinc-400">
+              <span className="bg-zinc-50 px-2 text-muted-foreground dark:bg-black">
                 New to S.M.A.R.S?
               </span>
             </div>
           </div>
 
-          <Link
-            href="/register"
-            className="flex h-11 w-full items-center justify-center rounded-lg border border-zinc-200 bg-transparent px-4 text-sm font-medium text-zinc-900 transition-colors hover:bg-zinc-100 dark:border-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-900"
-          >
-            Create an account
-          </Link>
+          <Button variant="outline" className="h-11 w-full" asChild>
+            <Link href="/register">Create an account</Link>
+          </Button>
         </div>
       </div>
     </div>

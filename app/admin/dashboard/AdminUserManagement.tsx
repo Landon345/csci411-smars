@@ -1,6 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Card } from "@/components/ui/card";
 
 interface UserRow {
   UserID: string;
@@ -49,7 +58,7 @@ export default function AdminUserManagement() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <p className="text-sm text-zinc-500">Loading users...</p>
+        <p className="text-sm text-muted-foreground">Loading users...</p>
       </div>
     );
   }
@@ -60,62 +69,51 @@ export default function AdminUserManagement() {
         <h2 className="text-xl font-medium tracking-tight">
           User Management
         </h2>
-        <p className="text-sm text-zinc-500">
+        <p className="text-sm text-muted-foreground">
           Manage user accounts and roles.
         </p>
       </header>
 
-      <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 overflow-hidden">
-        <table className="w-full">
-          <thead>
-            <tr className="border-b border-zinc-200 dark:border-zinc-800">
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-500">
-                Name
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-500">
-                Email
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-500">
-                Role
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-500">
-                Created
-              </th>
-            </tr>
-          </thead>
-          <tbody>
+      <Card>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Name</TableHead>
+              <TableHead>Email</TableHead>
+              <TableHead>Role</TableHead>
+              <TableHead>Created</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {users.map((user) => (
-              <tr
-                key={user.UserID}
-                className="border-b border-zinc-100 dark:border-zinc-800 last:border-0"
-              >
-                <td className="px-6 py-4 text-sm text-zinc-900 dark:text-zinc-50">
+              <TableRow key={user.UserID}>
+                <TableCell className="font-medium">
                   {user.FirstName} {user.LastName}
-                </td>
-                <td className="px-6 py-4 text-sm text-zinc-500">
+                </TableCell>
+                <TableCell className="text-muted-foreground">
                   {user.Email}
-                </td>
-                <td className="px-6 py-4">
+                </TableCell>
+                <TableCell>
                   <select
                     value={user.Role}
                     onChange={(e) =>
                       handleRoleChange(user.UserID, e.target.value)
                     }
-                    className="rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-1.5 text-sm text-zinc-900 dark:text-zinc-50 outline-none"
+                    className="rounded-md border border-input bg-background px-3 py-1.5 text-sm outline-none"
                   >
                     <option value="patient">Patient</option>
                     <option value="doctor">Doctor</option>
                     <option value="admin">Admin</option>
                   </select>
-                </td>
-                <td className="px-6 py-4 text-sm text-zinc-500">
+                </TableCell>
+                <TableCell className="text-muted-foreground">
                   {new Date(user.CreatedAt).toLocaleDateString()}
-                </td>
-              </tr>
+                </TableCell>
+              </TableRow>
             ))}
-          </tbody>
-        </table>
-      </div>
+          </TableBody>
+        </Table>
+      </Card>
     </>
   );
 }

@@ -1,5 +1,14 @@
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/session";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Card } from "@/components/ui/card";
 
 export default async function PatientRecordsPage() {
   const user = await getSession();
@@ -12,41 +21,33 @@ export default async function PatientRecordsPage() {
         <h1 className="text-2xl font-medium tracking-tight">
           My Medical Records
         </h1>
-        <p className="text-sm text-zinc-500">
+        <p className="text-sm text-muted-foreground">
           View and manage your medical history.
         </p>
       </header>
 
-      <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 overflow-hidden">
-        <table className="w-full">
-          <thead>
-            <tr className="border-b border-zinc-200 dark:border-zinc-800">
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-500">
-                Date
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-500">
-                Doctor
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-500">
-                Type
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-500">
-                Notes
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td
+      <Card>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Date</TableHead>
+              <TableHead>Doctor</TableHead>
+              <TableHead>Type</TableHead>
+              <TableHead>Notes</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            <TableRow>
+              <TableCell
                 colSpan={4}
-                className="px-6 py-8 text-center text-sm text-zinc-500"
+                className="text-center text-muted-foreground py-8"
               >
                 No records found.
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </Card>
     </>
   );
 }
