@@ -1,5 +1,6 @@
 import Link from "next/link";
 import LogoutButton from "@/components/LogoutButton";
+import ThemeToggle from "@/components/ThemeToggle";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 
@@ -67,7 +68,10 @@ export default function DashboardShell({
               {user.Role}
             </Badge>
           </div>
-          <LogoutButton />
+          <div className="flex items-center gap-2">
+            <LogoutButton />
+            <ThemeToggle />
+          </div>
         </div>
       </aside>
 
