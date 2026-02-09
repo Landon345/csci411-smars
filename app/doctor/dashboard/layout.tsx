@@ -4,6 +4,7 @@ import DashboardShell from "@/components/DashboardShell";
 
 const doctorNav = [
   { href: "/doctor/dashboard", label: "Overview" },
+  { href: "/doctor/dashboard/appointments", label: "Appointments" },
   { href: "/doctor/dashboard/patients", label: "Patient List" },
   { href: "/doctor/dashboard/settings", label: "Settings" },
 ];

@@ -16,3 +16,24 @@ export const Roles = {
 } as const
 
 export type Roles = (typeof Roles)[keyof typeof Roles]
+
+
+export const AppointmentStatus = {
+  scheduled: 'scheduled',
+  completed: 'completed',
+  canceled: 'canceled',
+  no_show: 'no_show'
+} as const
+
+export type AppointmentStatus = (typeof AppointmentStatus)[keyof typeof AppointmentStatus]
+
+
+export const AppointmentType = {
+  checkup: 'checkup',
+  follow_up: 'follow_up',
+  consultation: 'consultation',
+  procedure: 'procedure',
+  emergency: 'emergency'
+} as const
+
+export type AppointmentType = (typeof AppointmentType)[keyof typeof AppointmentType]

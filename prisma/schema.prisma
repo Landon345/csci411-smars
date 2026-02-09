@@ -19,6 +19,21 @@ enum Roles {
   admin
 }
 
+enum AppointmentStatus {
+  scheduled
+  completed
+  canceled
+  no_show
+}
+
+enum AppointmentType {
+  checkup
+  follow_up
+  consultation
+  procedure
+  emergency
+}
+
 model User {
   UserID        String    @id @default(uuid())
   Email         String    @unique @db.VarChar(255)
@@ -33,7 +48,9 @@ model User {
   EmailVerified DateTime? // Null means not verified
   VerifyCode    String?   @db.VarChar(6) // The 6-digit code
   VerifyExpires DateTime? // When the code expires
-  Session       Session[]
+  Session             Session[]
+  DoctorAppointments  Appointment[] @relation("DoctorAppointments")
+  PatientAppointments Appointment[] @relation("PatientAppointments")
 
   @@index([FirstName, CreatedAt(sort: Desc)])
   @@index([LastName, CreatedAt(sort: Desc)])
@@ -45,4 +62,26 @@ model Session {
   User      User     @relation(fields: [UserID], references: [UserID])
   UserID    String
   Expires   DateTime @default(dbgenerated("(NOW() + '02:00:00'::interval)"))
+}
+
+model Appointment {
+  AppointmentID String            @id @default(uuid())
+  DoctorID      String
+  PatientID     String
+  Doctor        User              @relation("DoctorAppointments", fields: [DoctorID], references: [UserID])
+  Patient       User              @relation("PatientAppointments", fields: [PatientID], references: [UserID])
+  Date          DateTime          @db.Date
+  StartTime     DateTime          @db.Time(6)
+  EndTime       DateTime          @db.Time(6)
+  Place         String            @db.VarChar(255)
+  Reason        String            @db.VarChar(500)
+  Type          AppointmentType   @default(checkup)
+  Status        AppointmentStatus @default(scheduled)
+  Notes         String?           @db.Text
+  CanceledBy    String?           @db.VarChar(255)
+  CreatedAt     DateTime          @default(now()) @db.Timestamp(6)
+  UpdatedAt     DateTime          @updatedAt
+
+  @@index([DoctorID, Date])
+  @@index([PatientID, Date])
 }
