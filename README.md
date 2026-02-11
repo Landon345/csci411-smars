@@ -61,6 +61,16 @@ Smars uses a multi-layered verification system to protect patient data:
 - **Session:** An encrypted JWT is generated using `jose` and stored in a secure **HttpOnly** cookie.
 - **Verification:** The user must enter the code at `/verify-email` to unlock dashboard access.
 
+### If having typescript issues
+
+- While in any typescript file, do `ctr + shift + p`, type in `typescript:select typescript version`, use the workspace version.
+- Can also reload typescript with `ctr + shift + p`, `typescript: restart TS server`
+
+### If having issues on Mac OS
+
+- Try running `sudo chown -R $(whoami) . && chmod -R 755 .` This gives you ownership of all files
+- Try removing any "Ghost" cache `rm -rf .next node_modules pnpm-lock.yaml && pnpm install`
+
 ### Development Workflow
 
 Create a branch with the naming convention:
