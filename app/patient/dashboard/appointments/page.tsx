@@ -4,15 +4,9 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  PlusIcon,
-  XMarkIcon,
-  PencilSquareIcon,
-  TrashIcon,
-} from "@heroicons/react/24/outline";
+import { PlusIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import {
   Table,
   TableBody,
@@ -22,7 +16,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-interface Patient {
+interface Doctor {
   UserID: string;
   FirstName: string;
   LastName: string;
@@ -32,7 +26,7 @@ interface Appointment {
   AppointmentID: string;
   DoctorID: string;
   PatientID: string;
-  Patient: { FirstName: string; LastName: string };
+  Doctor: { FirstName: string; LastName: string };
   Date: string;
   StartTime: string;
   EndTime: string;
@@ -85,34 +79,29 @@ function typeLabel(type: string) {
   return TYPE_OPTIONS.find((t) => t.value === type)?.label ?? type;
 }
 
-export default function AppointmentsPage() {
+export default function PatientAppointmentsPage() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
-  const [patients, setPatients] = useState<Patient[]>([]);
+  const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [editing, setEditing] = useState<Appointment | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   const [form, setForm] = useState({
-    patientId: "",
+    doctorId: "",
     date: "",
     startTime: "",
-    endTime: "",
-    place: "",
     reason: "",
     type: "checkup",
-    status: "scheduled",
-    notes: "",
   });
 
   useEffect(() => {
     fetchAppointments();
-    fetchPatients();
+    fetchDoctors();
   }, []);
 
   async function fetchAppointments() {
     try {
-      const res = await fetch("/api/doctor/appointments");
+      const res = await fetch("/api/patient/appointments");
       if (!res.ok) return;
       const data = await res.json();
       setAppointments(data.appointments);
@@ -121,48 +110,22 @@ export default function AppointmentsPage() {
     }
   }
 
-  async function fetchPatients() {
-    const res = await fetch("/api/doctor/patients");
+  async function fetchDoctors() {
+    const res = await fetch("/api/patient/doctors");
     if (!res.ok) return;
     const data = await res.json();
-    setPatients(data.patients);
+    setDoctors(data.doctors);
   }
 
   function resetForm() {
     setForm({
-      patientId: "",
+      doctorId: "",
       date: "",
       startTime: "",
-      endTime: "",
-      place: "",
       reason: "",
       type: "checkup",
-      status: "scheduled",
-      notes: "",
     });
-    setEditing(null);
     setShowForm(false);
-  }
-
-  function startEdit(appt: Appointment) {
-    setForm({
-      patientId: appt.PatientID,
-      date: new Date(appt.Date).toISOString().split("T")[0],
-      startTime: formatTime24(appt.StartTime),
-      endTime: formatTime24(appt.EndTime),
-      place: appt.Place,
-      reason: appt.Reason,
-      type: appt.Type,
-      status: appt.Status,
-      notes: appt.Notes || "",
-    });
-    setEditing(appt);
-    setShowForm(true);
-  }
-
-  function formatTime24(timeStr: string) {
-    const d = new Date(timeStr);
-    return d.toTimeString().slice(0, 5);
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -170,24 +133,12 @@ export default function AppointmentsPage() {
     setSubmitting(true);
 
     try {
-      if (editing) {
-        const res = await fetch(
-          `/api/doctor/appointments/${editing.AppointmentID}`,
-          {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(form),
-          },
-        );
-        if (!res.ok) return;
-      } else {
-        const res = await fetch("/api/doctor/appointments", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(form),
-        });
-        if (!res.ok) return;
-      }
+      const res = await fetch("/api/patient/appointments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      if (!res.ok) return;
 
       resetForm();
       await fetchAppointments();
@@ -196,11 +147,13 @@ export default function AppointmentsPage() {
     }
   }
 
-  async function handleDelete(id: string) {
-    if (!confirm("Are you sure you want to delete this appointment?")) return;
+  async function handleCancel(id: string) {
+    if (!confirm("Are you sure you want to cancel this appointment?")) return;
 
-    const res = await fetch(`/api/doctor/appointments/${id}`, {
-      method: "DELETE",
+    const res = await fetch(`/api/patient/appointments/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: "canceled" }),
     });
     if (res.ok) {
       await fetchAppointments();
@@ -219,9 +172,11 @@ export default function AppointmentsPage() {
     <>
       <header className="mb-4 flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-medium tracking-tight">Appointments</h2>
+          <h2 className="text-xl font-medium tracking-tight">
+            My Appointments
+          </h2>
           <p className="text-sm text-muted-foreground">
-            Manage your patient appointments.
+            View your appointments and request new ones.
           </p>
         </div>
         <Button
@@ -234,9 +189,13 @@ export default function AppointmentsPage() {
           }}
         >
           {showForm ? (
-            <><XMarkIcon className="h-4 w-4" /> Cancel</>
+            <>
+              <XMarkIcon className="h-4 w-4" /> Cancel
+            </>
           ) : (
-            <><PlusIcon className="h-4 w-4" /> New Appointment</>
+            <>
+              <PlusIcon className="h-4 w-4" /> Request Appointment
+            </>
           )}
         </Button>
       </header>
@@ -245,27 +204,26 @@ export default function AppointmentsPage() {
         <Card className="mb-6">
           <CardHeader>
             <CardTitle className="text-sm font-medium">
-              {editing ? "Edit Appointment" : "New Appointment"}
+              Request Appointment
             </CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit}>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <Label>Patient</Label>
+                  <Label>Doctor</Label>
                   <select
                     required
-                    disabled={!!editing}
-                    value={form.patientId}
+                    value={form.doctorId}
                     onChange={(e) =>
-                      setForm({ ...form, patientId: e.target.value })
+                      setForm({ ...form, doctorId: e.target.value })
                     }
-                    className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm outline-none disabled:opacity-50"
+                    className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm outline-none"
                   >
-                    <option value="">Select patient...</option>
-                    {patients.map((p) => (
-                      <option key={p.UserID} value={p.UserID}>
-                        {p.FirstName} {p.LastName}
+                    <option value="">Select doctor...</option>
+                    {doctors.map((d) => (
+                      <option key={d.UserID} value={d.UserID}>
+                        Dr. {d.FirstName} {d.LastName}
                       </option>
                     ))}
                   </select>
@@ -280,7 +238,7 @@ export default function AppointmentsPage() {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label>Start Time</Label>
+                  <Label>Preferred Time</Label>
                   <Input
                     type="time"
                     required
@@ -288,29 +246,6 @@ export default function AppointmentsPage() {
                     onChange={(e) =>
                       setForm({ ...form, startTime: e.target.value })
                     }
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <Label>End Time</Label>
-                  <Input
-                    type="time"
-                    required
-                    value={form.endTime}
-                    onChange={(e) =>
-                      setForm({ ...form, endTime: e.target.value })
-                    }
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <Label>Place</Label>
-                  <Input
-                    type="text"
-                    required
-                    value={form.place}
-                    onChange={(e) =>
-                      setForm({ ...form, place: e.target.value })
-                    }
-                    placeholder="e.g. Room 204"
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -329,24 +264,6 @@ export default function AppointmentsPage() {
                     ))}
                   </select>
                 </div>
-                {editing && (
-                  <div className="space-y-1.5">
-                    <Label>Status</Label>
-                    <select
-                      value={form.status}
-                      onChange={(e) =>
-                        setForm({ ...form, status: e.target.value })
-                      }
-                      className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm outline-none"
-                    >
-                      {STATUS_OPTIONS.map((s) => (
-                        <option key={s.value} value={s.value}>
-                          {s.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                )}
                 <div className="col-span-2 space-y-1.5">
                   <Label>Reason</Label>
                   <Input
@@ -359,28 +276,13 @@ export default function AppointmentsPage() {
                     placeholder="Reason for visit"
                   />
                 </div>
-                <div className="col-span-2 space-y-1.5">
-                  <Label>Notes (optional)</Label>
-                  <Textarea
-                    value={form.notes}
-                    onChange={(e) =>
-                      setForm({ ...form, notes: e.target.value })
-                    }
-                    rows={3}
-                    placeholder="Additional notes..."
-                  />
-                </div>
               </div>
               <div className="mt-4 flex justify-end gap-2">
                 <Button type="button" variant="outline" onClick={resetForm}>
                   Cancel
                 </Button>
                 <Button type="submit" disabled={submitting}>
-                  {submitting
-                    ? "Saving..."
-                    : editing
-                      ? "Update Appointment"
-                      : "Create Appointment"}
+                  {submitting ? "Submitting..." : "Submit Request"}
                 </Button>
               </div>
             </form>
@@ -394,7 +296,7 @@ export default function AppointmentsPage() {
             <TableRow>
               <TableHead>Date</TableHead>
               <TableHead>Time</TableHead>
-              <TableHead>Patient</TableHead>
+              <TableHead>Doctor</TableHead>
               <TableHead>Type</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Place</TableHead>
@@ -408,20 +310,18 @@ export default function AppointmentsPage() {
                   colSpan={7}
                   className="text-center text-muted-foreground py-8"
                 >
-                  No appointments found. Create one to get started.
+                  No appointments found. Request one to get started.
                 </TableCell>
               </TableRow>
             ) : (
               appointments.map((appt) => (
                 <TableRow key={appt.AppointmentID}>
-                  <TableCell>
-                    {formatDate(appt.Date)}
-                  </TableCell>
+                  <TableCell>{formatDate(appt.Date)}</TableCell>
                   <TableCell className="text-muted-foreground">
                     {formatTime(appt.StartTime)} - {formatTime(appt.EndTime)}
                   </TableCell>
                   <TableCell className="font-medium">
-                    {appt.Patient.FirstName} {appt.Patient.LastName}
+                    Dr. {appt.Doctor.FirstName} {appt.Doctor.LastName}
                   </TableCell>
                   <TableCell className="text-muted-foreground">
                     {typeLabel(appt.Type)}
@@ -441,25 +341,17 @@ export default function AppointmentsPage() {
                     {appt.Place}
                   </TableCell>
                   <TableCell>
-                    <div className="flex gap-2">
-                      <Button
-                        variant="ghost"
-                        size="xs"
-                        onClick={() => startEdit(appt)}
-                      >
-                        <PencilSquareIcon className="h-3.5 w-3.5" />
-                        Edit
-                      </Button>
+                    {(appt.Status === "scheduled" ||
+                      appt.Status === "pending") && (
                       <Button
                         variant="ghost"
                         size="xs"
                         className="text-destructive hover:text-destructive"
-                        onClick={() => handleDelete(appt.AppointmentID)}
+                        onClick={() => handleCancel(appt.AppointmentID)}
                       >
-                        <TrashIcon className="h-3.5 w-3.5" />
-                        Delete
+                        Cancel
                       </Button>
-                    </div>
+                    )}
                   </TableCell>
                 </TableRow>
               ))
