@@ -3,6 +3,7 @@
 import { useSyncExternalStore } from "react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { SunIcon, MoonIcon } from "@heroicons/react/24/outline";
 
 function getIsDark() {
   if (typeof window === "undefined") return false;
@@ -28,8 +29,15 @@ export default function ThemeToggle() {
 
   return (
     <div className="flex items-center justify-between">
-      <Label htmlFor="theme-toggle" className="text-xs text-muted-foreground cursor-pointer">
-        Dark mode
+      <Label
+        htmlFor="theme-toggle"
+        className="flex items-center gap-1.5 text-xs text-muted-foreground cursor-pointer pr-2"
+      >
+        {dark ? (
+          <MoonIcon className="h-3.5 w-3.5" />
+        ) : (
+          <SunIcon className="h-3.5 w-3.5" />
+        )}
       </Label>
       <Switch id="theme-toggle" checked={dark} onCheckedChange={toggle} />
     </div>

@@ -1,5 +1,10 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import {
+  UserPlusIcon,
+  ArrowRightIcon,
+  Squares2X2Icon,
+} from "@heroicons/react/24/outline";
 
 export default function Home() {
   return (
@@ -22,13 +27,22 @@ export default function Home() {
 
           <div className="flex flex-col gap-3">
             <Button className="h-11 w-full" asChild>
-              <Link href="/register">Create Account</Link>
+              <Link href="/register">
+                <UserPlusIcon className="h-4 w-4" />
+                Create Account
+              </Link>
             </Button>
             <Button className="h-11 w-full" asChild>
-              <Link href="/login">Get Started</Link>
+              <Link href="/login">
+                <ArrowRightIcon className="h-4 w-4" />
+                Get Started
+              </Link>
             </Button>
             <Button variant="outline" className="h-11 w-full" asChild>
-              <Link href="/dashboard">View Dashboard</Link>
+              <Link href="/dashboard">
+                <Squares2X2Icon className="h-4 w-4" />
+                View Dashboard
+              </Link>
             </Button>
           </div>
         </div>

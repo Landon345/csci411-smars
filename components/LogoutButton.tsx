@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { ArrowLeftStartOnRectangleIcon } from "@heroicons/react/24/outline";
 
 export default function LogoutButton() {
   const router = useRouter();
@@ -29,6 +30,7 @@ export default function LogoutButton() {
       onClick={handleLogout}
       disabled={isPending}
     >
+      <ArrowLeftStartOnRectangleIcon className="h-4 w-4" />
       {isPending ? "Logging out..." : "Log out"}
     </Button>
   );
