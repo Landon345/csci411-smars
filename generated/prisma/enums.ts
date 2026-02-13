@@ -19,6 +19,7 @@ export type Roles = (typeof Roles)[keyof typeof Roles]
 
 
 export const AppointmentStatus = {
+  pending: 'pending',
   scheduled: 'scheduled',
   completed: 'completed',
   canceled: 'canceled',
