@@ -2,6 +2,13 @@ import { redirect } from "next/navigation";
 import { getSession } from "@/lib/session";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import {
+  HeartIcon,
+  ChartBarIcon,
+  MoonIcon,
+  ShieldCheckIcon,
+  ClockIcon,
+} from "@heroicons/react/24/outline";
 
 export default async function PatientDashboard() {
   const user = await getSession();
@@ -23,7 +30,8 @@ export default async function PatientDashboard() {
 
       <Card className="mb-6">
         <CardContent>
-          <p className="text-sm text-muted-foreground">
+          <p className="flex items-center gap-2 text-sm text-muted-foreground">
+            <ShieldCheckIcon className="h-4 w-4" />
             Your session is active and encrypted.
           </p>
         </CardContent>
@@ -31,13 +39,14 @@ export default async function PatientDashboard() {
 
       <div className="grid grid-cols-3 gap-6">
         {[
-          { label: "Heart Rate", value: "72 bpm", status: "Normal" },
-          { label: "Blood Pressure", value: "120/80", status: "Optimal" },
-          { label: "Sleep Quality", value: "8h 12m", status: "Good" },
+          { label: "Heart Rate", value: "72 bpm", status: "Normal", icon: HeartIcon },
+          { label: "Blood Pressure", value: "120/80", status: "Optimal", icon: ChartBarIcon },
+          { label: "Sleep Quality", value: "8h 12m", status: "Good", icon: MoonIcon },
         ].map((stat) => (
           <Card key={stat.label}>
             <CardHeader>
-              <CardTitle className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+              <CardTitle className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                <stat.icon className="h-4 w-4" />
                 {stat.label}
               </CardTitle>
             </CardHeader>
@@ -55,7 +64,10 @@ export default async function PatientDashboard() {
 
       <Card className="mt-6">
         <CardHeader className="border-b">
-          <CardTitle className="text-sm font-medium">Recent Activity</CardTitle>
+          <CardTitle className="flex items-center gap-1.5 text-sm font-medium">
+            <ClockIcon className="h-4 w-4" />
+            Recent Activity
+          </CardTitle>
         </CardHeader>
         <CardContent className="py-8 text-center text-muted-foreground text-sm">
           No recent records to display.

@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { UserPlusIcon } from "@heroicons/react/24/outline";
 
 // 1. Define the Validation Schema
 const registerSchema = z.object({
@@ -202,6 +203,7 @@ export default function Register() {
               disabled={isSubmitting}
               className="mt-4 h-11 w-full"
             >
+              <UserPlusIcon className="h-4 w-4" />
               {isSubmitting ? "Creating account..." : "Register"}
             </Button>
           </form>

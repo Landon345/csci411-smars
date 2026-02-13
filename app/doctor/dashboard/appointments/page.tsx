@@ -8,6 +8,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
+  PlusIcon,
+  XMarkIcon,
+  PencilSquareIcon,
+  TrashIcon,
+} from "@heroicons/react/24/outline";
+import {
   Table,
   TableBody,
   TableCell,
@@ -224,7 +230,11 @@ export default function AppointmentsPage() {
             }
           }}
         >
-          {showForm ? "Cancel" : "New Appointment"}
+          {showForm ? (
+            <><XMarkIcon className="h-4 w-4" /> Cancel</>
+          ) : (
+            <><PlusIcon className="h-4 w-4" /> New Appointment</>
+          )}
         </Button>
       </header>
 
@@ -434,6 +444,7 @@ export default function AppointmentsPage() {
                         size="xs"
                         onClick={() => startEdit(appt)}
                       >
+                        <PencilSquareIcon className="h-3.5 w-3.5" />
                         Edit
                       </Button>
                       <Button
@@ -442,6 +453,7 @@ export default function AppointmentsPage() {
                         className="text-destructive hover:text-destructive"
                         onClick={() => handleDelete(appt.AppointmentID)}
                       >
+                        <TrashIcon className="h-3.5 w-3.5" />
                         Delete
                       </Button>
                     </div>

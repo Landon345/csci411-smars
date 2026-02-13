@@ -11,6 +11,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import {
+  CheckBadgeIcon,
+  ShieldCheckIcon,
+  ArrowPathIcon,
+} from "@heroicons/react/24/outline";
 
 // 1. Zod Schema for 6-Digit Code
 const verifySchema = z.object({
@@ -67,20 +72,7 @@ export default function VerifyEmail() {
           {/* Header */}
           <div className="flex flex-col items-center space-y-2 text-center">
             <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="h-6 w-6"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z"
-                />
-              </svg>
+              <CheckBadgeIcon className="h-6 w-6" />
             </div>
             <h1 className="text-2xl font-medium tracking-tight text-zinc-900 dark:text-zinc-50">
               Check your email
@@ -120,6 +112,7 @@ export default function VerifyEmail() {
               disabled={isSubmitting}
               className="h-11 w-full"
             >
+              <ShieldCheckIcon className="h-4 w-4" />
               {isSubmitting ? "Verifying..." : "Verify Code"}
             </Button>
           </form>
@@ -132,7 +125,7 @@ export default function VerifyEmail() {
               onClick={() => alert("Resend logic goes here!")}
             >
               Did not receive the code?{" "}
-              <span className="underline">Resend</span>
+              <span className="inline-flex items-center gap-1 underline"><ArrowPathIcon className="h-3 w-3" />Resend</span>
             </button>
 
             {/* QUICK LINK BYPASS */}

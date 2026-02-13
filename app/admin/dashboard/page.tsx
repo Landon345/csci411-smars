@@ -3,6 +3,12 @@ import { getSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import AdminUserManagement from "./AdminUserManagement";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  UsersIcon,
+  UserGroupIcon,
+  ShieldCheckIcon,
+  ClockIcon,
+} from "@heroicons/react/24/outline";
 
 export default async function AdminDashboard() {
   const user = await getSession();
@@ -27,7 +33,8 @@ export default async function AdminDashboard() {
 
       <Card className="mb-6">
         <CardContent>
-          <p className="text-sm text-muted-foreground">
+          <p className="flex items-center gap-2 text-sm text-muted-foreground">
+            <ShieldCheckIcon className="h-4 w-4" />
             Your session is active and encrypted.
           </p>
         </CardContent>
@@ -36,7 +43,8 @@ export default async function AdminDashboard() {
       <div className="grid grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+            <CardTitle className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+              <UsersIcon className="h-4 w-4" />
               Total Users
             </CardTitle>
           </CardHeader>
@@ -48,7 +56,8 @@ export default async function AdminDashboard() {
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+            <CardTitle className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+              <UserGroupIcon className="h-4 w-4" />
               Total Patients
             </CardTitle>
           </CardHeader>
@@ -66,7 +75,10 @@ export default async function AdminDashboard() {
 
       <Card className="mt-6">
         <CardHeader className="border-b">
-          <CardTitle className="text-sm font-medium">Recent Activity</CardTitle>
+          <CardTitle className="flex items-center gap-1.5 text-sm font-medium">
+            <ClockIcon className="h-4 w-4" />
+            Recent Activity
+          </CardTitle>
         </CardHeader>
         <CardContent className="py-8 text-center text-muted-foreground text-sm">
           No recent records to display.

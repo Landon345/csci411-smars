@@ -1,11 +1,16 @@
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/session";
 import DashboardShell from "@/components/DashboardShell";
+import {
+  HomeIcon,
+  DocumentTextIcon,
+  Cog6ToothIcon,
+} from "@heroicons/react/24/outline";
 
 const patientNav = [
-  { href: "/patient/dashboard", label: "Overview" },
-  { href: "/patient/dashboard/records", label: "My Records" },
-  { href: "/patient/dashboard/settings", label: "Settings" },
+  { href: "/patient/dashboard", label: "Overview", icon: HomeIcon },
+  { href: "/patient/dashboard/records", label: "My Records", icon: DocumentTextIcon },
+  { href: "/patient/dashboard/settings", label: "Settings", icon: Cog6ToothIcon },
 ];
 
 export default async function PatientDashboardLayout({
