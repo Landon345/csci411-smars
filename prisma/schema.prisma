@@ -48,6 +48,8 @@ model User {
   EmailVerified DateTime? // Null means not verified
   VerifyCode    String?   @db.VarChar(6) // The 6-digit code
   VerifyExpires DateTime? // When the code expires
+  ResetToken    String?   // Password reset token (UUID)
+  ResetExpires  DateTime? // When the reset token expires
   Session             Session[]
   DoctorAppointments  Appointment[] @relation("DoctorAppointments")
   PatientAppointments Appointment[] @relation("PatientAppointments")
