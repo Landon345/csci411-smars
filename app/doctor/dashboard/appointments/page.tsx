@@ -1,6 +1,20 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 interface Patient {
   UserID: string;
@@ -39,7 +53,7 @@ const STATUS_OPTIONS = [
   { value: "no_show", label: "No Show" },
 ];
 
-const statusColors: Record<string, string> = {
+const statusVariant: Record<string, string> = {
   scheduled:
     "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
   completed:
@@ -187,7 +201,7 @@ export default function AppointmentsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <p className="text-sm text-zinc-500">Loading appointments...</p>
+        <p className="text-sm text-muted-foreground">Loading appointments...</p>
       </div>
     );
   }
@@ -197,11 +211,11 @@ export default function AppointmentsPage() {
       <header className="mb-4 flex items-center justify-between">
         <div>
           <h2 className="text-xl font-medium tracking-tight">Appointments</h2>
-          <p className="text-sm text-zinc-500">
+          <p className="text-sm text-muted-foreground">
             Manage your patient appointments.
           </p>
         </div>
-        <button
+        <Button
           onClick={() => {
             if (showForm) {
               resetForm();
@@ -209,268 +223,235 @@ export default function AppointmentsPage() {
               setShowForm(true);
             }
           }}
-          className="rounded-lg bg-zinc-900 dark:bg-zinc-50 px-4 py-2 text-sm font-medium text-white dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors"
         >
           {showForm ? "Cancel" : "New Appointment"}
-        </button>
+        </Button>
       </header>
 
       {showForm && (
-        <form
-          onSubmit={handleSubmit}
-          className="mb-6 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6"
-        >
-          <h3 className="text-sm font-medium mb-4">
-            {editing ? "Edit Appointment" : "New Appointment"}
-          </h3>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-medium text-zinc-500 mb-1">
-                Patient
-              </label>
-              <select
-                required
-                disabled={!!editing}
-                value={form.patientId}
-                onChange={(e) =>
-                  setForm({ ...form, patientId: e.target.value })
-                }
-                className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-2 text-sm outline-none disabled:opacity-50"
-              >
-                <option value="">Select patient...</option>
-                {patients.map((p) => (
-                  <option key={p.UserID} value={p.UserID}>
-                    {p.FirstName} {p.LastName}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-zinc-500 mb-1">
-                Date
-              </label>
-              <input
-                type="date"
-                required
-                value={form.date}
-                onChange={(e) => setForm({ ...form, date: e.target.value })}
-                className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-2 text-sm outline-none"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-zinc-500 mb-1">
-                Start Time
-              </label>
-              <input
-                type="time"
-                required
-                value={form.startTime}
-                onChange={(e) =>
-                  setForm({ ...form, startTime: e.target.value })
-                }
-                className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-2 text-sm outline-none"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-zinc-500 mb-1">
-                End Time
-              </label>
-              <input
-                type="time"
-                required
-                value={form.endTime}
-                onChange={(e) => setForm({ ...form, endTime: e.target.value })}
-                className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-2 text-sm outline-none"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-zinc-500 mb-1">
-                Place
-              </label>
-              <input
-                type="text"
-                required
-                value={form.place}
-                onChange={(e) => setForm({ ...form, place: e.target.value })}
-                placeholder="e.g. Room 204"
-                className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-2 text-sm outline-none"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-zinc-500 mb-1">
-                Type
-              </label>
-              <select
-                value={form.type}
-                onChange={(e) => setForm({ ...form, type: e.target.value })}
-                className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-2 text-sm outline-none"
-              >
-                {TYPE_OPTIONS.map((t) => (
-                  <option key={t.value} value={t.value}>
-                    {t.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-            {editing && (
-              <div>
-                <label className="block text-xs font-medium text-zinc-500 mb-1">
-                  Status
-                </label>
-                <select
-                  value={form.status}
-                  onChange={(e) =>
-                    setForm({ ...form, status: e.target.value })
-                  }
-                  className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-2 text-sm outline-none"
-                >
-                  {STATUS_OPTIONS.map((s) => (
-                    <option key={s.value} value={s.value}>
-                      {s.label}
-                    </option>
-                  ))}
-                </select>
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="text-sm font-medium">
+              {editing ? "Edit Appointment" : "New Appointment"}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit}>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <Label>Patient</Label>
+                  <select
+                    required
+                    disabled={!!editing}
+                    value={form.patientId}
+                    onChange={(e) =>
+                      setForm({ ...form, patientId: e.target.value })
+                    }
+                    className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm outline-none disabled:opacity-50"
+                  >
+                    <option value="">Select patient...</option>
+                    {patients.map((p) => (
+                      <option key={p.UserID} value={p.UserID}>
+                        {p.FirstName} {p.LastName}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Date</Label>
+                  <Input
+                    type="date"
+                    required
+                    value={form.date}
+                    onChange={(e) => setForm({ ...form, date: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Start Time</Label>
+                  <Input
+                    type="time"
+                    required
+                    value={form.startTime}
+                    onChange={(e) =>
+                      setForm({ ...form, startTime: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label>End Time</Label>
+                  <Input
+                    type="time"
+                    required
+                    value={form.endTime}
+                    onChange={(e) =>
+                      setForm({ ...form, endTime: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Place</Label>
+                  <Input
+                    type="text"
+                    required
+                    value={form.place}
+                    onChange={(e) =>
+                      setForm({ ...form, place: e.target.value })
+                    }
+                    placeholder="e.g. Room 204"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Type</Label>
+                  <select
+                    value={form.type}
+                    onChange={(e) =>
+                      setForm({ ...form, type: e.target.value })
+                    }
+                    className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm outline-none"
+                  >
+                    {TYPE_OPTIONS.map((t) => (
+                      <option key={t.value} value={t.value}>
+                        {t.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                {editing && (
+                  <div className="space-y-1.5">
+                    <Label>Status</Label>
+                    <select
+                      value={form.status}
+                      onChange={(e) =>
+                        setForm({ ...form, status: e.target.value })
+                      }
+                      className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm outline-none"
+                    >
+                      {STATUS_OPTIONS.map((s) => (
+                        <option key={s.value} value={s.value}>
+                          {s.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+                <div className="col-span-2 space-y-1.5">
+                  <Label>Reason</Label>
+                  <Input
+                    type="text"
+                    required
+                    value={form.reason}
+                    onChange={(e) =>
+                      setForm({ ...form, reason: e.target.value })
+                    }
+                    placeholder="Reason for visit"
+                  />
+                </div>
+                <div className="col-span-2 space-y-1.5">
+                  <Label>Notes (optional)</Label>
+                  <Textarea
+                    value={form.notes}
+                    onChange={(e) =>
+                      setForm({ ...form, notes: e.target.value })
+                    }
+                    rows={3}
+                    placeholder="Additional notes..."
+                  />
+                </div>
               </div>
-            )}
-            <div className="col-span-2">
-              <label className="block text-xs font-medium text-zinc-500 mb-1">
-                Reason
-              </label>
-              <input
-                type="text"
-                required
-                value={form.reason}
-                onChange={(e) => setForm({ ...form, reason: e.target.value })}
-                placeholder="Reason for visit"
-                className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-2 text-sm outline-none"
-              />
-            </div>
-            <div className="col-span-2">
-              <label className="block text-xs font-medium text-zinc-500 mb-1">
-                Notes (optional)
-              </label>
-              <textarea
-                value={form.notes}
-                onChange={(e) => setForm({ ...form, notes: e.target.value })}
-                rows={3}
-                placeholder="Additional notes..."
-                className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-2 text-sm outline-none resize-none"
-              />
-            </div>
-          </div>
-          <div className="mt-4 flex justify-end gap-2">
-            <button
-              type="button"
-              onClick={resetForm}
-              className="rounded-lg border border-zinc-200 dark:border-zinc-700 px-4 py-2 text-sm font-medium hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={submitting}
-              className="rounded-lg bg-zinc-900 dark:bg-zinc-50 px-4 py-2 text-sm font-medium text-white dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors disabled:opacity-50"
-            >
-              {submitting
-                ? "Saving..."
-                : editing
-                  ? "Update Appointment"
-                  : "Create Appointment"}
-            </button>
-          </div>
-        </form>
+              <div className="mt-4 flex justify-end gap-2">
+                <Button type="button" variant="outline" onClick={resetForm}>
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={submitting}>
+                  {submitting
+                    ? "Saving..."
+                    : editing
+                      ? "Update Appointment"
+                      : "Create Appointment"}
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
       )}
 
-      <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 overflow-hidden">
-        <table className="w-full">
-          <thead>
-            <tr className="border-b border-zinc-200 dark:border-zinc-800">
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-500">
-                Date
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-500">
-                Time
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-500">
-                Patient
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-500">
-                Type
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-500">
-                Status
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-500">
-                Place
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-500">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody>
+      <Card>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Date</TableHead>
+              <TableHead>Time</TableHead>
+              <TableHead>Patient</TableHead>
+              <TableHead>Type</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Place</TableHead>
+              <TableHead>Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {appointments.length === 0 ? (
-              <tr>
-                <td
+              <TableRow>
+                <TableCell
                   colSpan={7}
-                  className="px-6 py-8 text-center text-sm text-zinc-500"
+                  className="text-center text-muted-foreground py-8"
                 >
                   No appointments found. Create one to get started.
-                </td>
-              </tr>
+                </TableCell>
+              </TableRow>
             ) : (
               appointments.map((appt) => (
-                <tr
-                  key={appt.AppointmentID}
-                  className="border-b border-zinc-100 dark:border-zinc-800 last:border-0"
-                >
-                  <td className="px-6 py-4 text-sm text-zinc-900 dark:text-zinc-50">
+                <TableRow key={appt.AppointmentID}>
+                  <TableCell>
                     {formatDate(appt.Date)}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-zinc-500">
+                  </TableCell>
+                  <TableCell className="text-muted-foreground">
                     {formatTime(appt.StartTime)} - {formatTime(appt.EndTime)}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-zinc-900 dark:text-zinc-50">
+                  </TableCell>
+                  <TableCell className="font-medium">
                     {appt.Patient.FirstName} {appt.Patient.LastName}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-zinc-500">
+                  </TableCell>
+                  <TableCell className="text-muted-foreground">
                     {typeLabel(appt.Type)}
-                  </td>
-                  <td className="px-6 py-4">
-                    <span
-                      className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${statusColors[appt.Status] || ""}`}
+                  </TableCell>
+                  <TableCell>
+                    <Badge
+                      variant="secondary"
+                      className={statusVariant[appt.Status] || ""}
                     >
                       {
                         STATUS_OPTIONS.find((s) => s.value === appt.Status)
                           ?.label
                       }
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-zinc-500">
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-muted-foreground">
                     {appt.Place}
-                  </td>
-                  <td className="px-6 py-4">
+                  </TableCell>
+                  <TableCell>
                     <div className="flex gap-2">
-                      <button
+                      <Button
+                        variant="ghost"
+                        size="xs"
                         onClick={() => startEdit(appt)}
-                        className="text-xs text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors"
                       >
                         Edit
-                      </button>
-                      <button
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="xs"
+                        className="text-destructive hover:text-destructive"
                         onClick={() => handleDelete(appt.AppointmentID)}
-                        className="text-xs text-red-500 hover:text-red-700 transition-colors"
                       >
                         Delete
-                      </button>
+                      </Button>
                     </div>
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ))
             )}
-          </tbody>
-        </table>
-      </div>
+          </TableBody>
+        </Table>
+      </Card>
     </>
   );
 }

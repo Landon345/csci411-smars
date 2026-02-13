@@ -6,6 +6,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 // 1. Define the Validation Schema
 const registerSchema = z.object({
@@ -70,13 +73,13 @@ export default function Register() {
             <h1 className="text-3xl font-medium tracking-tight text-zinc-900 dark:text-zinc-50">
               Create Account
             </h1>
-            <p className="text-sm text-zinc-500 dark:text-zinc-400">
+            <p className="text-sm text-muted-foreground">
               Secure your Smars medical profile.
             </p>
           </div>
 
           {serverError && (
-            <div className="rounded-lg bg-red-50 p-3 text-sm text-red-500 dark:bg-red-950/30 dark:text-red-400">
+            <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
               {serverError}
             </div>
           )}
@@ -84,37 +87,27 @@ export default function Register() {
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-medium uppercase tracking-wider text-zinc-500">
-                  First Name
-                </label>
-                <input
+                <Label htmlFor="firstName">First Name</Label>
+                <Input
                   {...register("FirstName")}
-                  className={`w-full rounded-lg border bg-white px-4 py-2 text-sm outline-none transition-all dark:bg-zinc-950 ${
-                    errors.FirstName
-                      ? "border-red-500"
-                      : "border-zinc-200 focus:border-zinc-900 dark:border-zinc-800 dark:focus:border-zinc-50"
-                  }`}
+                  id="firstName"
+                  aria-invalid={!!errors.FirstName}
                 />
                 {errors.FirstName && (
-                  <p className="text-[10px] text-red-500">
+                  <p className="text-[10px] text-destructive">
                     {errors.FirstName.message}
                   </p>
                 )}
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs font-medium uppercase tracking-wider text-zinc-500">
-                  Last Name
-                </label>
-                <input
+                <Label htmlFor="lastName">Last Name</Label>
+                <Input
                   {...register("LastName")}
-                  className={`w-full rounded-lg border bg-white px-4 py-2 text-sm outline-none transition-all dark:bg-zinc-950 ${
-                    errors.LastName
-                      ? "border-red-500"
-                      : "border-zinc-200 focus:border-zinc-900 dark:border-zinc-800 dark:focus:border-zinc-50"
-                  }`}
+                  id="lastName"
+                  aria-invalid={!!errors.LastName}
                 />
                 {errors.LastName && (
-                  <p className="text-[10px] text-red-500">
+                  <p className="text-[10px] text-destructive">
                     {errors.LastName.message}
                   </p>
                 )}
@@ -122,19 +115,14 @@ export default function Register() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-medium uppercase tracking-wider text-zinc-500">
-                Email Address
-              </label>
-              <input
+              <Label htmlFor="email">Email Address</Label>
+              <Input
                 {...register("Email")}
-                className={`w-full rounded-lg border bg-white px-4 py-2 text-sm outline-none transition-all dark:bg-zinc-950 ${
-                  errors.Email
-                    ? "border-red-500"
-                    : "border-zinc-200 focus:border-zinc-900 dark:border-zinc-800 dark:focus:border-zinc-50"
-                }`}
+                id="email"
+                aria-invalid={!!errors.Email}
               />
               {errors.Email && (
-                <p className="text-[10px] text-red-500">
+                <p className="text-[10px] text-destructive">
                   {errors.Email.message}
                 </p>
               )}
@@ -142,29 +130,22 @@ export default function Register() {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-medium uppercase tracking-wider text-zinc-500">
-                  Phone (Optional)
-                </label>
-                <input
+                <Label htmlFor="phone">Phone (Optional)</Label>
+                <Input
                   {...register("Phone")}
+                  id="phone"
                   placeholder="1234567890"
-                  className="w-full rounded-lg border border-zinc-200 bg-white px-4 py-2 text-sm outline-none transition-all focus:border-zinc-900 dark:border-zinc-800 dark:bg-zinc-950 dark:focus:border-zinc-50"
                 />
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs font-medium uppercase tracking-wider text-zinc-500">
-                  SSN (XXX-XX-XXXX)
-                </label>
-                <input
+                <Label htmlFor="ssn">SSN (XXX-XX-XXXX)</Label>
+                <Input
                   {...register("SSN")}
-                  className={`w-full rounded-lg border bg-white px-4 py-2 text-sm outline-none transition-all dark:bg-zinc-950 ${
-                    errors.SSN
-                      ? "border-red-500"
-                      : "border-zinc-200 focus:border-zinc-900 dark:border-zinc-800 dark:focus:border-zinc-50"
-                  }`}
+                  id="ssn"
+                  aria-invalid={!!errors.SSN}
                 />
                 {errors.SSN && (
-                  <p className="text-[10px] text-red-500">
+                  <p className="text-[10px] text-destructive">
                     {errors.SSN.message}
                   </p>
                 )}
@@ -172,9 +153,7 @@ export default function Register() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-medium uppercase tracking-wider text-zinc-500">
-                I am a...
-              </label>
+              <Label>I am a...</Label>
               <div className="flex gap-4">
                 <label className="flex items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300 cursor-pointer">
                   <input
@@ -197,46 +176,41 @@ export default function Register() {
                 </label>
               </div>
               {errors.Role && (
-                <p className="text-[10px] text-red-500">
+                <p className="text-[10px] text-destructive">
                   {errors.Role.message}
                 </p>
               )}
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-medium uppercase tracking-wider text-zinc-500">
-                Password
-              </label>
-              <input
+              <Label htmlFor="password">Password</Label>
+              <Input
                 type="password"
                 {...register("Password")}
-                className={`w-full rounded-lg border bg-white px-4 py-2 text-sm outline-none transition-all dark:bg-zinc-950 ${
-                  errors.Password
-                    ? "border-red-500"
-                    : "border-zinc-200 focus:border-zinc-900 dark:border-zinc-800 dark:focus:border-zinc-50"
-                }`}
+                id="password"
+                aria-invalid={!!errors.Password}
               />
               {errors.Password && (
-                <p className="text-[10px] text-red-500">
+                <p className="text-[10px] text-destructive">
                   {errors.Password.message}
                 </p>
               )}
             </div>
 
-            <button
+            <Button
               type="submit"
               disabled={isSubmitting}
-              className="mt-4 flex h-11 w-full items-center justify-center rounded-lg bg-zinc-900 px-4 text-sm font-medium text-zinc-50 transition-colors hover:bg-zinc-800 disabled:opacity-50 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200"
+              className="mt-4 h-11 w-full"
             >
               {isSubmitting ? "Creating account..." : "Register"}
-            </button>
+            </Button>
           </form>
 
-          <p className="text-center text-sm text-zinc-500 dark:text-zinc-400">
+          <p className="text-center text-sm text-muted-foreground">
             Already have an account?{" "}
             <Link
               href="/login"
-              className="font-medium text-zinc-900 underline underline-offset-4 dark:text-zinc-50"
+              className="font-medium text-foreground underline underline-offset-4"
             >
               Sign In
             </Link>
