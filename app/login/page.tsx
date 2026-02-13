@@ -11,6 +11,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import {
+  LockClosedIcon,
+  UserPlusIcon,
+} from "@heroicons/react/24/outline";
 
 // 1. Define the Login Schema
 const loginSchema = z.object({
@@ -128,6 +132,7 @@ export default function SignIn() {
               disabled={isSubmitting}
               className="mt-2 h-11 w-full"
             >
+              <LockClosedIcon className="h-4 w-4" />
               {isSubmitting ? "Signing in..." : "Sign In"}
             </Button>
           </form>
@@ -144,7 +149,10 @@ export default function SignIn() {
           </div>
 
           <Button variant="outline" className="h-11 w-full" asChild>
-            <Link href="/register">Create an account</Link>
+            <Link href="/register">
+              <UserPlusIcon className="h-4 w-4" />
+              Create an account
+            </Link>
           </Button>
         </div>
       </div>

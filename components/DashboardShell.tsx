@@ -3,10 +3,12 @@ import LogoutButton from "@/components/LogoutButton";
 import ThemeToggle from "@/components/ThemeToggle";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { type ComponentType } from "react";
 
 interface NavLink {
   href: string;
   label: string;
+  icon?: ComponentType<{ className?: string }>;
 }
 
 interface DashboardShellProps {
@@ -16,8 +18,7 @@ interface DashboardShellProps {
 }
 
 const roleBadgeColors: Record<string, string> = {
-  patient:
-    "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+  patient: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
   doctor:
     "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
   admin:
@@ -47,8 +48,9 @@ export default function DashboardShell({
             <Link
               key={link.href}
               href={link.href}
-              className="flex items-center px-3 py-2 text-sm font-medium rounded-lg text-muted-foreground hover:bg-accent transition-colors"
+              className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg text-muted-foreground hover:bg-accent transition-colors"
             >
+              {link.icon && <link.icon className="h-4 w-4" />}
               {link.label}
             </Link>
           ))}
@@ -57,7 +59,7 @@ export default function DashboardShell({
         {/* User info at bottom */}
         <div className="pt-4">
           <Separator className="mb-4" />
-          <div className="flex items-center gap-2 mb-3">
+          <div className="flex items-center justify-center gap-2 mb-3">
             <span className="text-sm font-medium text-zinc-900 dark:text-zinc-50">
               {user.FirstName} {user.LastName}
             </span>
@@ -68,7 +70,7 @@ export default function DashboardShell({
               {user.Role}
             </Badge>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-around gap-2">
             <LogoutButton />
             <ThemeToggle />
           </div>

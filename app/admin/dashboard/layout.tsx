@@ -1,11 +1,16 @@
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/session";
 import DashboardShell from "@/components/DashboardShell";
+import {
+  HomeIcon,
+  UserGroupIcon,
+  Cog6ToothIcon,
+} from "@heroicons/react/24/outline";
 
 const adminNav = [
-  { href: "/admin/dashboard", label: "Overview" },
-  { href: "/admin/dashboard/patients", label: "Patient List" },
-  { href: "/admin/dashboard/settings", label: "Settings" },
+  { href: "/admin/dashboard", label: "Overview", icon: HomeIcon },
+  { href: "/admin/dashboard/patients", label: "Patient List", icon: UserGroupIcon },
+  { href: "/admin/dashboard/settings", label: "Settings", icon: Cog6ToothIcon },
 ];
 
 export default async function AdminDashboardLayout({
