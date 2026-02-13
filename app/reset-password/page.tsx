@@ -10,6 +10,11 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  LockClosedIcon,
+  ArrowLeftIcon,
+  ArrowPathIcon,
+} from "@heroicons/react/24/outline";
 
 const resetSchema = z
   .object({
@@ -71,7 +76,10 @@ export default function ResetPassword() {
             Invalid reset link. No token provided.
           </div>
           <Button variant="outline" className="h-11 w-full" asChild>
-            <Link href="/forgot-password">Request a new reset link</Link>
+            <Link href="/forgot-password">
+              <ArrowPathIcon className="h-4 w-4" />
+              Request a new reset link
+            </Link>
           </Button>
         </div>
       </div>
@@ -100,7 +108,10 @@ export default function ResetPassword() {
                 Password reset successful! Redirecting to login...
               </div>
               <Button variant="outline" className="h-11 w-full" asChild>
-                <Link href="/login">Go to Sign In</Link>
+                <Link href="/login">
+                  <ArrowLeftIcon className="h-4 w-4" />
+                  Go to Sign In
+                </Link>
               </Button>
             </div>
           ) : (
@@ -159,6 +170,7 @@ export default function ResetPassword() {
                   disabled={isSubmitting}
                   className="mt-2 h-11 w-full"
                 >
+                  <LockClosedIcon className="h-4 w-4" />
                   {isSubmitting ? "Resetting..." : "Reset Password"}
                 </Button>
               </form>

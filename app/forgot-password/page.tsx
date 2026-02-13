@@ -9,6 +9,10 @@ import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  EnvelopeIcon,
+  ArrowLeftIcon,
+} from "@heroicons/react/24/outline";
 
 const forgotSchema = z.object({
   Email: z.email("Please enter a valid email address"),
@@ -75,7 +79,10 @@ export default function ForgotPassword() {
                 minutes.
               </div>
               <Button variant="outline" className="h-11 w-full" asChild>
-                <Link href="/login">Back to Sign In</Link>
+                <Link href="/login">
+                  <ArrowLeftIcon className="h-4 w-4" />
+                  Back to Sign In
+                </Link>
               </Button>
             </div>
           ) : (
@@ -108,6 +115,7 @@ export default function ForgotPassword() {
                   disabled={isSubmitting}
                   className="mt-2 h-11 w-full"
                 >
+                  <EnvelopeIcon className="h-4 w-4" />
                   {isSubmitting ? "Sending..." : "Send Reset Link"}
                 </Button>
               </form>
