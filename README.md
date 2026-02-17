@@ -45,21 +45,11 @@ pnpm exec prisma db push
 pnpm exec prisma generate
 ```
 
-Run locally
+### 4. Run locally
 
 ```bash
 pnpm dev
 ```
-
-## 🔐 Authentication & OTP Flow
-
-Smars uses a multi-layered verification system to protect patient data:
-
-- **Registration:** User data is captured; passwords are hashed via `bcryptjs`.
-- **OTP Generation:** A 6-digit code is generated and stored in the DB with a 15-minute expiration.
-- **Email Delivery:** The code is sent via **Resend** to the user's inbox.
-- **Session:** An encrypted JWT is generated using `jose` and stored in a secure **HttpOnly** cookie.
-- **Verification:** The user must enter the code at `/verify-email` to unlock dashboard access.
 
 ### If having typescript issues
 
