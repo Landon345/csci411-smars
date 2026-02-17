@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Link from "next/link";
 import {
   PlusIcon,
   XMarkIcon,
@@ -446,7 +447,12 @@ export default function DoctorRecordsPage() {
                 <TableRow key={record.RecordID}>
                   <TableCell>{formatDate(record.VisitDate)}</TableCell>
                   <TableCell className="font-medium">
-                    {record.Patient.FirstName} {record.Patient.LastName}
+                    <Link
+                      href={`/doctor/dashboard/patients/${record.PatientID}`}
+                      className="hover:underline"
+                    >
+                      {record.Patient.FirstName} {record.Patient.LastName}
+                    </Link>
                   </TableCell>
                   <TableCell className="text-muted-foreground">
                     {typeLabel(record.Type)}

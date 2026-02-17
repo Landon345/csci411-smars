@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { getSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import {
@@ -68,7 +69,12 @@ export default async function DoctorPatientsPage() {
               patients.map((patient) => (
                 <TableRow key={patient.UserID}>
                   <TableCell className="font-medium">
-                    {patient.FirstName} {patient.LastName}
+                    <Link
+                      href={`/doctor/dashboard/patients/${patient.UserID}`}
+                      className="hover:underline"
+                    >
+                      {patient.FirstName} {patient.LastName}
+                    </Link>
                   </TableCell>
                   <TableCell className="text-muted-foreground">
                     {patient.Email}
