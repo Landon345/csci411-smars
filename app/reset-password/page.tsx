@@ -1,8 +1,7 @@
 "use client";
-export const dynamic = "force-dynamic";
 
 import Link from "next/link";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -29,6 +28,20 @@ const resetSchema = z
 type ResetInput = z.infer<typeof resetSchema>;
 
 export default function ResetPassword() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-black">
+          <p className="text-sm text-muted-foreground">Loading...</p>
+        </div>
+      }
+    >
+      <ResetPasswordForm />
+    </Suspense>
+  );
+}
+
+function ResetPasswordForm() {
   const [serverError, setServerError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const router = useRouter();

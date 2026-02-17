@@ -103,7 +103,7 @@ export default function DoctorRecordsPage() {
   }
 
   async function fetchPatients() {
-    const res = await fetch("/api/doctor/patients");
+    const res = await fetch("/api/doctor/patients/search");
     if (!res.ok) return;
     const data = await res.json();
     setPatients(data.patients);

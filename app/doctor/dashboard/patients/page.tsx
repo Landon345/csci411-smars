@@ -17,7 +17,13 @@ export default async function DoctorPatientsPage() {
   if (user.Role !== "doctor") redirect("/dashboard");
 
   const patients = await prisma.user.findMany({
-    where: { Role: "patient" },
+    where: {
+      Role: "patient",
+      OR: [
+        { PatientAppointments: { some: { DoctorID: user.UserID } } },
+        { PatientRecords: { some: { DoctorID: user.UserID } } },
+      ],
+    },
     select: {
       UserID: true,
       FirstName: true,
@@ -34,7 +40,7 @@ export default async function DoctorPatientsPage() {
       <header className="mb-8">
         <h1 className="text-2xl font-medium tracking-tight">Patient List</h1>
         <p className="text-sm text-muted-foreground">
-          View all registered patients.
+          View your patients.
         </p>
       </header>
 
