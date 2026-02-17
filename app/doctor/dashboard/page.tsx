@@ -13,7 +13,15 @@ export default async function DoctorDashboard() {
   const user = await getSession();
   if (!user) redirect("/login");
 
-  const patientCount = await prisma.user.count({ where: { Role: "patient" } });
+  const patientCount = await prisma.user.count({
+    where: {
+      Role: "patient",
+      OR: [
+        { PatientAppointments: { some: { DoctorID: user.UserID } } },
+        { PatientRecords: { some: { DoctorID: user.UserID } } },
+      ],
+    },
+  });
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -53,13 +61,11 @@ export default async function DoctorDashboard() {
           <CardHeader>
             <CardTitle className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
               <UserGroupIcon className="h-4 w-4" />
-              Total Patients
+              Your Patients
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-medium">
-              {patientCount}
-            </p>
+            <p className="text-2xl font-medium">{patientCount}</p>
           </CardContent>
         </Card>
         <Card>
@@ -70,9 +76,7 @@ export default async function DoctorDashboard() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-medium">
-              {upcomingCount}
-            </p>
+            <p className="text-2xl font-medium">{upcomingCount}</p>
           </CardContent>
         </Card>
       </div>

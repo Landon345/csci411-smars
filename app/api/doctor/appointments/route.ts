@@ -2,14 +2,20 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/session";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   const user = await getSession();
   if (!user || user.Role !== "doctor") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
   }
 
+  const { searchParams } = new URL(request.url);
+  const patientId = searchParams.get("patientId");
+
+  const where: Record<string, unknown> = { DoctorID: user.UserID };
+  if (patientId) where.PatientID = patientId;
+
   const appointments = await prisma.appointment.findMany({
-    where: { DoctorID: user.UserID },
+    where,
     include: {
       Patient: {
         select: { FirstName: true, LastName: true },

@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Link from "next/link";
 import {
   PlusIcon,
   XMarkIcon,
@@ -122,7 +123,7 @@ export default function AppointmentsPage() {
   }
 
   async function fetchPatients() {
-    const res = await fetch("/api/doctor/patients");
+    const res = await fetch("/api/doctor/patients/search");
     if (!res.ok) return;
     const data = await res.json();
     setPatients(data.patients);
@@ -421,7 +422,12 @@ export default function AppointmentsPage() {
                     {formatTime(appt.StartTime)} - {formatTime(appt.EndTime)}
                   </TableCell>
                   <TableCell className="font-medium">
-                    {appt.Patient.FirstName} {appt.Patient.LastName}
+                    <Link
+                      href={`/doctor/dashboard/patients/${appt.PatientID}`}
+                      className="hover:underline"
+                    >
+                      {appt.Patient.FirstName} {appt.Patient.LastName}
+                    </Link>
                   </TableCell>
                   <TableCell className="text-muted-foreground">
                     {typeLabel(appt.Type)}

@@ -9,13 +9,7 @@ export async function GET() {
   }
 
   const patients = await prisma.user.findMany({
-    where: {
-      Role: "patient",
-      OR: [
-        { PatientAppointments: { some: { DoctorID: user.UserID } } },
-        { PatientRecords: { some: { DoctorID: user.UserID } } },
-      ],
-    },
+    where: { Role: "patient" },
     select: {
       UserID: true,
       FirstName: true,
