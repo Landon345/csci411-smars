@@ -1,5 +1,7 @@
-import { redirect } from "next/navigation";
-import { getSession } from "@/lib/session";
+"use client";
+
+import { useEffect, useState } from "react";
+import { Card } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -8,21 +10,69 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Card } from "@/components/ui/card";
 
-export default async function PatientRecordsPage() {
-  const user = await getSession();
-  if (!user) redirect("/login");
-  if (user.Role !== "patient") redirect("/dashboard");
+interface MedicalRecord {
+  RecordID: string;
+  Doctor: { FirstName: string; LastName: string };
+  VisitDate: string;
+  ChiefComplaint: string;
+  DiagnosisCode: string;
+  DiagnosisDesc: string;
+  TreatmentPlan: string;
+  Type: string;
+}
+
+const TYPE_OPTIONS = [
+  { value: "office_visit", label: "Office Visit" },
+  { value: "lab_result", label: "Lab Result" },
+  { value: "imaging", label: "Imaging" },
+  { value: "referral", label: "Referral" },
+  { value: "procedure_note", label: "Procedure Note" },
+];
+
+function formatDate(dateStr: string) {
+  return new Date(dateStr).toLocaleDateString();
+}
+
+function typeLabel(type: string) {
+  return TYPE_OPTIONS.find((t) => t.value === type)?.label ?? type;
+}
+
+export default function PatientRecordsPage() {
+  const [records, setRecords] = useState<MedicalRecord[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchRecords();
+  }, []);
+
+  async function fetchRecords() {
+    try {
+      const res = await fetch("/api/patient/records");
+      if (!res.ok) return;
+      const data = await res.json();
+      setRecords(data.records);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <p className="text-sm text-muted-foreground">Loading records...</p>
+      </div>
+    );
+  }
 
   return (
     <>
-      <header className="mb-8">
-        <h1 className="text-2xl font-medium tracking-tight">
+      <header className="mb-4">
+        <h2 className="text-xl font-medium tracking-tight">
           My Medical Records
-        </h1>
+        </h2>
         <p className="text-sm text-muted-foreground">
-          View and manage your medical history.
+          View your medical history.
         </p>
       </header>
 
@@ -33,18 +83,43 @@ export default async function PatientRecordsPage() {
               <TableHead>Date</TableHead>
               <TableHead>Doctor</TableHead>
               <TableHead>Type</TableHead>
-              <TableHead>Notes</TableHead>
+              <TableHead>Diagnosis</TableHead>
+              <TableHead>Chief Complaint</TableHead>
+              <TableHead>Treatment Plan</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            <TableRow>
-              <TableCell
-                colSpan={4}
-                className="text-center text-muted-foreground py-8"
-              >
-                No records found.
-              </TableCell>
-            </TableRow>
+            {records.length === 0 ? (
+              <TableRow>
+                <TableCell
+                  colSpan={6}
+                  className="text-center text-muted-foreground py-8"
+                >
+                  No records found.
+                </TableCell>
+              </TableRow>
+            ) : (
+              records.map((record) => (
+                <TableRow key={record.RecordID}>
+                  <TableCell>{formatDate(record.VisitDate)}</TableCell>
+                  <TableCell className="font-medium">
+                    Dr. {record.Doctor.FirstName} {record.Doctor.LastName}
+                  </TableCell>
+                  <TableCell className="text-muted-foreground">
+                    {typeLabel(record.Type)}
+                  </TableCell>
+                  <TableCell className="text-muted-foreground">
+                    {record.DiagnosisCode} - {record.DiagnosisDesc}
+                  </TableCell>
+                  <TableCell className="text-muted-foreground">
+                    {record.ChiefComplaint}
+                  </TableCell>
+                  <TableCell className="text-muted-foreground">
+                    {record.TreatmentPlan}
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </Card>

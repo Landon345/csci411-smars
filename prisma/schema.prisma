@@ -19,6 +19,14 @@ enum Roles {
   admin
 }
 
+enum RecordType {
+  office_visit
+  lab_result
+  imaging
+  referral
+  procedure_note
+}
+
 enum AppointmentStatus {
   pending
   scheduled
@@ -54,6 +62,8 @@ model User {
   Session             Session[]
   DoctorAppointments  Appointment[] @relation("DoctorAppointments")
   PatientAppointments Appointment[] @relation("PatientAppointments")
+  DoctorRecords       MedicalRecord[] @relation("DoctorRecords")
+  PatientRecords      MedicalRecord[] @relation("PatientRecords")
 
   @@index([FirstName, CreatedAt(sort: Desc)])
   @@index([LastName, CreatedAt(sort: Desc)])
@@ -87,4 +97,29 @@ model Appointment {
 
   @@index([DoctorID, Date])
   @@index([PatientID, Date])
+}
+
+model MedicalRecord {
+  RecordID       String     @id @default(uuid())
+  DoctorID       String
+  PatientID      String
+  Doctor         User       @relation("DoctorRecords", fields: [DoctorID], references: [UserID])
+  Patient        User       @relation("PatientRecords", fields: [PatientID], references: [UserID])
+  VisitDate      DateTime   @db.Date
+  ChiefComplaint String     @db.VarChar(500)
+  DiagnosisCode  String     @db.VarChar(10)
+  DiagnosisDesc  String     @db.VarChar(500)
+  TreatmentPlan  String     @db.Text
+  HeartRate      Int?
+  BloodPressure  String?    @db.VarChar(7)
+  Temperature    Decimal?   @db.Decimal(4, 1)
+  Weight         Decimal?   @db.Decimal(5, 1)
+  Height         Decimal?   @db.Decimal(5, 1)
+  FollowUp       String?    @db.Text
+  Type           RecordType @default(office_visit)
+  CreatedAt      DateTime   @default(now()) @db.Timestamp(6)
+  UpdatedAt      DateTime   @updatedAt
+
+  @@index([DoctorID, VisitDate])
+  @@index([PatientID, VisitDate])
 }
