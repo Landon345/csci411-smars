@@ -18,6 +18,17 @@ export const Roles = {
 export type Roles = (typeof Roles)[keyof typeof Roles]
 
 
+export const RecordType = {
+  office_visit: 'office_visit',
+  lab_result: 'lab_result',
+  imaging: 'imaging',
+  referral: 'referral',
+  procedure_note: 'procedure_note'
+} as const
+
+export type RecordType = (typeof RecordType)[keyof typeof RecordType]
+
+
 export const AppointmentStatus = {
   pending: 'pending',
   scheduled: 'scheduled',
