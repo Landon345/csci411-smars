@@ -257,6 +257,50 @@ export type EnumRecordTypeWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumRecordTypeFilter<$PrismaModel>
 }
 
+export type IntFilter<$PrismaModel = never> = {
+  equals?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  in?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel>
+  notIn?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel>
+  lt?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  lte?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  gt?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  gte?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedIntFilter<$PrismaModel> | number
+}
+
+export type EnumPrescriptionStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.PrescriptionStatus | Prisma.EnumPrescriptionStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.PrescriptionStatus[] | Prisma.ListEnumPrescriptionStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PrescriptionStatus[] | Prisma.ListEnumPrescriptionStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPrescriptionStatusFilter<$PrismaModel> | $Enums.PrescriptionStatus
+}
+
+export type IntWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  in?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel>
+  notIn?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel>
+  lt?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  lte?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  gt?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  gte?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedIntWithAggregatesFilter<$PrismaModel> | number
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _avg?: Prisma.NestedFloatFilter<$PrismaModel>
+  _sum?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedIntFilter<$PrismaModel>
+  _max?: Prisma.NestedIntFilter<$PrismaModel>
+}
+
+export type EnumPrescriptionStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PrescriptionStatus | Prisma.EnumPrescriptionStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.PrescriptionStatus[] | Prisma.ListEnumPrescriptionStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PrescriptionStatus[] | Prisma.ListEnumPrescriptionStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPrescriptionStatusWithAggregatesFilter<$PrismaModel> | $Enums.PrescriptionStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPrescriptionStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPrescriptionStatusFilter<$PrismaModel>
+}
+
 export type NestedStringFilter<$PrismaModel = never> = {
   equals?: string | Prisma.StringFieldRefInput<$PrismaModel>
   in?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
@@ -511,6 +555,50 @@ export type NestedEnumRecordTypeWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumRecordTypeFilter<$PrismaModel>
   _max?: Prisma.NestedEnumRecordTypeFilter<$PrismaModel>
+}
+
+export type NestedEnumPrescriptionStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.PrescriptionStatus | Prisma.EnumPrescriptionStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.PrescriptionStatus[] | Prisma.ListEnumPrescriptionStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PrescriptionStatus[] | Prisma.ListEnumPrescriptionStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPrescriptionStatusFilter<$PrismaModel> | $Enums.PrescriptionStatus
+}
+
+export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  in?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel>
+  notIn?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel>
+  lt?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  lte?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  gt?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  gte?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedIntWithAggregatesFilter<$PrismaModel> | number
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _avg?: Prisma.NestedFloatFilter<$PrismaModel>
+  _sum?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedIntFilter<$PrismaModel>
+  _max?: Prisma.NestedIntFilter<$PrismaModel>
+}
+
+export type NestedFloatFilter<$PrismaModel = never> = {
+  equals?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  in?: number[] | Prisma.ListFloatFieldRefInput<$PrismaModel>
+  notIn?: number[] | Prisma.ListFloatFieldRefInput<$PrismaModel>
+  lt?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  lte?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  gt?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  gte?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedFloatFilter<$PrismaModel> | number
+}
+
+export type NestedEnumPrescriptionStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PrescriptionStatus | Prisma.EnumPrescriptionStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.PrescriptionStatus[] | Prisma.ListEnumPrescriptionStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PrescriptionStatus[] | Prisma.ListEnumPrescriptionStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPrescriptionStatusWithAggregatesFilter<$PrismaModel> | $Enums.PrescriptionStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPrescriptionStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPrescriptionStatusFilter<$PrismaModel>
 }
 
 

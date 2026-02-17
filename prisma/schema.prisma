@@ -43,6 +43,12 @@ enum AppointmentType {
   emergency
 }
 
+enum PrescriptionStatus {
+  active
+  completed
+  discontinued
+}
+
 model User {
   UserID        String    @id @default(uuid())
   Email         String    @unique @db.VarChar(255)
@@ -64,6 +70,8 @@ model User {
   PatientAppointments Appointment[] @relation("PatientAppointments")
   DoctorRecords       MedicalRecord[] @relation("DoctorRecords")
   PatientRecords      MedicalRecord[] @relation("PatientRecords")
+  DoctorPrescriptions   Prescription[] @relation("DoctorPrescriptions")
+  PatientPrescriptions  Prescription[] @relation("PatientPrescriptions")
 
   @@index([FirstName, CreatedAt(sort: Desc)])
   @@index([LastName, CreatedAt(sort: Desc)])
@@ -122,4 +130,28 @@ model MedicalRecord {
 
   @@index([DoctorID, VisitDate])
   @@index([PatientID, VisitDate])
+}
+
+model Prescription {
+  PrescriptionID  String               @id @default(uuid())
+  DoctorID        String
+  PatientID       String
+  Doctor          User                 @relation("DoctorPrescriptions", fields: [DoctorID], references: [UserID])
+  Patient         User                 @relation("PatientPrescriptions", fields: [PatientID], references: [UserID])
+  RecordID        String?
+  AppointmentID   String?
+  Medication      String               @db.VarChar(255)
+  Dosage          String               @db.VarChar(100)
+  Frequency       String               @db.VarChar(100)
+  Duration        String               @db.VarChar(100)
+  Refills         Int                  @default(0)
+  StartDate       DateTime             @db.Date
+  EndDate         DateTime?            @db.Date
+  Status          PrescriptionStatus   @default(active)
+  Notes           String?              @db.Text
+  CreatedAt       DateTime             @default(now()) @db.Timestamp(6)
+  UpdatedAt       DateTime             @updatedAt
+
+  @@index([DoctorID, StartDate])
+  @@index([PatientID, StartDate])
 }

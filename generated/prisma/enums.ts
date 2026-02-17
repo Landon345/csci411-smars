@@ -49,3 +49,12 @@ export const AppointmentType = {
 } as const
 
 export type AppointmentType = (typeof AppointmentType)[keyof typeof AppointmentType]
+
+
+export const PrescriptionStatus = {
+  active: 'active',
+  completed: 'completed',
+  discontinued: 'discontinued'
+} as const
+
+export type PrescriptionStatus = (typeof PrescriptionStatus)[keyof typeof PrescriptionStatus]
