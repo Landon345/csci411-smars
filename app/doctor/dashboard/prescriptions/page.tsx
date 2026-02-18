@@ -192,8 +192,8 @@ export default function DoctorPrescriptionsPage() {
       <>
         <header className="mb-4 flex items-center justify-between">
           <div>
-            <Skeleton className="h-6 w-36 mb-1.5" />
-            <Skeleton className="h-4 w-56" />
+            <h2 className="text-xl font-medium tracking-tight">Prescriptions</h2>
+            <p className="text-sm text-muted-foreground">Manage your patient prescriptions.</p>
           </div>
           <Skeleton className="h-9 w-40" />
         </header>

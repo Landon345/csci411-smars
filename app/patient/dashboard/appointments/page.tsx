@@ -166,8 +166,8 @@ export default function PatientAppointmentsPage() {
       <>
         <header className="mb-4 flex items-center justify-between">
           <div>
-            <Skeleton className="h-6 w-40 mb-1.5" />
-            <Skeleton className="h-4 w-64" />
+            <h2 className="text-xl font-medium tracking-tight">My Appointments</h2>
+            <p className="text-sm text-muted-foreground">View your appointments and request new ones.</p>
           </div>
           <Skeleton className="h-9 w-44" />
         </header>

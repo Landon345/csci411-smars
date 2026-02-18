@@ -62,8 +62,8 @@ export default function PatientRecordsPage() {
     return (
       <>
         <header className="mb-4">
-          <Skeleton className="h-6 w-44 mb-1.5" />
-          <Skeleton className="h-4 w-40" />
+          <h2 className="text-xl font-medium tracking-tight">My Medical Records</h2>
+          <p className="text-sm text-muted-foreground">View your medical history.</p>
         </header>
         <Card>
           <Table>

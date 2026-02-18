@@ -195,8 +195,8 @@ export default function DoctorRecordsPage() {
       <>
         <header className="mb-4 flex items-center justify-between">
           <div>
-            <Skeleton className="h-6 w-40 mb-1.5" />
-            <Skeleton className="h-4 w-60" />
+            <h2 className="text-xl font-medium tracking-tight">Medical Records</h2>
+            <p className="text-sm text-muted-foreground">Manage your patient medical records.</p>
           </div>
           <Skeleton className="h-9 w-32" />
         </header>

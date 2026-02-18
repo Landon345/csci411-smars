@@ -406,15 +406,15 @@ export default function PatientDetailPage() {
     return (
       <>
         <header className="mb-8">
-          <Skeleton className="h-4 w-32 mb-3" />
-          <Skeleton className="h-8 w-52 mb-1.5" />
+          <span className="text-sm text-muted-foreground">&larr; Back to Patient List</span>
+          <Skeleton className="h-8 w-52 mt-2 mb-1.5" />
           <Skeleton className="h-4 w-64" />
         </header>
 
         {/* Appointments skeleton */}
         <Card className="mb-6">
           <CardHeader>
-            <Skeleton className="h-5 w-28" />
+            <CardTitle>Appointments</CardTitle>
           </CardHeader>
           <CardContent>
             <Table>
@@ -447,7 +447,7 @@ export default function PatientDetailPage() {
         {/* Medical Records skeleton */}
         <Card className="mb-6">
           <CardHeader>
-            <Skeleton className="h-5 w-36" />
+            <CardTitle>Medical Records</CardTitle>
           </CardHeader>
           <CardContent>
             <Table>
@@ -480,7 +480,7 @@ export default function PatientDetailPage() {
         {/* Prescriptions skeleton */}
         <Card className="mt-6">
           <CardHeader>
-            <Skeleton className="h-5 w-28" />
+            <CardTitle>Prescriptions</CardTitle>
           </CardHeader>
           <CardContent>
             <Table>

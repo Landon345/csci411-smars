@@ -68,8 +68,8 @@ export default function PatientMedicationsPage() {
     return (
       <>
         <header className="mb-4">
-          <Skeleton className="h-6 w-36 mb-1.5" />
-          <Skeleton className="h-4 w-52" />
+          <h2 className="text-xl font-medium tracking-tight">My Medications</h2>
+          <p className="text-sm text-muted-foreground">View your prescriptions and medications.</p>
         </header>
         <Card>
           <Table>
