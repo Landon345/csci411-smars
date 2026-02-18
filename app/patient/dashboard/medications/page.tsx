@@ -11,6 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Prescription {
   PrescriptionID: string;
@@ -65,11 +66,44 @@ export default function PatientMedicationsPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <p className="text-sm text-muted-foreground">
-          Loading medications...
-        </p>
-      </div>
+      <>
+        <header className="mb-4">
+          <Skeleton className="h-6 w-36 mb-1.5" />
+          <Skeleton className="h-4 w-52" />
+        </header>
+        <Card>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Medication</TableHead>
+                <TableHead>Dosage</TableHead>
+                <TableHead>Frequency</TableHead>
+                <TableHead>Duration</TableHead>
+                <TableHead>Refills</TableHead>
+                <TableHead>Start</TableHead>
+                <TableHead>End</TableHead>
+                <TableHead>Doctor</TableHead>
+                <TableHead>Status</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {Array.from({ length: 5 }).map((_, i) => (
+                <TableRow key={i}>
+                  <TableCell><Skeleton className="h-4 w-28" /></TableCell>
+                  <TableCell><Skeleton className="h-4 w-16" /></TableCell>
+                  <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+                  <TableCell><Skeleton className="h-4 w-16" /></TableCell>
+                  <TableCell><Skeleton className="h-4 w-8" /></TableCell>
+                  <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+                  <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+                  <TableCell><Skeleton className="h-4 w-32" /></TableCell>
+                  <TableCell><Skeleton className="h-5 w-20 rounded-full" /></TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </Card>
+      </>
     );
   }
 
