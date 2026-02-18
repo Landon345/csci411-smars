@@ -64,6 +64,21 @@ interface MedicalRecord {
   Type: string;
 }
 
+interface Prescription {
+  PrescriptionID: string;
+  DoctorID: string;
+  PatientID: string;
+  Medication: string;
+  Dosage: string;
+  Frequency: string;
+  Duration: string;
+  Refills: number;
+  StartDate: string;
+  EndDate: string | null;
+  Status: string;
+  Notes: string | null;
+}
+
 const APPT_TYPE_OPTIONS = [
   { value: "checkup", label: "Checkup" },
   { value: "follow_up", label: "Follow-up" },
@@ -88,6 +103,12 @@ const RECORD_TYPE_OPTIONS = [
   { value: "procedure_note", label: "Procedure Note" },
 ];
 
+const PRESCRIPTION_STATUS_OPTIONS = [
+  { value: "active", label: "Active" },
+  { value: "completed", label: "Completed" },
+  { value: "discontinued", label: "Discontinued" },
+];
+
 const statusVariant: Record<string, string> = {
   pending:
     "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400",
@@ -98,6 +119,15 @@ const statusVariant: Record<string, string> = {
   canceled: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
   no_show:
     "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400",
+};
+
+const rxStatusVariant: Record<string, string> = {
+  active:
+    "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
+  completed:
+    "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400",
+  discontinued:
+    "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
 };
 
 function formatDate(dateStr: string) {
@@ -122,6 +152,7 @@ export default function PatientDetailPage() {
   const [patient, setPatient] = useState<Patient | null>(null);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [records, setRecords] = useState<MedicalRecord[]>([]);
+  const [prescriptions, setPrescriptions] = useState<Prescription[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Appointment edit state
@@ -158,16 +189,32 @@ export default function PatientDetailPage() {
     followUp: "",
   });
 
+  // Prescription edit state
+  const [editingRx, setEditingRx] = useState<Prescription | null>(null);
+  const [rxSubmitting, setRxSubmitting] = useState(false);
+  const [rxForm, setRxForm] = useState({
+    medication: "",
+    dosage: "",
+    frequency: "",
+    duration: "",
+    refills: "0",
+    startDate: "",
+    endDate: "",
+    status: "active",
+    notes: "",
+  });
+
   useEffect(() => {
     fetchAll();
   }, [id]);
 
   async function fetchAll() {
     try {
-      const [patientRes, apptRes, recordRes] = await Promise.all([
+      const [patientRes, apptRes, recordRes, rxRes] = await Promise.all([
         fetch(`/api/doctor/patients/${id}`),
         fetch(`/api/doctor/appointments?patientId=${id}`),
         fetch(`/api/doctor/records?patientId=${id}`),
+        fetch(`/api/doctor/prescriptions?patientId=${id}`),
       ]);
 
       if (!patientRes.ok) {
@@ -186,6 +233,11 @@ export default function PatientDetailPage() {
       if (recordRes.ok) {
         const recordData = await recordRes.json();
         setRecords(recordData.records);
+      }
+
+      if (rxRes.ok) {
+        const rxData = await rxRes.json();
+        setPrescriptions(rxData.prescriptions);
       }
     } finally {
       setLoading(false);
@@ -291,6 +343,59 @@ export default function PatientDetailPage() {
   async function handleDeleteRecord(recordId: string) {
     if (!confirm("Are you sure you want to delete this record?")) return;
     const res = await fetch(`/api/doctor/records/${recordId}`, {
+      method: "DELETE",
+    });
+    if (res.ok) await fetchAll();
+  }
+
+  // --- Prescription edit/delete ---
+
+  function startEditRx(rx: Prescription) {
+    setRxForm({
+      medication: rx.Medication,
+      dosage: rx.Dosage,
+      frequency: rx.Frequency,
+      duration: rx.Duration,
+      refills: rx.Refills.toString(),
+      startDate: new Date(rx.StartDate).toISOString().split("T")[0],
+      endDate: rx.EndDate
+        ? new Date(rx.EndDate).toISOString().split("T")[0]
+        : "",
+      status: rx.Status,
+      notes: rx.Notes || "",
+    });
+    setEditingRx(rx);
+  }
+
+  function cancelEditRx() {
+    setEditingRx(null);
+  }
+
+  async function handleRxSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!editingRx) return;
+    setRxSubmitting(true);
+
+    try {
+      const res = await fetch(
+        `/api/doctor/prescriptions/${editingRx.PrescriptionID}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(rxForm),
+        },
+      );
+      if (!res.ok) return;
+      cancelEditRx();
+      await fetchAll();
+    } finally {
+      setRxSubmitting(false);
+    }
+  }
+
+  async function handleDeleteRx(rxId: string) {
+    if (!confirm("Are you sure you want to delete this prescription?")) return;
+    const res = await fetch(`/api/doctor/prescriptions/${rxId}`, {
       method: "DELETE",
     });
     if (res.ok) await fetchAll();
@@ -791,6 +896,225 @@ export default function PatientDetailPage() {
                           size="xs"
                           className="text-destructive hover:text-destructive"
                           onClick={() => handleDeleteRecord(record.RecordID)}
+                        >
+                          <TrashIcon className="h-3.5 w-3.5" />
+                          Delete
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+
+      {/* Prescription Edit Form */}
+      {editingRx && (
+        <Card className="mt-6 mb-6">
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle className="text-sm font-medium">
+              Edit Prescription
+            </CardTitle>
+            <Button variant="ghost" size="xs" onClick={cancelEditRx}>
+              <XMarkIcon className="h-4 w-4" /> Cancel
+            </Button>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleRxSubmit}>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <Label>Medication</Label>
+                  <Input
+                    type="text"
+                    required
+                    value={rxForm.medication}
+                    onChange={(e) =>
+                      setRxForm({ ...rxForm, medication: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Dosage</Label>
+                  <Input
+                    type="text"
+                    required
+                    value={rxForm.dosage}
+                    onChange={(e) =>
+                      setRxForm({ ...rxForm, dosage: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Frequency</Label>
+                  <Input
+                    type="text"
+                    required
+                    value={rxForm.frequency}
+                    onChange={(e) =>
+                      setRxForm({ ...rxForm, frequency: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Duration</Label>
+                  <Input
+                    type="text"
+                    required
+                    value={rxForm.duration}
+                    onChange={(e) =>
+                      setRxForm({ ...rxForm, duration: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Refills</Label>
+                  <Input
+                    type="number"
+                    min="0"
+                    value={rxForm.refills}
+                    onChange={(e) =>
+                      setRxForm({ ...rxForm, refills: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Start Date</Label>
+                  <Input
+                    type="date"
+                    required
+                    value={rxForm.startDate}
+                    onChange={(e) =>
+                      setRxForm({ ...rxForm, startDate: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label>End Date (optional)</Label>
+                  <Input
+                    type="date"
+                    value={rxForm.endDate}
+                    onChange={(e) =>
+                      setRxForm({ ...rxForm, endDate: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Status</Label>
+                  <select
+                    value={rxForm.status}
+                    onChange={(e) =>
+                      setRxForm({ ...rxForm, status: e.target.value })
+                    }
+                    className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm outline-none"
+                  >
+                    {PRESCRIPTION_STATUS_OPTIONS.map((s) => (
+                      <option key={s.value} value={s.value}>
+                        {s.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="col-span-2 space-y-1.5">
+                  <Label>Notes (optional)</Label>
+                  <Textarea
+                    value={rxForm.notes}
+                    onChange={(e) =>
+                      setRxForm({ ...rxForm, notes: e.target.value })
+                    }
+                    rows={3}
+                  />
+                </div>
+              </div>
+              <div className="mt-4 flex justify-end gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={cancelEditRx}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={rxSubmitting}>
+                  {rxSubmitting ? "Saving..." : "Update Prescription"}
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Prescriptions */}
+      <Card className="mt-6">
+        <CardHeader>
+          <CardTitle>Prescriptions</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Medication</TableHead>
+                <TableHead>Dosage</TableHead>
+                <TableHead>Frequency</TableHead>
+                <TableHead>Start</TableHead>
+                <TableHead>End</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {prescriptions.length === 0 ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={7}
+                    className="text-center text-muted-foreground py-8"
+                  >
+                    No prescriptions found.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                prescriptions.map((rx) => (
+                  <TableRow key={rx.PrescriptionID}>
+                    <TableCell className="font-medium">
+                      {rx.Medication}
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {rx.Dosage}
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {rx.Frequency}
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {formatDate(rx.StartDate)}
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {rx.EndDate ? formatDate(rx.EndDate) : "-"}
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant="secondary"
+                        className={rxStatusVariant[rx.Status] || ""}
+                      >
+                        {PRESCRIPTION_STATUS_OPTIONS.find(
+                          (s) => s.value === rx.Status,
+                        )?.label ?? rx.Status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex gap-2">
+                        <Button
+                          variant="ghost"
+                          size="xs"
+                          onClick={() => startEditRx(rx)}
+                        >
+                          <PencilSquareIcon className="h-3.5 w-3.5" />
+                          Edit
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="xs"
+                          className="text-destructive hover:text-destructive"
+                          onClick={() => handleDeleteRx(rx.PrescriptionID)}
                         >
                           <TrashIcon className="h-3.5 w-3.5" />
                           Delete
