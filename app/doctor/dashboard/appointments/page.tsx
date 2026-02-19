@@ -44,6 +44,7 @@ interface Appointment {
   Status: string;
   Notes: string | null;
   CanceledBy: string | null;
+  VisitSummary: string | null;
 }
 
 const TYPE_OPTIONS = [
@@ -105,6 +106,7 @@ export default function AppointmentsPage() {
     type: "checkup",
     status: "scheduled",
     notes: "",
+    visitSummary: "",
   });
 
   useEffect(() => {
@@ -141,6 +143,7 @@ export default function AppointmentsPage() {
       type: "checkup",
       status: "scheduled",
       notes: "",
+      visitSummary: "",
     });
     setEditing(null);
     setShowForm(false);
@@ -157,6 +160,7 @@ export default function AppointmentsPage() {
       type: appt.Type,
       status: appt.Status,
       notes: appt.Notes || "",
+      visitSummary: appt.VisitSummary || "",
     });
     setEditing(appt);
     setShowForm(true);
@@ -406,6 +410,19 @@ export default function AppointmentsPage() {
                     placeholder="Additional notes..."
                   />
                 </div>
+                {editing && form.status === "completed" && (
+                  <div className="col-span-2 space-y-1.5">
+                    <Label>Visit Summary (SOAP Note)</Label>
+                    <Textarea
+                      value={form.visitSummary}
+                      onChange={(e) =>
+                        setForm({ ...form, visitSummary: e.target.value })
+                      }
+                      rows={5}
+                      placeholder="S: Subjective&#10;O: Objective&#10;A: Assessment&#10;P: Plan"
+                    />
+                  </div>
+                )}
               </div>
               <div className="mt-4 flex justify-end gap-2">
                 <Button type="button" variant="outline" onClick={resetForm}>

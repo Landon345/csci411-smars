@@ -21,7 +21,7 @@ export async function PATCH(
   }
 
   const body = await request.json();
-  const { date, startTime, endTime, place, reason, type, status, notes, canceledBy } = body;
+  const { date, startTime, endTime, place, reason, type, status, notes, canceledBy, visitSummary } = body;
 
   const data: Record<string, unknown> = {};
   if (date) data.Date = new Date(date);
@@ -33,6 +33,7 @@ export async function PATCH(
   if (status) data.Status = status;
   if (notes !== undefined) data.Notes = notes || null;
   if (canceledBy !== undefined) data.CanceledBy = canceledBy || null;
+  if (visitSummary !== undefined) data.VisitSummary = visitSummary || null;
 
   const appointment = await prisma.appointment.update({
     where: { AppointmentID: id },
@@ -43,6 +44,27 @@ export async function PATCH(
       },
     },
   });
+
+  if (status === "completed" && visitSummary) {
+    const existingRecord = await prisma.medicalRecord.findFirst({
+      where: { AppointmentID: id },
+    });
+    if (!existingRecord) {
+      await prisma.medicalRecord.create({
+        data: {
+          DoctorID: user.UserID,
+          PatientID: existing.PatientID,
+          AppointmentID: id,
+          VisitDate: existing.Date,
+          ChiefComplaint: existing.Reason,
+          DiagnosisCode: "N/A",
+          DiagnosisDesc: "See visit summary",
+          TreatmentPlan: visitSummary,
+          Type: "office_visit",
+        },
+      });
+    }
+  }
 
   return NextResponse.json({ appointment });
 }
