@@ -100,19 +100,23 @@ model Appointment {
   Status        AppointmentStatus @default(scheduled)
   Notes         String?           @db.Text
   CanceledBy    String?           @db.VarChar(255)
+  VisitSummary  String?           @db.Text
   CreatedAt     DateTime          @default(now()) @db.Timestamp(6)
   UpdatedAt     DateTime          @updatedAt
+  MedicalRecord MedicalRecord[]
 
   @@index([DoctorID, Date])
   @@index([PatientID, Date])
 }
 
 model MedicalRecord {
-  RecordID       String     @id @default(uuid())
+  RecordID       String       @id @default(uuid())
   DoctorID       String
   PatientID      String
-  Doctor         User       @relation("DoctorRecords", fields: [DoctorID], references: [UserID])
-  Patient        User       @relation("PatientRecords", fields: [PatientID], references: [UserID])
+  AppointmentID  String?
+  Doctor         User         @relation("DoctorRecords", fields: [DoctorID], references: [UserID])
+  Patient        User         @relation("PatientRecords", fields: [PatientID], references: [UserID])
+  Appointment    Appointment? @relation(fields: [AppointmentID], references: [AppointmentID])
   VisitDate      DateTime   @db.Date
   ChiefComplaint String     @db.VarChar(500)
   DiagnosisCode  String     @db.VarChar(10)

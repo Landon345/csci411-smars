@@ -14,6 +14,9 @@ export async function GET() {
       Doctor: {
         select: { FirstName: true, LastName: true },
       },
+      Appointment: {
+        select: { Date: true, Type: true, Reason: true },
+      },
     },
     orderBy: { VisitDate: "desc" },
   });

@@ -117,6 +117,7 @@ export const AppointmentScalarFieldEnum = {
   Status: 'Status',
   Notes: 'Notes',
   CanceledBy: 'CanceledBy',
+  VisitSummary: 'VisitSummary',
   CreatedAt: 'CreatedAt',
   UpdatedAt: 'UpdatedAt'
 } as const
@@ -128,6 +129,7 @@ export const MedicalRecordScalarFieldEnum = {
   RecordID: 'RecordID',
   DoctorID: 'DoctorID',
   PatientID: 'PatientID',
+  AppointmentID: 'AppointmentID',
   VisitDate: 'VisitDate',
   ChiefComplaint: 'ChiefComplaint',
   DiagnosisCode: 'DiagnosisCode',

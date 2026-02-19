@@ -45,6 +45,7 @@ interface Appointment {
   Status: string;
   Notes: string | null;
   CanceledBy: string | null;
+  VisitSummary: string | null;
 }
 
 interface MedicalRecord {
@@ -168,6 +169,7 @@ export default function PatientDetailPage() {
     type: "checkup",
     status: "scheduled",
     notes: "",
+    visitSummary: "",
   });
 
   // Record edit state
@@ -257,6 +259,7 @@ export default function PatientDetailPage() {
       type: appt.Type,
       status: appt.Status,
       notes: appt.Notes || "",
+      visitSummary: appt.VisitSummary || "",
     });
     setEditingAppt(appt);
   }
@@ -646,6 +649,19 @@ export default function PatientDetailPage() {
                     rows={3}
                   />
                 </div>
+                {apptForm.status === "completed" && (
+                  <div className="col-span-2 space-y-1.5">
+                    <Label>Visit Summary (SOAP Note)</Label>
+                    <Textarea
+                      value={apptForm.visitSummary}
+                      onChange={(e) =>
+                        setApptForm({ ...apptForm, visitSummary: e.target.value })
+                      }
+                      rows={5}
+                      placeholder="S: Subjective&#10;O: Objective&#10;A: Assessment&#10;P: Plan"
+                    />
+                  </div>
+                )}
               </div>
               <div className="mt-4 flex justify-end gap-2">
                 <Button
