@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { RecordDetail } from "@/components/details/RecordDetail";
+import { formatDate } from "@/lib/format";
 
 interface Patient {
   UserID: string;
@@ -57,9 +58,6 @@ const TYPE_OPTIONS = [
   { value: "procedure_note", label: "Procedure Note" },
 ];
 
-function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString();
-}
 
 function typeLabel(type: string) {
   return TYPE_OPTIONS.find((t) => t.value === type)?.label ?? type;

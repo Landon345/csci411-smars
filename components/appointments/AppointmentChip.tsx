@@ -13,6 +13,7 @@ import {
   ArrowsPointingOutIcon,
 } from "@heroicons/react/24/outline";
 import { CalendarAppointment } from "@/lib/appointments";
+import { parseLocalDate } from "@/lib/format";
 
 const TYPE_LABELS: Record<string, string> = {
   checkup: "Checkup",
@@ -54,7 +55,7 @@ function formatTime(timeStr: string) {
 }
 
 function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString(undefined, {
+  return parseLocalDate(dateStr).toLocaleDateString(undefined, {
     weekday: "short",
     month: "short",
     day: "numeric",

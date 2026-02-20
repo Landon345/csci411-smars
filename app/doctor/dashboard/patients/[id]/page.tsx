@@ -23,6 +23,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
+import { formatDate } from "@/lib/format";
 import { AppointmentDetail } from "@/components/details/AppointmentDetail";
 import { RecordDetail } from "@/components/details/RecordDetail";
 import { PrescriptionDetail } from "@/components/details/PrescriptionDetail";
@@ -135,9 +136,6 @@ const rxStatusVariant: Record<string, string> = {
     "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
 };
 
-function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString();
-}
 
 function formatTime(timeStr: string) {
   return new Date(timeStr).toLocaleTimeString([], {

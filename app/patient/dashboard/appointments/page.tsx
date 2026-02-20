@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AppointmentDetail } from "@/components/details/AppointmentDetail";
+import { formatDate } from "@/lib/format";
 
 interface Doctor {
   UserID: string;
@@ -74,9 +75,6 @@ const statusVariant: Record<string, string> = {
     "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400",
 };
 
-function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString();
-}
 
 function formatTime(timeStr: string) {
   const d = new Date(timeStr);

@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PrescriptionDetail } from "@/components/details/PrescriptionDetail";
+import { formatDate } from "@/lib/format";
 
 interface Patient {
   UserID: string;
@@ -62,9 +63,6 @@ const statusVariant: Record<string, string> = {
     "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
 };
 
-function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString();
-}
 
 export default function DoctorPrescriptionsPage() {
   const [prescriptions, setPrescriptions] = useState<Prescription[]>([]);

@@ -23,7 +23,7 @@ export function toDateKey(d: Date): string {
 
 /** Convert an appointment Date string from the API to a YYYY-MM-DD key in local time */
 export function apptDateKey(dateStr: string): string {
-  return toDateKey(new Date(dateStr));
+  return dateStr.split("T")[0];
 }
 
 /** Group appointments by their local date key */

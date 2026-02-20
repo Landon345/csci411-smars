@@ -10,6 +10,7 @@ import {
   SheetDescription,
   SheetCloseButton,
 } from "@/components/ui/sheet";
+import { parseLocalDate } from "@/lib/format";
 
 export interface DetailRecord {
   RecordID: string;
@@ -47,7 +48,7 @@ const APPT_TYPE_LABELS: Record<string, string> = {
 };
 
 function formatDate(d: string) {
-  return new Date(d).toLocaleDateString(undefined, {
+  return parseLocalDate(d).toLocaleDateString(undefined, {
     year: "numeric",
     month: "long",
     day: "numeric",
