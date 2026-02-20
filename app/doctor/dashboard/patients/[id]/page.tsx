@@ -23,6 +23,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
+import { AppointmentDetail } from "@/components/details/AppointmentDetail";
+import { RecordDetail } from "@/components/details/RecordDetail";
+import { PrescriptionDetail } from "@/components/details/PrescriptionDetail";
 
 interface Patient {
   UserID: string;
@@ -156,6 +159,11 @@ export default function PatientDetailPage() {
   const [records, setRecords] = useState<MedicalRecord[]>([]);
   const [prescriptions, setPrescriptions] = useState<Prescription[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Detail view state
+  const [selectedAppt, setSelectedAppt] = useState<Appointment | null>(null);
+  const [selectedRecord, setSelectedRecord] = useState<MedicalRecord | null>(null);
+  const [selectedRx, setSelectedRx] = useState<Prescription | null>(null);
 
   // Appointment edit state
   const [editingAppt, setEditingAppt] = useState<Appointment | null>(null);
@@ -709,7 +717,11 @@ export default function PatientDetailPage() {
                 </TableRow>
               ) : (
                 appointments.map((appt) => (
-                  <TableRow key={appt.AppointmentID}>
+                  <TableRow
+                    key={appt.AppointmentID}
+                    className="cursor-pointer"
+                    onClick={() => setSelectedAppt(appt)}
+                  >
                     <TableCell>{formatDate(appt.Date)}</TableCell>
                     <TableCell className="text-muted-foreground">
                       {formatTime(appt.StartTime)}
@@ -731,7 +743,7 @@ export default function PatientDetailPage() {
                     <TableCell className="text-muted-foreground">
                       {appt.Place}
                     </TableCell>
-                    <TableCell>
+                    <TableCell onClick={(e) => e.stopPropagation()}>
                       <div className="flex gap-2">
                         <Button
                           variant="ghost"
@@ -745,9 +757,7 @@ export default function PatientDetailPage() {
                           variant="ghost"
                           size="xs"
                           className="text-destructive hover:text-destructive"
-                          onClick={() =>
-                            handleDeleteAppt(appt.AppointmentID)
-                          }
+                          onClick={() => handleDeleteAppt(appt.AppointmentID)}
                         >
                           <TrashIcon className="h-3.5 w-3.5" />
                           Delete
@@ -988,7 +998,11 @@ export default function PatientDetailPage() {
                 </TableRow>
               ) : (
                 records.map((record) => (
-                  <TableRow key={record.RecordID}>
+                  <TableRow
+                    key={record.RecordID}
+                    className="cursor-pointer"
+                    onClick={() => setSelectedRecord(record)}
+                  >
                     <TableCell>{formatDate(record.VisitDate)}</TableCell>
                     <TableCell className="text-muted-foreground">
                       {RECORD_TYPE_OPTIONS.find((t) => t.value === record.Type)
@@ -1003,7 +1017,7 @@ export default function PatientDetailPage() {
                     <TableCell className="text-muted-foreground">
                       {record.TreatmentPlan}
                     </TableCell>
-                    <TableCell>
+                    <TableCell onClick={(e) => e.stopPropagation()}>
                       <div className="flex gap-2">
                         <Button
                           variant="ghost"
@@ -1196,7 +1210,11 @@ export default function PatientDetailPage() {
                 </TableRow>
               ) : (
                 prescriptions.map((rx) => (
-                  <TableRow key={rx.PrescriptionID}>
+                  <TableRow
+                    key={rx.PrescriptionID}
+                    className="cursor-pointer"
+                    onClick={() => setSelectedRx(rx)}
+                  >
                     <TableCell className="font-medium">
                       {rx.Medication}
                     </TableCell>
@@ -1222,7 +1240,7 @@ export default function PatientDetailPage() {
                         )?.label ?? rx.Status}
                       </Badge>
                     </TableCell>
-                    <TableCell>
+                    <TableCell onClick={(e) => e.stopPropagation()}>
                       <div className="flex gap-2">
                         <Button
                           variant="ghost"
@@ -1250,6 +1268,9 @@ export default function PatientDetailPage() {
           </Table>
         </CardContent>
       </Card>
+      <AppointmentDetail appointment={selectedAppt} onClose={() => setSelectedAppt(null)} />
+      <RecordDetail record={selectedRecord} onClose={() => setSelectedRecord(null)} />
+      <PrescriptionDetail prescription={selectedRx} onClose={() => setSelectedRx(null)} />
     </>
   );
 }

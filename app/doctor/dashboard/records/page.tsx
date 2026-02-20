@@ -22,6 +22,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
+import { RecordDetail } from "@/components/details/RecordDetail";
 
 interface Patient {
   UserID: string;
@@ -71,6 +72,7 @@ export default function DoctorRecordsPage() {
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<MedicalRecord | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [selected, setSelected] = useState<MedicalRecord | null>(null);
 
   const [form, setForm] = useState({
     patientId: "",
@@ -477,7 +479,11 @@ export default function DoctorRecordsPage() {
               </TableRow>
             ) : (
               records.map((record) => (
-                <TableRow key={record.RecordID}>
+                <TableRow
+                  key={record.RecordID}
+                  className="cursor-pointer"
+                  onClick={() => setSelected(record)}
+                >
                   <TableCell>{formatDate(record.VisitDate)}</TableCell>
                   <TableCell className="font-medium">
                     <Link
@@ -496,7 +502,7 @@ export default function DoctorRecordsPage() {
                   <TableCell className="text-muted-foreground">
                     {record.ChiefComplaint}
                   </TableCell>
-                  <TableCell>
+                  <TableCell onClick={(e) => e.stopPropagation()}>
                     <div className="flex gap-2">
                       <Button
                         variant="ghost"
@@ -523,6 +529,8 @@ export default function DoctorRecordsPage() {
           </TableBody>
         </Table>
       </Card>
+
+      <RecordDetail record={selected} onClose={() => setSelected(null)} />
     </>
   );
 }

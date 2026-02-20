@@ -23,6 +23,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
+import { PrescriptionDetail } from "@/components/details/PrescriptionDetail";
 
 interface Patient {
   UserID: string;
@@ -72,6 +73,7 @@ export default function DoctorPrescriptionsPage() {
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Prescription | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [selected, setSelected] = useState<Prescription | null>(null);
 
   const [form, setForm] = useState({
     patientId: "",
@@ -441,7 +443,11 @@ export default function DoctorPrescriptionsPage() {
               </TableRow>
             ) : (
               prescriptions.map((rx) => (
-                <TableRow key={rx.PrescriptionID}>
+                <TableRow
+                  key={rx.PrescriptionID}
+                  className="cursor-pointer"
+                  onClick={() => setSelected(rx)}
+                >
                   <TableCell className="font-medium">
                     <Link
                       href={`/doctor/dashboard/patients/${rx.PatientID}`}
@@ -477,7 +483,7 @@ export default function DoctorPrescriptionsPage() {
                       <Button
                         variant="ghost"
                         size="xs"
-                        onClick={() => startEdit(rx)}
+                        onClick={(e) => { e.stopPropagation(); startEdit(rx); }}
                       >
                         <PencilSquareIcon className="h-3.5 w-3.5" />
                         Edit
@@ -486,7 +492,7 @@ export default function DoctorPrescriptionsPage() {
                         variant="ghost"
                         size="xs"
                         className="text-destructive hover:text-destructive"
-                        onClick={() => handleDelete(rx.PrescriptionID)}
+                        onClick={(e) => { e.stopPropagation(); handleDelete(rx.PrescriptionID); }}
                       >
                         <TrashIcon className="h-3.5 w-3.5" />
                         Delete
@@ -499,6 +505,8 @@ export default function DoctorPrescriptionsPage() {
           </TableBody>
         </Table>
       </Card>
+
+      <PrescriptionDetail prescription={selected} onClose={() => setSelected(null)} />
     </>
   );
 }

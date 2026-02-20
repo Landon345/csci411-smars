@@ -11,6 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
+import { RecordDetail } from "@/components/details/RecordDetail";
 
 interface MedicalRecord {
   RecordID: string;
@@ -43,6 +44,7 @@ function typeLabel(type: string) {
 export default function PatientRecordsPage() {
   const [records, setRecords] = useState<MedicalRecord[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selected, setSelected] = useState<MedicalRecord | null>(null);
 
   useEffect(() => {
     fetchRecords();
@@ -134,7 +136,11 @@ export default function PatientRecordsPage() {
               </TableRow>
             ) : (
               records.map((record) => (
-                <TableRow key={record.RecordID}>
+                <TableRow
+                  key={record.RecordID}
+                  className="cursor-pointer"
+                  onClick={() => setSelected(record)}
+                >
                   <TableCell>{formatDate(record.VisitDate)}</TableCell>
                   <TableCell className="font-medium">
                     Dr. {record.Doctor.FirstName} {record.Doctor.LastName}
@@ -165,6 +171,8 @@ export default function PatientRecordsPage() {
           </TableBody>
         </Table>
       </Card>
+
+      <RecordDetail record={selected} onClose={() => setSelected(null)} />
     </>
   );
 }

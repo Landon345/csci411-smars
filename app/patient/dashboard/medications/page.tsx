@@ -12,6 +12,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
+import { PrescriptionDetail } from "@/components/details/PrescriptionDetail";
 
 interface Prescription {
   PrescriptionID: string;
@@ -48,6 +49,7 @@ function formatDate(dateStr: string) {
 export default function PatientMedicationsPage() {
   const [prescriptions, setPrescriptions] = useState<Prescription[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selected, setSelected] = useState<Prescription | null>(null);
 
   useEffect(() => {
     fetchMedications();
@@ -143,7 +145,11 @@ export default function PatientMedicationsPage() {
               </TableRow>
             ) : (
               prescriptions.map((rx) => (
-                <TableRow key={rx.PrescriptionID}>
+                <TableRow
+                  key={rx.PrescriptionID}
+                  className="cursor-pointer"
+                  onClick={() => setSelected(rx)}
+                >
                   <TableCell className="font-medium">
                     {rx.Medication}
                   </TableCell>
@@ -183,6 +189,8 @@ export default function PatientMedicationsPage() {
           </TableBody>
         </Table>
       </Card>
+
+      <PrescriptionDetail prescription={selected} onClose={() => setSelected(null)} />
     </>
   );
 }

@@ -1,7 +1,7 @@
-import { redirect } from "next/navigation";
-import Link from "next/link";
-import { getSession } from "@/lib/session";
-import { prisma } from "@/lib/prisma";
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   Table,
   TableBody,
@@ -11,38 +11,67 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Card } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 
-export default async function DoctorPatientsPage() {
-  const user = await getSession();
-  if (!user) redirect("/login");
-  if (user.Role !== "doctor") redirect("/dashboard");
+interface Patient {
+  UserID: string;
+  FirstName: string;
+  LastName: string;
+  Email: string;
+  Phone: string | null;
+  CreatedAt: string;
+}
 
-  const patients = await prisma.user.findMany({
-    where: {
-      Role: "patient",
-      OR: [
-        { PatientAppointments: { some: { DoctorID: user.UserID } } },
-        { PatientRecords: { some: { DoctorID: user.UserID } } },
-      ],
-    },
-    select: {
-      UserID: true,
-      FirstName: true,
-      LastName: true,
-      Email: true,
-      Phone: true,
-      CreatedAt: true,
-    },
-    orderBy: { CreatedAt: "desc" },
-  });
+export default function DoctorPatientsPage() {
+  const router = useRouter();
+  const [patients, setPatients] = useState<Patient[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/doctor/patients/list")
+      .then((r) => r.json())
+      .then((d) => setPatients(d.patients ?? []))
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) {
+    return (
+      <>
+        <header className="mb-8">
+          <h1 className="text-2xl font-medium tracking-tight">Patient List</h1>
+          <p className="text-sm text-muted-foreground">View your patients.</p>
+        </header>
+        <Card>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Email</TableHead>
+                <TableHead>Phone</TableHead>
+                <TableHead>Created</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {Array.from({ length: 5 }).map((_, i) => (
+                <TableRow key={i}>
+                  <TableCell><Skeleton className="h-4 w-36" /></TableCell>
+                  <TableCell><Skeleton className="h-4 w-48" /></TableCell>
+                  <TableCell><Skeleton className="h-4 w-28" /></TableCell>
+                  <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </Card>
+      </>
+    );
+  }
 
   return (
     <>
       <header className="mb-8">
         <h1 className="text-2xl font-medium tracking-tight">Patient List</h1>
-        <p className="text-sm text-muted-foreground">
-          View your patients.
-        </p>
+        <p className="text-sm text-muted-foreground">View your patients.</p>
       </header>
 
       <Card>
@@ -67,23 +96,24 @@ export default async function DoctorPatientsPage() {
               </TableRow>
             ) : (
               patients.map((patient) => (
-                <TableRow key={patient.UserID}>
+                <TableRow
+                  key={patient.UserID}
+                  className="cursor-pointer"
+                  onClick={() =>
+                    router.push(`/doctor/dashboard/patients/${patient.UserID}`)
+                  }
+                >
                   <TableCell className="font-medium">
-                    <Link
-                      href={`/doctor/dashboard/patients/${patient.UserID}`}
-                      className="hover:underline"
-                    >
-                      {patient.FirstName} {patient.LastName}
-                    </Link>
+                    {patient.FirstName} {patient.LastName}
                   </TableCell>
                   <TableCell className="text-muted-foreground">
                     {patient.Email}
                   </TableCell>
                   <TableCell className="text-muted-foreground">
-                    {patient.Phone || "\u2014"}
+                    {patient.Phone || "—"}
                   </TableCell>
                   <TableCell className="text-muted-foreground">
-                    {patient.CreatedAt.toLocaleDateString()}
+                    {new Date(patient.CreatedAt).toLocaleDateString()}
                   </TableCell>
                 </TableRow>
               ))

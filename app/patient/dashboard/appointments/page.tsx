@@ -22,6 +22,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
+import { AppointmentDetail } from "@/components/details/AppointmentDetail";
 
 interface Doctor {
   UserID: string;
@@ -93,6 +94,7 @@ export default function PatientAppointmentsPage() {
   const [showForm, setShowForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [view, setView] = useState<"table" | "calendar">("table");
+  const [selected, setSelected] = useState<Appointment | null>(null);
 
   useEffect(() => {
     const saved = sessionStorage.getItem("patient-appt-view") as
@@ -403,7 +405,11 @@ export default function PatientAppointmentsPage() {
                 </TableRow>
               ) : (
                 appointments.map((appt) => (
-                  <TableRow key={appt.AppointmentID}>
+                  <TableRow
+                    key={appt.AppointmentID}
+                    className="cursor-pointer"
+                    onClick={() => setSelected(appt)}
+                  >
                     <TableCell>{formatDate(appt.Date)}</TableCell>
                     <TableCell className="text-muted-foreground">
                       {formatTime(appt.StartTime)} - {formatTime(appt.EndTime)}
@@ -425,7 +431,7 @@ export default function PatientAppointmentsPage() {
                     <TableCell className="text-muted-foreground">
                       {appt.Place}
                     </TableCell>
-                    <TableCell>
+                    <TableCell onClick={(e) => e.stopPropagation()}>
                       {(appt.Status === "scheduled" ||
                         appt.Status === "pending") && (
                         <Button
@@ -445,6 +451,8 @@ export default function PatientAppointmentsPage() {
           </Table>
         </Card>
       )}
+
+      <AppointmentDetail appointment={selected} onClose={() => setSelected(null)} />
     </>
   );
 }
