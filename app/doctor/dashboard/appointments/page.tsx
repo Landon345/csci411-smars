@@ -13,7 +13,10 @@ import {
   XMarkIcon,
   PencilSquareIcon,
   TrashIcon,
+  TableCellsIcon,
+  CalendarDaysIcon,
 } from "@heroicons/react/24/outline";
+import { AppointmentCalendar } from "@/components/appointments/AppointmentCalendar";
 import {
   Table,
   TableBody,
@@ -95,6 +98,27 @@ export default function AppointmentsPage() {
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Appointment | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [view, setView] = useState<"table" | "calendar">("table");
+
+  useEffect(() => {
+    const saved = sessionStorage.getItem("doctor-appt-view") as
+      | "table"
+      | "calendar"
+      | null;
+    if (saved) setView(saved);
+  }, []);
+
+  function setViewAndPersist(v: "table" | "calendar") {
+    setView(v);
+    sessionStorage.setItem("doctor-appt-view", v);
+  }
+
+  function handleChipEdit(id: string) {
+    const appt = appointments.find((a) => a.AppointmentID === id);
+    if (!appt) return;
+    startEdit(appt);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
 
   const [form, setForm] = useState({
     patientId: "",
@@ -221,7 +245,10 @@ export default function AppointmentsPage() {
             <h2 className="text-xl font-medium tracking-tight">Appointments</h2>
             <p className="text-sm text-muted-foreground">Manage your patient appointments.</p>
           </div>
-          <Skeleton className="h-9 w-40" />
+          <div className="flex items-center gap-2">
+            <Skeleton className="h-7 w-36" />
+            <Skeleton className="h-9 w-40" />
+          </div>
         </header>
         <Card>
           <Table>
@@ -264,21 +291,44 @@ export default function AppointmentsPage() {
             Manage your patient appointments.
           </p>
         </div>
-        <Button
-          onClick={() => {
-            if (showForm) {
-              resetForm();
-            } else {
-              setShowForm(true);
-            }
-          }}
-        >
-          {showForm ? (
-            <><XMarkIcon className="h-4 w-4" /> Cancel</>
-          ) : (
-            <><PlusIcon className="h-4 w-4" /> New Appointment</>
-          )}
-        </Button>
+        <div className="flex items-center gap-2">
+          {/* View toggle */}
+          <div className="flex items-center rounded-md border bg-background p-0.5 gap-0.5">
+            <Button
+              variant={view === "table" ? "secondary" : "ghost"}
+              size="xs"
+              onClick={() => setViewAndPersist("table")}
+              aria-label="Table view"
+            >
+              <TableCellsIcon className="h-3.5 w-3.5" />
+              Table
+            </Button>
+            <Button
+              variant={view === "calendar" ? "secondary" : "ghost"}
+              size="xs"
+              onClick={() => setViewAndPersist("calendar")}
+              aria-label="Calendar view"
+            >
+              <CalendarDaysIcon className="h-3.5 w-3.5" />
+              Calendar
+            </Button>
+          </div>
+          <Button
+            onClick={() => {
+              if (showForm) {
+                resetForm();
+              } else {
+                setShowForm(true);
+              }
+            }}
+          >
+            {showForm ? (
+              <><XMarkIcon className="h-4 w-4" /> Cancel</>
+            ) : (
+              <><PlusIcon className="h-4 w-4" /> New Appointment</>
+            )}
+          </Button>
+        </div>
       </header>
 
       {showForm && (
@@ -441,90 +491,93 @@ export default function AppointmentsPage() {
         </Card>
       )}
 
-      <Card>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Date</TableHead>
-              <TableHead>Time</TableHead>
-              <TableHead>Patient</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Place</TableHead>
-              <TableHead>Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {appointments.length === 0 ? (
+      {view === "calendar" ? (
+        <AppointmentCalendar
+          appointments={appointments}
+          role="doctor"
+          onEditAppt={handleChipEdit}
+        />
+      ) : (
+        <Card>
+          <Table>
+            <TableHeader>
               <TableRow>
-                <TableCell
-                  colSpan={7}
-                  className="text-center text-muted-foreground py-8"
-                >
-                  No appointments found. Create one to get started.
-                </TableCell>
+                <TableHead>Date</TableHead>
+                <TableHead>Time</TableHead>
+                <TableHead>Patient</TableHead>
+                <TableHead>Type</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Place</TableHead>
+                <TableHead>Actions</TableHead>
               </TableRow>
-            ) : (
-              appointments.map((appt) => (
-                <TableRow key={appt.AppointmentID}>
-                  <TableCell>
-                    {formatDate(appt.Date)}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {formatTime(appt.StartTime)} - {formatTime(appt.EndTime)}
-                  </TableCell>
-                  <TableCell className="font-medium">
-                    <Link
-                      href={`/doctor/dashboard/patients/${appt.PatientID}`}
-                      className="hover:underline"
-                    >
-                      {appt.Patient.FirstName} {appt.Patient.LastName}
-                    </Link>
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {typeLabel(appt.Type)}
-                  </TableCell>
-                  <TableCell>
-                    <Badge
-                      variant="secondary"
-                      className={statusVariant[appt.Status] || ""}
-                    >
-                      {
-                        STATUS_OPTIONS.find((s) => s.value === appt.Status)
-                          ?.label
-                      }
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {appt.Place}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex gap-2">
-                      <Button
-                        variant="ghost"
-                        size="xs"
-                        onClick={() => startEdit(appt)}
-                      >
-                        <PencilSquareIcon className="h-3.5 w-3.5" />
-                        Edit
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="xs"
-                        className="text-destructive hover:text-destructive"
-                        onClick={() => handleDelete(appt.AppointmentID)}
-                      >
-                        <TrashIcon className="h-3.5 w-3.5" />
-                        Delete
-                      </Button>
-                    </div>
+            </TableHeader>
+            <TableBody>
+              {appointments.length === 0 ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={7}
+                    className="text-center text-muted-foreground py-8"
+                  >
+                    No appointments found. Create one to get started.
                   </TableCell>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </Card>
+              ) : (
+                appointments.map((appt) => (
+                  <TableRow key={appt.AppointmentID}>
+                    <TableCell>{formatDate(appt.Date)}</TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {formatTime(appt.StartTime)} - {formatTime(appt.EndTime)}
+                    </TableCell>
+                    <TableCell className="font-medium">
+                      <Link
+                        href={`/doctor/dashboard/patients/${appt.PatientID}`}
+                        className="hover:underline"
+                      >
+                        {appt.Patient.FirstName} {appt.Patient.LastName}
+                      </Link>
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {typeLabel(appt.Type)}
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant="secondary"
+                        className={statusVariant[appt.Status] || ""}
+                      >
+                        {STATUS_OPTIONS.find((s) => s.value === appt.Status)?.label}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {appt.Place}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex gap-2">
+                        <Button
+                          variant="ghost"
+                          size="xs"
+                          onClick={() => startEdit(appt)}
+                        >
+                          <PencilSquareIcon className="h-3.5 w-3.5" />
+                          Edit
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="xs"
+                          className="text-destructive hover:text-destructive"
+                          onClick={() => handleDelete(appt.AppointmentID)}
+                        >
+                          <TrashIcon className="h-3.5 w-3.5" />
+                          Delete
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </Card>
+      )}
     </>
   );
 }

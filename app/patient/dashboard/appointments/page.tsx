@@ -6,7 +6,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { PlusIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import {
+  PlusIcon,
+  XMarkIcon,
+  TableCellsIcon,
+  CalendarDaysIcon,
+} from "@heroicons/react/24/outline";
+import { AppointmentCalendar } from "@/components/appointments/AppointmentCalendar";
 import {
   Table,
   TableBody,
@@ -86,6 +92,20 @@ export default function PatientAppointmentsPage() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [view, setView] = useState<"table" | "calendar">("table");
+
+  useEffect(() => {
+    const saved = sessionStorage.getItem("patient-appt-view") as
+      | "table"
+      | "calendar"
+      | null;
+    if (saved) setView(saved);
+  }, []);
+
+  function setViewAndPersist(v: "table" | "calendar") {
+    setView(v);
+    sessionStorage.setItem("patient-appt-view", v);
+  }
 
   const [form, setForm] = useState({
     doctorId: "",
@@ -169,7 +189,10 @@ export default function PatientAppointmentsPage() {
             <h2 className="text-xl font-medium tracking-tight">My Appointments</h2>
             <p className="text-sm text-muted-foreground">View your appointments and request new ones.</p>
           </div>
-          <Skeleton className="h-9 w-44" />
+          <div className="flex items-center gap-2">
+            <Skeleton className="h-7 w-36" />
+            <Skeleton className="h-9 w-44" />
+          </div>
         </header>
         <Card>
           <Table>
@@ -214,25 +237,48 @@ export default function PatientAppointmentsPage() {
             View your appointments and request new ones.
           </p>
         </div>
-        <Button
-          onClick={() => {
-            if (showForm) {
-              resetForm();
-            } else {
-              setShowForm(true);
-            }
-          }}
-        >
-          {showForm ? (
-            <>
-              <XMarkIcon className="h-4 w-4" /> Cancel
-            </>
-          ) : (
-            <>
-              <PlusIcon className="h-4 w-4" /> Request Appointment
-            </>
-          )}
-        </Button>
+        <div className="flex items-center gap-2">
+          {/* View toggle */}
+          <div className="flex items-center rounded-md border bg-background p-0.5 gap-0.5">
+            <Button
+              variant={view === "table" ? "secondary" : "ghost"}
+              size="xs"
+              onClick={() => setViewAndPersist("table")}
+              aria-label="Table view"
+            >
+              <TableCellsIcon className="h-3.5 w-3.5" />
+              Table
+            </Button>
+            <Button
+              variant={view === "calendar" ? "secondary" : "ghost"}
+              size="xs"
+              onClick={() => setViewAndPersist("calendar")}
+              aria-label="Calendar view"
+            >
+              <CalendarDaysIcon className="h-3.5 w-3.5" />
+              Calendar
+            </Button>
+          </div>
+          <Button
+            onClick={() => {
+              if (showForm) {
+                resetForm();
+              } else {
+                setShowForm(true);
+              }
+            }}
+          >
+            {showForm ? (
+              <>
+                <XMarkIcon className="h-4 w-4" /> Cancel
+              </>
+            ) : (
+              <>
+                <PlusIcon className="h-4 w-4" /> Request Appointment
+              </>
+            )}
+          </Button>
+        </div>
       </header>
 
       {showForm && (
@@ -325,75 +371,80 @@ export default function PatientAppointmentsPage() {
         </Card>
       )}
 
-      <Card>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Date</TableHead>
-              <TableHead>Time</TableHead>
-              <TableHead>Doctor</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Place</TableHead>
-              <TableHead>Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {appointments.length === 0 ? (
+      {view === "calendar" ? (
+        <AppointmentCalendar
+          appointments={appointments}
+          role="patient"
+          onCancelAppt={handleCancel}
+        />
+      ) : (
+        <Card>
+          <Table>
+            <TableHeader>
               <TableRow>
-                <TableCell
-                  colSpan={7}
-                  className="text-center text-muted-foreground py-8"
-                >
-                  No appointments found. Request one to get started.
-                </TableCell>
+                <TableHead>Date</TableHead>
+                <TableHead>Time</TableHead>
+                <TableHead>Doctor</TableHead>
+                <TableHead>Type</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Place</TableHead>
+                <TableHead>Actions</TableHead>
               </TableRow>
-            ) : (
-              appointments.map((appt) => (
-                <TableRow key={appt.AppointmentID}>
-                  <TableCell>{formatDate(appt.Date)}</TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {formatTime(appt.StartTime)} - {formatTime(appt.EndTime)}
-                  </TableCell>
-                  <TableCell className="font-medium">
-                    Dr. {appt.Doctor.FirstName} {appt.Doctor.LastName}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {typeLabel(appt.Type)}
-                  </TableCell>
-                  <TableCell>
-                    <Badge
-                      variant="secondary"
-                      className={statusVariant[appt.Status] || ""}
-                    >
-                      {
-                        STATUS_OPTIONS.find((s) => s.value === appt.Status)
-                          ?.label
-                      }
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {appt.Place}
-                  </TableCell>
-                  <TableCell>
-                    {(appt.Status === "scheduled" ||
-                      appt.Status === "pending") && (
-                      <Button
-                        variant="ghost"
-                        size="xs"
-                        className="text-destructive hover:text-destructive"
-                        onClick={() => handleCancel(appt.AppointmentID)}
-                      >
-                        Cancel
-                      </Button>
-                    )}
+            </TableHeader>
+            <TableBody>
+              {appointments.length === 0 ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={7}
+                    className="text-center text-muted-foreground py-8"
+                  >
+                    No appointments found. Request one to get started.
                   </TableCell>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </Card>
+              ) : (
+                appointments.map((appt) => (
+                  <TableRow key={appt.AppointmentID}>
+                    <TableCell>{formatDate(appt.Date)}</TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {formatTime(appt.StartTime)} - {formatTime(appt.EndTime)}
+                    </TableCell>
+                    <TableCell className="font-medium">
+                      Dr. {appt.Doctor.FirstName} {appt.Doctor.LastName}
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {typeLabel(appt.Type)}
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant="secondary"
+                        className={statusVariant[appt.Status] || ""}
+                      >
+                        {STATUS_OPTIONS.find((s) => s.value === appt.Status)?.label}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {appt.Place}
+                    </TableCell>
+                    <TableCell>
+                      {(appt.Status === "scheduled" ||
+                        appt.Status === "pending") && (
+                        <Button
+                          variant="ghost"
+                          size="xs"
+                          className="text-destructive hover:text-destructive"
+                          onClick={() => handleCancel(appt.AppointmentID)}
+                        >
+                          Cancel
+                        </Button>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </Card>
+      )}
     </>
   );
 }
