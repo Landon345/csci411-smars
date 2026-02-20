@@ -20,6 +20,7 @@ interface AppointmentCalendarProps {
   role: "doctor" | "patient";
   onEditAppt?: (id: string) => void;
   onCancelAppt?: (id: string) => void;
+  onViewDetail?: (appt: CalendarAppointment) => void;
 }
 
 export function AppointmentCalendar({
@@ -27,6 +28,7 @@ export function AppointmentCalendar({
   role,
   onEditAppt,
   onCancelAppt,
+  onViewDetail,
 }: AppointmentCalendarProps) {
   const today = new Date();
   const [currentMonth, setCurrentMonth] = useState(
@@ -186,6 +188,7 @@ export function AppointmentCalendar({
                       role={role}
                       onEdit={onEditAppt}
                       onCancel={onCancelAppt}
+                      onViewDetail={onViewDetail}
                     />
                   ))}
                   {dayAppts.length > 2 && (

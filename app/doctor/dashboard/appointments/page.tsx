@@ -17,6 +17,7 @@ import {
   CalendarDaysIcon,
 } from "@heroicons/react/24/outline";
 import { AppointmentCalendar } from "@/components/appointments/AppointmentCalendar";
+import { AppointmentDetail } from "@/components/details/AppointmentDetail";
 import {
   Table,
   TableBody,
@@ -26,6 +27,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
+import { formatDate } from "@/lib/format";
 
 interface Patient {
   UserID: string;
@@ -78,9 +80,6 @@ const statusVariant: Record<string, string> = {
     "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400",
 };
 
-function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString();
-}
 
 function formatTime(timeStr: string) {
   const d = new Date(timeStr);
@@ -99,6 +98,7 @@ export default function AppointmentsPage() {
   const [editing, setEditing] = useState<Appointment | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [view, setView] = useState<"table" | "calendar">("table");
+  const [selected, setSelected] = useState<Appointment | null>(null);
 
   useEffect(() => {
     const saved = sessionStorage.getItem("doctor-appt-view") as
@@ -496,6 +496,9 @@ export default function AppointmentsPage() {
           appointments={appointments}
           role="doctor"
           onEditAppt={handleChipEdit}
+          onViewDetail={(appt) =>
+            setSelected(appointments.find((a) => a.AppointmentID === appt.AppointmentID) ?? null)
+          }
         />
       ) : (
         <Card>
@@ -523,7 +526,11 @@ export default function AppointmentsPage() {
                 </TableRow>
               ) : (
                 appointments.map((appt) => (
-                  <TableRow key={appt.AppointmentID}>
+                  <TableRow
+                    key={appt.AppointmentID}
+                    className="cursor-pointer"
+                    onClick={() => setSelected(appt)}
+                  >
                     <TableCell>{formatDate(appt.Date)}</TableCell>
                     <TableCell className="text-muted-foreground">
                       {formatTime(appt.StartTime)} - {formatTime(appt.EndTime)}
@@ -550,7 +557,7 @@ export default function AppointmentsPage() {
                     <TableCell className="text-muted-foreground">
                       {appt.Place}
                     </TableCell>
-                    <TableCell>
+                    <TableCell onClick={(e) => e.stopPropagation()}>
                       <div className="flex gap-2">
                         <Button
                           variant="ghost"
@@ -578,6 +585,27 @@ export default function AppointmentsPage() {
           </Table>
         </Card>
       )}
+
+      <AppointmentDetail
+        appointment={selected}
+        onClose={() => setSelected(null)}
+        actions={
+          selected && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setSelected(null);
+                startEdit(selected);
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+            >
+              <PencilSquareIcon className="h-3.5 w-3.5" />
+              Edit Appointment
+            </Button>
+          )
+        }
+      />
     </>
   );
 }
