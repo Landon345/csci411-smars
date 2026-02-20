@@ -378,6 +378,9 @@ export default function PatientAppointmentsPage() {
           appointments={appointments}
           role="patient"
           onCancelAppt={handleCancel}
+          onViewDetail={(appt) =>
+            setSelected(appointments.find((a) => a.AppointmentID === appt.AppointmentID) ?? null)
+          }
         />
       ) : (
         <Card>

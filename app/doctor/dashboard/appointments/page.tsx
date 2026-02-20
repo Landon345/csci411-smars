@@ -498,6 +498,9 @@ export default function AppointmentsPage() {
           appointments={appointments}
           role="doctor"
           onEditAppt={handleChipEdit}
+          onViewDetail={(appt) =>
+            setSelected(appointments.find((a) => a.AppointmentID === appt.AppointmentID) ?? null)
+          }
         />
       ) : (
         <Card>

@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import {
   ExclamationTriangleIcon,
   PencilSquareIcon,
+  ArrowsPointingOutIcon,
 } from "@heroicons/react/24/outline";
 import { CalendarAppointment } from "@/lib/appointments";
 
@@ -67,6 +68,7 @@ interface AppointmentChipProps {
   role: "doctor" | "patient";
   onEdit?: (id: string) => void;
   onCancel?: (id: string) => void;
+  onViewDetail?: (appt: CalendarAppointment) => void;
 }
 
 export function AppointmentChip({
@@ -76,6 +78,7 @@ export function AppointmentChip({
   role,
   onEdit,
   onCancel,
+  onViewDetail,
 }: AppointmentChipProps) {
   const bg = chipBg[appt.Status] ?? "bg-muted text-muted-foreground";
   const typeLabel = TYPE_LABELS[appt.Type] ?? appt.Type;
@@ -159,6 +162,18 @@ export function AppointmentChip({
           )}
 
           {/* Actions */}
+          {onViewDetail && (
+            <Button
+              size="sm"
+              variant="outline"
+              className="w-full"
+              onClick={() => onViewDetail(appt)}
+            >
+              <ArrowsPointingOutIcon className="h-3.5 w-3.5" />
+              View Details
+            </Button>
+          )}
+
           {role === "doctor" && onEdit && (
             <Button
               size="sm"
