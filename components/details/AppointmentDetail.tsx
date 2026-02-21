@@ -8,7 +8,6 @@ import {
   SheetBody,
   SheetTitle,
   SheetDescription,
-  SheetCloseButton,
 } from "@/components/ui/sheet";
 import { parseLocalDate } from "@/lib/format";
 
@@ -88,15 +87,12 @@ export function AppointmentDetail({ appointment, onClose, actions }: Props) {
     <Sheet open={!!appointment} onOpenChange={(open) => !open && onClose()}>
       <SheetContent>
         <SheetHeader>
-          <div>
-            <SheetTitle>Appointment Details</SheetTitle>
-            {appointment && (
-              <SheetDescription className="mt-1">
-                {formatDate(appointment.Date)}
-              </SheetDescription>
-            )}
-          </div>
-          <SheetCloseButton onClick={onClose} />
+          <SheetTitle>Appointment Details</SheetTitle>
+          {appointment && (
+            <SheetDescription>
+              {formatDate(appointment.Date)}
+            </SheetDescription>
+          )}
         </SheetHeader>
 
         {appointment && (

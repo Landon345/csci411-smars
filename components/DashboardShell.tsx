@@ -1,84 +1,184 @@
+"use client";
+
 import Link from "next/link";
-import LogoutButton from "@/components/LogoutButton";
-import ThemeToggle from "@/components/ThemeToggle";
+import { usePathname, useRouter } from "next/navigation";
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
+import ThemeToggle from "@/components/ThemeToggle";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarHeader,
+  SidebarInset,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarProvider,
+  SidebarRail,
+  SidebarSeparator,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
+import {
+  ArrowLeftStartOnRectangleIcon,
+  HomeIcon,
+  CalendarDaysIcon,
+  ClipboardDocumentListIcon,
+  DocumentTextIcon,
+  BeakerIcon,
+  UserGroupIcon,
+  Cog6ToothIcon,
+} from "@heroicons/react/24/outline";
 import { type ComponentType } from "react";
 
 interface NavLink {
   href: string;
   label: string;
-  icon?: ComponentType<{ className?: string }>;
+  icon: ComponentType<{ className?: string }>;
 }
 
-interface DashboardShellProps {
-  user: { FirstName: string; LastName: string; Role: string };
-  navLinks: NavLink[];
-  children: React.ReactNode;
-}
+const NAV_LINKS: Record<string, NavLink[]> = {
+  doctor: [
+    { href: "/doctor/dashboard", label: "Overview", icon: HomeIcon },
+    { href: "/doctor/dashboard/appointments", label: "Appointments", icon: CalendarDaysIcon },
+    { href: "/doctor/dashboard/records", label: "Medical Records", icon: ClipboardDocumentListIcon },
+    { href: "/doctor/dashboard/prescriptions", label: "Prescriptions", icon: BeakerIcon },
+    { href: "/doctor/dashboard/patients", label: "Patient List", icon: UserGroupIcon },
+    { href: "/doctor/dashboard/settings", label: "Settings", icon: Cog6ToothIcon },
+  ],
+  patient: [
+    { href: "/patient/dashboard", label: "Overview", icon: HomeIcon },
+    { href: "/patient/dashboard/appointments", label: "My Appointments", icon: CalendarDaysIcon },
+    { href: "/patient/dashboard/records", label: "My Records", icon: DocumentTextIcon },
+    { href: "/patient/dashboard/medications", label: "Medications", icon: BeakerIcon },
+    { href: "/patient/dashboard/settings", label: "Settings", icon: Cog6ToothIcon },
+  ],
+  admin: [
+    { href: "/admin/dashboard", label: "Overview", icon: HomeIcon },
+    { href: "/admin/dashboard/patients", label: "Patient List", icon: UserGroupIcon },
+    { href: "/admin/dashboard/settings", label: "Settings", icon: Cog6ToothIcon },
+  ],
+};
 
 const roleBadgeColors: Record<string, string> = {
   patient: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
-  doctor:
-    "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
-  admin:
-    "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400",
+  doctor: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
+  admin: "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400",
 };
 
-export default function DashboardShell({
-  user,
-  navLinks,
-  children,
-}: DashboardShellProps) {
+interface DashboardShellProps {
+  user: { FirstName: string; LastName: string; Role: string };
+  children: React.ReactNode;
+}
+
+export default function DashboardShell({ user, children }: DashboardShellProps) {
+  const pathname = usePathname();
+  const router = useRouter();
+  const [loggingOut, setLoggingOut] = useState(false);
+
+  const navLinks = NAV_LINKS[user.Role] ?? [];
+
+  async function handleLogout() {
+    setLoggingOut(true);
+    try {
+      await fetch("/api/logout", { method: "POST" });
+      router.push("/login");
+      router.refresh();
+    } finally {
+      setLoggingOut(false);
+    }
+  }
+
   return (
-    <div className="flex min-h-screen bg-zinc-50 dark:bg-black font-sans">
-      {/* Sidebar */}
-      <aside className="w-64 border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 flex flex-col">
-        <div className="mb-10 flex items-center space-x-2">
-          <div className="h-8 w-8 rounded-lg bg-zinc-900 dark:bg-zinc-100 flex items-center justify-center text-white dark:text-black font-bold italic">
-            S
-          </div>
-          <span className="font-medium text-zinc-900 dark:text-zinc-50">
-            S.M.A.R.S
-          </span>
-        </div>
+    <SidebarProvider>
+      <Sidebar collapsible="icon">
+        {/* Logo */}
+        <SidebarHeader>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton size="lg" asChild tooltip="S.M.A.R.S">
+                <Link href="/">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-zinc-900 dark:bg-zinc-100">
+                    <span className="font-bold italic text-white dark:text-black">S</span>
+                  </div>
+                  <span className="font-medium">S.M.A.R.S</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarHeader>
 
-        <nav className="space-y-1 flex-1">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg text-muted-foreground hover:bg-accent transition-colors"
-            >
-              {link.icon && <link.icon className="h-4 w-4" />}
-              {link.label}
-            </Link>
-          ))}
-        </nav>
+        {/* Nav links */}
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {navLinks.map((link) => (
+                  <SidebarMenuItem key={link.href}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={pathname === link.href}
+                      tooltip={link.label}
+                    >
+                      <Link href={link.href}>
+                        <link.icon className="h-4 w-4" />
+                        <span>{link.label}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </SidebarContent>
 
-        {/* User info at bottom */}
-        <div className="pt-4">
-          <Separator className="mb-4" />
-          <div className="flex items-center justify-center gap-2 mb-3">
-            <span className="text-sm font-medium text-zinc-900 dark:text-zinc-50">
+        {/* User info + actions */}
+        <SidebarFooter>
+          <SidebarSeparator />
+
+          {/* Name + role badge — hidden in icon mode */}
+          <div className="group-data-[collapsible=icon]:hidden flex items-center justify-between gap-2 px-2 py-1">
+            <span className="text-sm font-medium truncate">
               {user.FirstName} {user.LastName}
             </span>
             <Badge
               variant="secondary"
-              className={roleBadgeColors[user.Role] || ""}
+              className={`shrink-0 capitalize ${roleBadgeColors[user.Role] ?? ""}`}
             >
               {user.Role}
             </Badge>
           </div>
-          <div className="flex items-center justify-around gap-2">
-            <LogoutButton />
+
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                onClick={handleLogout}
+                disabled={loggingOut}
+                tooltip="Log out"
+              >
+                <ArrowLeftStartOnRectangleIcon className="h-4 w-4" />
+                <span>{loggingOut ? "Logging out…" : "Log out"}</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+
+          {/* Theme toggle — hidden in icon mode */}
+          <div className="group-data-[collapsible=icon]:hidden px-2 pb-1">
             <ThemeToggle />
           </div>
-        </div>
-      </aside>
+        </SidebarFooter>
 
-      {/* Main Content */}
-      <main className="flex-1 p-10">{children}</main>
-    </div>
+        <SidebarRail />
+      </Sidebar>
+
+      <SidebarInset>
+        <header className="flex h-12 shrink-0 items-center gap-2 border-b px-4">
+          <SidebarTrigger />
+        </header>
+        <main className="flex-1 p-10">{children}</main>
+      </SidebarInset>
+    </SidebarProvider>
   );
 }

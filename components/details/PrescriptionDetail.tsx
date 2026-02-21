@@ -8,7 +8,6 @@ import {
   SheetBody,
   SheetTitle,
   SheetDescription,
-  SheetCloseButton,
 } from "@/components/ui/sheet";
 import { parseLocalDate } from "@/lib/format";
 
@@ -70,15 +69,12 @@ export function PrescriptionDetail({ prescription, onClose, actions }: Props) {
     <Sheet open={!!prescription} onOpenChange={(open) => !open && onClose()}>
       <SheetContent>
         <SheetHeader>
-          <div>
-            <SheetTitle>{prescription?.Medication ?? "Prescription"}</SheetTitle>
-            {prescription && (
-              <SheetDescription className="mt-1">
-                {prescription.Dosage} · {prescription.Frequency}
-              </SheetDescription>
-            )}
-          </div>
-          <SheetCloseButton onClick={onClose} />
+          <SheetTitle>{prescription?.Medication ?? "Prescription"}</SheetTitle>
+          {prescription && (
+            <SheetDescription>
+              {prescription.Dosage} · {prescription.Frequency}
+            </SheetDescription>
+          )}
         </SheetHeader>
 
         {prescription && (
