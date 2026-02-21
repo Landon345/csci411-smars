@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
-import { NextRequest, NextResponse } from "next/server";
 
 const SECRET_KEY = new TextEncoder().encode(
   process.env.JWT_SECRET || "default_secret_change_me",

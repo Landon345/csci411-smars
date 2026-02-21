@@ -60,8 +60,7 @@ export async function POST(request: Request) {
       { message: "Email verified successfully" },
       { status: 200 },
     );
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
+  } catch {
     return NextResponse.json({ error: "Verification failed" }, { status: 500 });
   }
 }
