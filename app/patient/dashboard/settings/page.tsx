@@ -6,5 +6,5 @@ export default async function PatientSettingsPage() {
   const user = await getSession();
   if (!user || user.Role !== "patient") redirect("/login");
 
-  return <SettingsPageContent user={user} />;
+  return <SettingsPageContent />;
 }

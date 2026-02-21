@@ -6,5 +6,5 @@ export default async function AdminSettingsPage() {
   const user = await getSession();
   if (!user || user.Role !== "admin") redirect("/login");
 
-  return <SettingsPageContent user={user} />;
+  return <SettingsPageContent />;
 }

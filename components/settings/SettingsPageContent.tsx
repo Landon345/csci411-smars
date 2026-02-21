@@ -20,7 +20,6 @@ import {
 } from "@/components/ui/sheet";
 import { SunIcon, MoonIcon, TrashIcon, CameraIcon } from "@heroicons/react/24/outline";
 import { useSyncExternalStore } from "react";
-import { type SessionUser } from "@/lib/session";
 
 function getIsDark() {
   if (typeof window === "undefined") return false;
@@ -36,8 +35,7 @@ function subscribe(callback: () => void) {
   return () => observer.disconnect();
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export default function SettingsPageContent(_: { user: SessionUser }) {
+export default function SettingsPageContent() {
   const router = useRouter();
   const [deregisterPassword, setDeregisterPassword] = useState("");
   const [deregisterError, setDeregisterError] = useState("");
@@ -49,6 +47,14 @@ export default function SettingsPageContent(_: { user: SessionUser }) {
   function toggleTheme(checked: boolean) {
     document.documentElement.classList.toggle("dark", checked);
     localStorage.setItem("theme", checked ? "dark" : "light");
+  }
+
+  function handleSheetOpenChange(open: boolean) {
+    setShowDeregisterSheet(open);
+    if (!open) {
+      setDeregisterPassword("");
+      setDeregisterError("");
+    }
   }
 
   async function handleDeregister() {
@@ -69,9 +75,7 @@ export default function SettingsPageContent(_: { user: SessionUser }) {
         return;
       }
 
-      // Successful deregistration
       router.push("/login");
-      router.refresh();
     } catch {
       setDeregisterError("An unexpected error occurred");
     } finally {
@@ -98,10 +102,10 @@ export default function SettingsPageContent(_: { user: SessionUser }) {
             </div>
             <div className="space-y-2">
               <p className="text-sm text-muted-foreground">
-                Click the button below to upload a new profile picture.
+                Photo upload is not yet available.
               </p>
               <div className="flex gap-2">
-                <Button variant="outline" size="sm" onClick={() => alert("Photo upload functionality will be implemented soon!")}>
+                <Button variant="outline" size="sm" disabled>
                   Upload Photo
                 </Button>
                 <Button variant="ghost" size="sm" disabled>
@@ -147,7 +151,7 @@ export default function SettingsPageContent(_: { user: SessionUser }) {
                 Permanently delete your account and all associated data. This action cannot be undone.
               </p>
             </div>
-            <Sheet open={showDeregisterSheet} onOpenChange={setShowDeregisterSheet}>
+            <Sheet open={showDeregisterSheet} onOpenChange={handleSheetOpenChange}>
               <SheetTrigger asChild>
                 <Button variant="destructive">
                   <TrashIcon className="mr-2 h-4 w-4" />
@@ -168,7 +172,7 @@ export default function SettingsPageContent(_: { user: SessionUser }) {
                     </p>
                     <p>All your appointments, medical records, and prescriptions will be permanently deleted from our system.</p>
                   </div>
-                  
+
                   <div className="rounded-md bg-destructive/10 p-4 text-sm text-destructive border border-destructive/20">
                     <p className="font-bold mb-2 flex items-center gap-2">
                       ⚠️ Warning 2: No Recovery
@@ -178,13 +182,18 @@ export default function SettingsPageContent(_: { user: SessionUser }) {
 
                   <div className="space-y-4 pt-4 border-t">
                     <div className="space-y-2">
-                      <Label htmlFor="password">Confirm with Password</Label>
+                      <Label htmlFor="deregister-password">Confirm with Password</Label>
                       <Input
-                        id="password"
+                        id="deregister-password"
                         type="password"
                         placeholder="Enter your password"
                         value={deregisterPassword}
                         onChange={(e) => setDeregisterPassword(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" && deregisterPassword && !isDeregistering) {
+                            handleDeregister();
+                          }
+                        }}
                       />
                       {deregisterError && (
                         <p className="text-xs font-medium text-destructive mt-1">
@@ -206,7 +215,7 @@ export default function SettingsPageContent(_: { user: SessionUser }) {
                     </Button>
                     <Button
                       variant="outline"
-                      onClick={() => setShowDeregisterSheet(false)}
+                      onClick={() => handleSheetOpenChange(false)}
                       disabled={isDeregistering}
                       className="w-full"
                     >
