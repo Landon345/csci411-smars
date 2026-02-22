@@ -6,11 +6,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
 import {
   CheckBadgeIcon,
   ShieldCheckIcon,
@@ -30,6 +28,8 @@ type VerifyInput = z.infer<typeof verifySchema>;
 
 export default function VerifyEmail() {
   const [serverError, setServerError] = useState<string | null>(null);
+  const [resendStatus, setResendStatus] = useState<string | null>(null);
+  const [isResending, setIsResending] = useState(false);
   const router = useRouter();
 
   const {
@@ -62,6 +62,24 @@ export default function VerifyEmail() {
       } else {
         setServerError("An unexpected error occurred");
       }
+    }
+  };
+
+  const handleResend = async () => {
+    setResendStatus(null);
+    setIsResending(true);
+    try {
+      const response = await fetch("/api/resend-otp", { method: "POST" });
+      const data = await response.json();
+      if (!response.ok) {
+        setResendStatus(data.error || "Failed to resend code");
+      } else {
+        setResendStatus("A new code has been sent to your email.");
+      }
+    } catch {
+      setResendStatus("Failed to resend code. Please try again.");
+    } finally {
+      setIsResending(false);
     }
   };
 
@@ -117,27 +135,25 @@ export default function VerifyEmail() {
             </Button>
           </form>
 
-          {/* Development Links */}
-          <div className="flex flex-col space-y-4 text-center">
+          {/* Resend */}
+          <div className="flex flex-col space-y-2 text-center">
             <button
               type="button"
-              className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-              onClick={() => alert("Resend logic goes here!")}
+              disabled={isResending}
+              className="text-xs text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
+              onClick={handleResend}
             >
               Did not receive the code?{" "}
-              <span className="inline-flex items-center gap-1 underline"><ArrowPathIcon className="h-3 w-3" />Resend</span>
+              <span className="inline-flex items-center gap-1 underline">
+                <ArrowPathIcon className="h-3 w-3" />
+                {isResending ? "Sending..." : "Resend"}
+              </span>
             </button>
-
-            {/* QUICK LINK BYPASS */}
-            <div className="pt-4">
-              <Separator className="mb-4" />
-              <Link
-                href="/dashboard"
-                className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground hover:text-orange-500 transition-colors"
-              >
-                Skip Verification (Dev Only) →
-              </Link>
-            </div>
+            {resendStatus && (
+              <p className="text-xs text-center text-muted-foreground">
+                {resendStatus}
+              </p>
+            )}
           </div>
         </div>
       </div>

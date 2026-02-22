@@ -689,14 +689,6 @@ export type PrescriptionUncheckedUpdateManyWithoutPatientNestedInput = {
   deleteMany?: Prisma.PrescriptionScalarWhereInput | Prisma.PrescriptionScalarWhereInput[]
 }
 
-export type IntFieldUpdateOperationsInput = {
-  set?: number
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
 export type EnumPrescriptionStatusFieldUpdateOperationsInput = {
   set?: $Enums.PrescriptionStatus
 }

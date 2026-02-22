@@ -23,6 +23,11 @@ export async function proxy(request: NextRequest) {
       const session = await decrypt(token);
       const role = session?.user?.Role;
 
+      // Redirect unverified users to the verification page
+      if (session?.user?.emailVerified === false) {
+        return NextResponse.redirect(new URL("/verify-email", request.url));
+      }
+
       // Role-based route protection by prefix
       if (path.startsWith("/patient") && role !== "patient") {
         return NextResponse.redirect(new URL("/dashboard", request.url));
@@ -34,8 +39,15 @@ export async function proxy(request: NextRequest) {
         return NextResponse.redirect(new URL("/dashboard", request.url));
       }
     } catch {
-      // If token is invalid and they are on a protected page, redirect
-      return NextResponse.redirect(new URL("/login", request.url));
+      // Token is invalid — clear the stale cookie and redirect to login
+      const redirectResponse = NextResponse.redirect(
+        new URL("/login", request.url),
+      );
+      redirectResponse.cookies.set("auth_token", "", {
+        expires: new Date(0),
+        path: "/",
+      });
+      return redirectResponse;
     }
   }
 

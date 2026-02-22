@@ -2,8 +2,19 @@
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 
+// Enforce JWT_SECRET at module initialization
+const jwtSecret = process.env.JWT_SECRET;
+if (
+  process.env.NODE_ENV === "production" &&
+  (!jwtSecret || jwtSecret.length < 32)
+) {
+  throw new Error(
+    "JWT_SECRET must be set and at least 32 characters in production",
+  );
+}
+
 const SECRET_KEY = new TextEncoder().encode(
-  process.env.JWT_SECRET || "default_secret_change_me",
+  jwtSecret || "default_secret_change_me",
 );
 
 export async function encrypt(payload: any) {
@@ -27,6 +38,7 @@ export async function login(user: {
   FirstName: string;
   LastName: string;
   Role: string;
+  emailVerified: boolean;
 }) {
   // Create the session
   const expires = new Date(Date.now() + 2 * 60 * 60 * 1000);
