@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { cookies } from "next/headers";
-import { decrypt } from "@/lib/auth";
+import { decrypt, login } from "@/lib/auth";
+
+const MAX_ATTEMPTS = 5;
 
 export async function POST(request: Request) {
   try {
@@ -30,10 +32,15 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // 3. Validate the Code
-    if (user.VerifyCode !== code) {
+    // 3. Check attempt limit
+    if (user.VerifyAttempts >= MAX_ATTEMPTS) {
+      // Clear the code so they must request a new one
+      await prisma.user.update({
+        where: { UserID: user.UserID },
+        data: { VerifyCode: null, VerifyExpires: null },
+      });
       return NextResponse.json(
-        { error: "Invalid verification code" },
+        { error: "Too many attempts. Please request a new code." },
         { status: 400 },
       );
     }
@@ -46,14 +53,43 @@ export async function POST(request: Request) {
       );
     }
 
-    // 5. Success: Mark as verified and clear the code
+    // 5. Validate the Code
+    if (user.VerifyCode !== code) {
+      await prisma.user.update({
+        where: { UserID: user.UserID },
+        data: { VerifyAttempts: { increment: 1 } },
+      });
+      const remaining = MAX_ATTEMPTS - (user.VerifyAttempts + 1);
+      return NextResponse.json(
+        {
+          error:
+            remaining > 0
+              ? `Invalid verification code. ${remaining} attempt${remaining === 1 ? "" : "s"} remaining.`
+              : "Invalid verification code. No attempts remaining — please request a new code.",
+        },
+        { status: 400 },
+      );
+    }
+
+    // 6. Success: mark as verified, clear the code, reset attempts
     await prisma.user.update({
       where: { UserID: user.UserID },
       data: {
         EmailVerified: new Date(),
-        VerifyCode: null, // Clear code so it can't be reused
+        VerifyCode: null,
         VerifyExpires: null,
+        VerifyAttempts: 0,
       },
+    });
+
+    // 7. Re-issue the JWT with emailVerified: true
+    await login({
+      UserID: user.UserID,
+      Email: user.Email,
+      FirstName: user.FirstName,
+      LastName: user.LastName,
+      Role: user.Role as "patient" | "doctor" | "admin",
+      emailVerified: true,
     });
 
     return NextResponse.json(

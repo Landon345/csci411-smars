@@ -20,8 +20,18 @@ export type UserModel = runtime.Types.Result.DefaultSelection<Prisma.$UserPayloa
 
 export type AggregateUser = {
   _count: UserCountAggregateOutputType | null
+  _avg: UserAvgAggregateOutputType | null
+  _sum: UserSumAggregateOutputType | null
   _min: UserMinAggregateOutputType | null
   _max: UserMaxAggregateOutputType | null
+}
+
+export type UserAvgAggregateOutputType = {
+  VerifyAttempts: number | null
+}
+
+export type UserSumAggregateOutputType = {
+  VerifyAttempts: number | null
 }
 
 export type UserMinAggregateOutputType = {
@@ -38,6 +48,7 @@ export type UserMinAggregateOutputType = {
   EmailVerified: Date | null
   VerifyCode: string | null
   VerifyExpires: Date | null
+  VerifyAttempts: number | null
   ResetToken: string | null
   ResetExpires: Date | null
 }
@@ -56,6 +67,7 @@ export type UserMaxAggregateOutputType = {
   EmailVerified: Date | null
   VerifyCode: string | null
   VerifyExpires: Date | null
+  VerifyAttempts: number | null
   ResetToken: string | null
   ResetExpires: Date | null
 }
@@ -74,11 +86,20 @@ export type UserCountAggregateOutputType = {
   EmailVerified: number
   VerifyCode: number
   VerifyExpires: number
+  VerifyAttempts: number
   ResetToken: number
   ResetExpires: number
   _all: number
 }
 
+
+export type UserAvgAggregateInputType = {
+  VerifyAttempts?: true
+}
+
+export type UserSumAggregateInputType = {
+  VerifyAttempts?: true
+}
 
 export type UserMinAggregateInputType = {
   UserID?: true
@@ -94,6 +115,7 @@ export type UserMinAggregateInputType = {
   EmailVerified?: true
   VerifyCode?: true
   VerifyExpires?: true
+  VerifyAttempts?: true
   ResetToken?: true
   ResetExpires?: true
 }
@@ -112,6 +134,7 @@ export type UserMaxAggregateInputType = {
   EmailVerified?: true
   VerifyCode?: true
   VerifyExpires?: true
+  VerifyAttempts?: true
   ResetToken?: true
   ResetExpires?: true
 }
@@ -130,6 +153,7 @@ export type UserCountAggregateInputType = {
   EmailVerified?: true
   VerifyCode?: true
   VerifyExpires?: true
+  VerifyAttempts?: true
   ResetToken?: true
   ResetExpires?: true
   _all?: true
@@ -173,6 +197,18 @@ export type UserAggregateArgs<ExtArgs extends runtime.Types.Extensions.InternalA
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: UserAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: UserSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: UserMinAggregateInputType
@@ -203,6 +239,8 @@ export type UserGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
   take?: number
   skip?: number
   _count?: UserCountAggregateInputType | true
+  _avg?: UserAvgAggregateInputType
+  _sum?: UserSumAggregateInputType
   _min?: UserMinAggregateInputType
   _max?: UserMaxAggregateInputType
 }
@@ -221,9 +259,12 @@ export type UserGroupByOutputType = {
   EmailVerified: Date | null
   VerifyCode: string | null
   VerifyExpires: Date | null
+  VerifyAttempts: number
   ResetToken: string | null
   ResetExpires: Date | null
   _count: UserCountAggregateOutputType | null
+  _avg: UserAvgAggregateOutputType | null
+  _sum: UserSumAggregateOutputType | null
   _min: UserMinAggregateOutputType | null
   _max: UserMaxAggregateOutputType | null
 }
@@ -260,6 +301,7 @@ export type UserWhereInput = {
   EmailVerified?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   VerifyCode?: Prisma.StringNullableFilter<"User"> | string | null
   VerifyExpires?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  VerifyAttempts?: Prisma.IntFilter<"User"> | number
   ResetToken?: Prisma.StringNullableFilter<"User"> | string | null
   ResetExpires?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   Session?: Prisma.SessionListRelationFilter
@@ -285,6 +327,7 @@ export type UserOrderByWithRelationInput = {
   EmailVerified?: Prisma.SortOrderInput | Prisma.SortOrder
   VerifyCode?: Prisma.SortOrderInput | Prisma.SortOrder
   VerifyExpires?: Prisma.SortOrderInput | Prisma.SortOrder
+  VerifyAttempts?: Prisma.SortOrder
   ResetToken?: Prisma.SortOrderInput | Prisma.SortOrder
   ResetExpires?: Prisma.SortOrderInput | Prisma.SortOrder
   Session?: Prisma.SessionOrderByRelationAggregateInput
@@ -313,6 +356,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   EmailVerified?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   VerifyCode?: Prisma.StringNullableFilter<"User"> | string | null
   VerifyExpires?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  VerifyAttempts?: Prisma.IntFilter<"User"> | number
   ResetToken?: Prisma.StringNullableFilter<"User"> | string | null
   ResetExpires?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   Session?: Prisma.SessionListRelationFilter
@@ -338,11 +382,14 @@ export type UserOrderByWithAggregationInput = {
   EmailVerified?: Prisma.SortOrderInput | Prisma.SortOrder
   VerifyCode?: Prisma.SortOrderInput | Prisma.SortOrder
   VerifyExpires?: Prisma.SortOrderInput | Prisma.SortOrder
+  VerifyAttempts?: Prisma.SortOrder
   ResetToken?: Prisma.SortOrderInput | Prisma.SortOrder
   ResetExpires?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
+  _avg?: Prisma.UserAvgOrderByAggregateInput
   _max?: Prisma.UserMaxOrderByAggregateInput
   _min?: Prisma.UserMinOrderByAggregateInput
+  _sum?: Prisma.UserSumOrderByAggregateInput
 }
 
 export type UserScalarWhereWithAggregatesInput = {
@@ -362,6 +409,7 @@ export type UserScalarWhereWithAggregatesInput = {
   EmailVerified?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
   VerifyCode?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   VerifyExpires?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
+  VerifyAttempts?: Prisma.IntWithAggregatesFilter<"User"> | number
   ResetToken?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   ResetExpires?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
 }
@@ -380,6 +428,7 @@ export type UserCreateInput = {
   EmailVerified?: Date | string | null
   VerifyCode?: string | null
   VerifyExpires?: Date | string | null
+  VerifyAttempts?: number
   ResetToken?: string | null
   ResetExpires?: Date | string | null
   Session?: Prisma.SessionCreateNestedManyWithoutUserInput
@@ -405,6 +454,7 @@ export type UserUncheckedCreateInput = {
   EmailVerified?: Date | string | null
   VerifyCode?: string | null
   VerifyExpires?: Date | string | null
+  VerifyAttempts?: number
   ResetToken?: string | null
   ResetExpires?: Date | string | null
   Session?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
@@ -430,6 +480,7 @@ export type UserUpdateInput = {
   EmailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   VerifyCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   VerifyExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  VerifyAttempts?: Prisma.IntFieldUpdateOperationsInput | number
   ResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   Session?: Prisma.SessionUpdateManyWithoutUserNestedInput
@@ -455,6 +506,7 @@ export type UserUncheckedUpdateInput = {
   EmailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   VerifyCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   VerifyExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  VerifyAttempts?: Prisma.IntFieldUpdateOperationsInput | number
   ResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   Session?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -480,6 +532,7 @@ export type UserCreateManyInput = {
   EmailVerified?: Date | string | null
   VerifyCode?: string | null
   VerifyExpires?: Date | string | null
+  VerifyAttempts?: number
   ResetToken?: string | null
   ResetExpires?: Date | string | null
 }
@@ -498,6 +551,7 @@ export type UserUpdateManyMutationInput = {
   EmailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   VerifyCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   VerifyExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  VerifyAttempts?: Prisma.IntFieldUpdateOperationsInput | number
   ResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
@@ -516,6 +570,7 @@ export type UserUncheckedUpdateManyInput = {
   EmailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   VerifyCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   VerifyExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  VerifyAttempts?: Prisma.IntFieldUpdateOperationsInput | number
   ResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
@@ -534,8 +589,13 @@ export type UserCountOrderByAggregateInput = {
   EmailVerified?: Prisma.SortOrder
   VerifyCode?: Prisma.SortOrder
   VerifyExpires?: Prisma.SortOrder
+  VerifyAttempts?: Prisma.SortOrder
   ResetToken?: Prisma.SortOrder
   ResetExpires?: Prisma.SortOrder
+}
+
+export type UserAvgOrderByAggregateInput = {
+  VerifyAttempts?: Prisma.SortOrder
 }
 
 export type UserMaxOrderByAggregateInput = {
@@ -552,6 +612,7 @@ export type UserMaxOrderByAggregateInput = {
   EmailVerified?: Prisma.SortOrder
   VerifyCode?: Prisma.SortOrder
   VerifyExpires?: Prisma.SortOrder
+  VerifyAttempts?: Prisma.SortOrder
   ResetToken?: Prisma.SortOrder
   ResetExpires?: Prisma.SortOrder
 }
@@ -570,8 +631,13 @@ export type UserMinOrderByAggregateInput = {
   EmailVerified?: Prisma.SortOrder
   VerifyCode?: Prisma.SortOrder
   VerifyExpires?: Prisma.SortOrder
+  VerifyAttempts?: Prisma.SortOrder
   ResetToken?: Prisma.SortOrder
   ResetExpires?: Prisma.SortOrder
+}
+
+export type UserSumOrderByAggregateInput = {
+  VerifyAttempts?: Prisma.SortOrder
 }
 
 export type UserScalarRelationFilter = {
@@ -597,6 +663,14 @@ export type DateTimeFieldUpdateOperationsInput = {
 
 export type NullableDateTimeFieldUpdateOperationsInput = {
   set?: Date | string | null
+}
+
+export type IntFieldUpdateOperationsInput = {
+  set?: number
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
 }
 
 export type UserCreateNestedOneWithoutSessionInput = {
@@ -711,6 +785,7 @@ export type UserCreateWithoutSessionInput = {
   EmailVerified?: Date | string | null
   VerifyCode?: string | null
   VerifyExpires?: Date | string | null
+  VerifyAttempts?: number
   ResetToken?: string | null
   ResetExpires?: Date | string | null
   DoctorAppointments?: Prisma.AppointmentCreateNestedManyWithoutDoctorInput
@@ -735,6 +810,7 @@ export type UserUncheckedCreateWithoutSessionInput = {
   EmailVerified?: Date | string | null
   VerifyCode?: string | null
   VerifyExpires?: Date | string | null
+  VerifyAttempts?: number
   ResetToken?: string | null
   ResetExpires?: Date | string | null
   DoctorAppointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutDoctorInput
@@ -775,6 +851,7 @@ export type UserUpdateWithoutSessionInput = {
   EmailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   VerifyCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   VerifyExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  VerifyAttempts?: Prisma.IntFieldUpdateOperationsInput | number
   ResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   DoctorAppointments?: Prisma.AppointmentUpdateManyWithoutDoctorNestedInput
@@ -799,6 +876,7 @@ export type UserUncheckedUpdateWithoutSessionInput = {
   EmailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   VerifyCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   VerifyExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  VerifyAttempts?: Prisma.IntFieldUpdateOperationsInput | number
   ResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   DoctorAppointments?: Prisma.AppointmentUncheckedUpdateManyWithoutDoctorNestedInput
@@ -823,6 +901,7 @@ export type UserCreateWithoutDoctorAppointmentsInput = {
   EmailVerified?: Date | string | null
   VerifyCode?: string | null
   VerifyExpires?: Date | string | null
+  VerifyAttempts?: number
   ResetToken?: string | null
   ResetExpires?: Date | string | null
   Session?: Prisma.SessionCreateNestedManyWithoutUserInput
@@ -847,6 +926,7 @@ export type UserUncheckedCreateWithoutDoctorAppointmentsInput = {
   EmailVerified?: Date | string | null
   VerifyCode?: string | null
   VerifyExpires?: Date | string | null
+  VerifyAttempts?: number
   ResetToken?: string | null
   ResetExpires?: Date | string | null
   Session?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
@@ -876,6 +956,7 @@ export type UserCreateWithoutPatientAppointmentsInput = {
   EmailVerified?: Date | string | null
   VerifyCode?: string | null
   VerifyExpires?: Date | string | null
+  VerifyAttempts?: number
   ResetToken?: string | null
   ResetExpires?: Date | string | null
   Session?: Prisma.SessionCreateNestedManyWithoutUserInput
@@ -900,6 +981,7 @@ export type UserUncheckedCreateWithoutPatientAppointmentsInput = {
   EmailVerified?: Date | string | null
   VerifyCode?: string | null
   VerifyExpires?: Date | string | null
+  VerifyAttempts?: number
   ResetToken?: string | null
   ResetExpires?: Date | string | null
   Session?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
@@ -940,6 +1022,7 @@ export type UserUpdateWithoutDoctorAppointmentsInput = {
   EmailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   VerifyCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   VerifyExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  VerifyAttempts?: Prisma.IntFieldUpdateOperationsInput | number
   ResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   Session?: Prisma.SessionUpdateManyWithoutUserNestedInput
@@ -964,6 +1047,7 @@ export type UserUncheckedUpdateWithoutDoctorAppointmentsInput = {
   EmailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   VerifyCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   VerifyExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  VerifyAttempts?: Prisma.IntFieldUpdateOperationsInput | number
   ResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   Session?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -999,6 +1083,7 @@ export type UserUpdateWithoutPatientAppointmentsInput = {
   EmailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   VerifyCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   VerifyExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  VerifyAttempts?: Prisma.IntFieldUpdateOperationsInput | number
   ResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   Session?: Prisma.SessionUpdateManyWithoutUserNestedInput
@@ -1023,6 +1108,7 @@ export type UserUncheckedUpdateWithoutPatientAppointmentsInput = {
   EmailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   VerifyCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   VerifyExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  VerifyAttempts?: Prisma.IntFieldUpdateOperationsInput | number
   ResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   Session?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -1047,6 +1133,7 @@ export type UserCreateWithoutDoctorRecordsInput = {
   EmailVerified?: Date | string | null
   VerifyCode?: string | null
   VerifyExpires?: Date | string | null
+  VerifyAttempts?: number
   ResetToken?: string | null
   ResetExpires?: Date | string | null
   Session?: Prisma.SessionCreateNestedManyWithoutUserInput
@@ -1071,6 +1158,7 @@ export type UserUncheckedCreateWithoutDoctorRecordsInput = {
   EmailVerified?: Date | string | null
   VerifyCode?: string | null
   VerifyExpires?: Date | string | null
+  VerifyAttempts?: number
   ResetToken?: string | null
   ResetExpires?: Date | string | null
   Session?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
@@ -1100,6 +1188,7 @@ export type UserCreateWithoutPatientRecordsInput = {
   EmailVerified?: Date | string | null
   VerifyCode?: string | null
   VerifyExpires?: Date | string | null
+  VerifyAttempts?: number
   ResetToken?: string | null
   ResetExpires?: Date | string | null
   Session?: Prisma.SessionCreateNestedManyWithoutUserInput
@@ -1124,6 +1213,7 @@ export type UserUncheckedCreateWithoutPatientRecordsInput = {
   EmailVerified?: Date | string | null
   VerifyCode?: string | null
   VerifyExpires?: Date | string | null
+  VerifyAttempts?: number
   ResetToken?: string | null
   ResetExpires?: Date | string | null
   Session?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
@@ -1164,6 +1254,7 @@ export type UserUpdateWithoutDoctorRecordsInput = {
   EmailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   VerifyCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   VerifyExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  VerifyAttempts?: Prisma.IntFieldUpdateOperationsInput | number
   ResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   Session?: Prisma.SessionUpdateManyWithoutUserNestedInput
@@ -1188,6 +1279,7 @@ export type UserUncheckedUpdateWithoutDoctorRecordsInput = {
   EmailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   VerifyCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   VerifyExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  VerifyAttempts?: Prisma.IntFieldUpdateOperationsInput | number
   ResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   Session?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -1223,6 +1315,7 @@ export type UserUpdateWithoutPatientRecordsInput = {
   EmailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   VerifyCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   VerifyExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  VerifyAttempts?: Prisma.IntFieldUpdateOperationsInput | number
   ResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   Session?: Prisma.SessionUpdateManyWithoutUserNestedInput
@@ -1247,6 +1340,7 @@ export type UserUncheckedUpdateWithoutPatientRecordsInput = {
   EmailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   VerifyCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   VerifyExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  VerifyAttempts?: Prisma.IntFieldUpdateOperationsInput | number
   ResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   Session?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -1271,6 +1365,7 @@ export type UserCreateWithoutDoctorPrescriptionsInput = {
   EmailVerified?: Date | string | null
   VerifyCode?: string | null
   VerifyExpires?: Date | string | null
+  VerifyAttempts?: number
   ResetToken?: string | null
   ResetExpires?: Date | string | null
   Session?: Prisma.SessionCreateNestedManyWithoutUserInput
@@ -1295,6 +1390,7 @@ export type UserUncheckedCreateWithoutDoctorPrescriptionsInput = {
   EmailVerified?: Date | string | null
   VerifyCode?: string | null
   VerifyExpires?: Date | string | null
+  VerifyAttempts?: number
   ResetToken?: string | null
   ResetExpires?: Date | string | null
   Session?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
@@ -1324,6 +1420,7 @@ export type UserCreateWithoutPatientPrescriptionsInput = {
   EmailVerified?: Date | string | null
   VerifyCode?: string | null
   VerifyExpires?: Date | string | null
+  VerifyAttempts?: number
   ResetToken?: string | null
   ResetExpires?: Date | string | null
   Session?: Prisma.SessionCreateNestedManyWithoutUserInput
@@ -1348,6 +1445,7 @@ export type UserUncheckedCreateWithoutPatientPrescriptionsInput = {
   EmailVerified?: Date | string | null
   VerifyCode?: string | null
   VerifyExpires?: Date | string | null
+  VerifyAttempts?: number
   ResetToken?: string | null
   ResetExpires?: Date | string | null
   Session?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
@@ -1388,6 +1486,7 @@ export type UserUpdateWithoutDoctorPrescriptionsInput = {
   EmailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   VerifyCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   VerifyExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  VerifyAttempts?: Prisma.IntFieldUpdateOperationsInput | number
   ResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   Session?: Prisma.SessionUpdateManyWithoutUserNestedInput
@@ -1412,6 +1511,7 @@ export type UserUncheckedUpdateWithoutDoctorPrescriptionsInput = {
   EmailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   VerifyCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   VerifyExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  VerifyAttempts?: Prisma.IntFieldUpdateOperationsInput | number
   ResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   Session?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -1447,6 +1547,7 @@ export type UserUpdateWithoutPatientPrescriptionsInput = {
   EmailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   VerifyCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   VerifyExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  VerifyAttempts?: Prisma.IntFieldUpdateOperationsInput | number
   ResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   Session?: Prisma.SessionUpdateManyWithoutUserNestedInput
@@ -1471,6 +1572,7 @@ export type UserUncheckedUpdateWithoutPatientPrescriptionsInput = {
   EmailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   VerifyCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   VerifyExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  VerifyAttempts?: Prisma.IntFieldUpdateOperationsInput | number
   ResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   Session?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -1580,6 +1682,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   EmailVerified?: boolean
   VerifyCode?: boolean
   VerifyExpires?: boolean
+  VerifyAttempts?: boolean
   ResetToken?: boolean
   ResetExpires?: boolean
   Session?: boolean | Prisma.User$SessionArgs<ExtArgs>
@@ -1606,6 +1709,7 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   EmailVerified?: boolean
   VerifyCode?: boolean
   VerifyExpires?: boolean
+  VerifyAttempts?: boolean
   ResetToken?: boolean
   ResetExpires?: boolean
 }, ExtArgs["result"]["user"]>
@@ -1624,6 +1728,7 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   EmailVerified?: boolean
   VerifyCode?: boolean
   VerifyExpires?: boolean
+  VerifyAttempts?: boolean
   ResetToken?: boolean
   ResetExpires?: boolean
 }, ExtArgs["result"]["user"]>
@@ -1642,11 +1747,12 @@ export type UserSelectScalar = {
   EmailVerified?: boolean
   VerifyCode?: boolean
   VerifyExpires?: boolean
+  VerifyAttempts?: boolean
   ResetToken?: boolean
   ResetExpires?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"UserID" | "Email" | "Password" | "FirstName" | "LastName" | "Phone" | "SSN" | "Role" | "CreatedAt" | "UpdatedAt" | "EmailVerified" | "VerifyCode" | "VerifyExpires" | "ResetToken" | "ResetExpires", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"UserID" | "Email" | "Password" | "FirstName" | "LastName" | "Phone" | "SSN" | "Role" | "CreatedAt" | "UpdatedAt" | "EmailVerified" | "VerifyCode" | "VerifyExpires" | "VerifyAttempts" | "ResetToken" | "ResetExpires", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   Session?: boolean | Prisma.User$SessionArgs<ExtArgs>
   DoctorAppointments?: boolean | Prisma.User$DoctorAppointmentsArgs<ExtArgs>
@@ -1685,6 +1791,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     EmailVerified: Date | null
     VerifyCode: string | null
     VerifyExpires: Date | null
+    VerifyAttempts: number
     ResetToken: string | null
     ResetExpires: Date | null
   }, ExtArgs["result"]["user"]>
@@ -2130,6 +2237,7 @@ export interface UserFieldRefs {
   readonly EmailVerified: Prisma.FieldRef<"User", 'DateTime'>
   readonly VerifyCode: Prisma.FieldRef<"User", 'String'>
   readonly VerifyExpires: Prisma.FieldRef<"User", 'DateTime'>
+  readonly VerifyAttempts: Prisma.FieldRef<"User", 'Int'>
   readonly ResetToken: Prisma.FieldRef<"User", 'String'>
   readonly ResetExpires: Prisma.FieldRef<"User", 'DateTime'>
 }

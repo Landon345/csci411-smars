@@ -7,6 +7,7 @@ export interface SessionUser {
   FirstName: string;
   LastName: string;
   Role: "patient" | "doctor" | "admin";
+  emailVerified: boolean;
 }
 
 export interface SessionPayload {

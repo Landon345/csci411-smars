@@ -56,13 +56,14 @@ model User {
   FirstName     String    @db.VarChar(255)
   LastName      String    @db.VarChar(255)
   Phone         String?   @db.VarChar(23)
-  SSN           String    @unique @db.VarChar(11)
+  SSN           String    @unique @db.VarChar(500)
   Role          Roles     @default(patient)
   CreatedAt     DateTime  @default(now()) @db.Timestamp(6)
   UpdatedAt     DateTime  @updatedAt
   EmailVerified DateTime? // Null means not verified
-  VerifyCode    String?   @db.VarChar(6) // The 6-digit code
-  VerifyExpires DateTime? // When the code expires
+  VerifyCode      String?   @db.VarChar(6) // The 6-digit code
+  VerifyExpires   DateTime? // When the code expires
+  VerifyAttempts  Int       @default(0)
   ResetToken    String?   // Password reset token (UUID)
   ResetExpires  DateTime? // When the reset token expires
   Session             Session[]

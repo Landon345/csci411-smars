@@ -1,27 +1,49 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma"; // Adjust path to your prisma client
+import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
-import { encrypt } from "@/lib/auth"; // Your JWT helper
+import { login } from "@/lib/auth";
+import { encryptSSN } from "@/lib/crypto";
 import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-
-export interface UserSessionType {
-  UserID: string;
-  Email: string;
-  FirstName: string;
-  LastName: string;
-  Role: "patient" | "doctor" | "admin";
-}
-export interface UserSessionTokenType {
-  user: UserSessionType;
-  expires: Date;
-}
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
     const { FirstName, LastName, Email, Password, Phone, SSN, Role } = body;
+
+    // --- Input Validation ---
+    const missing = ["FirstName", "LastName", "Email", "Password", "SSN"].filter(
+      (f) => !body[f] || typeof body[f] !== "string" || !body[f].trim(),
+    );
+    if (missing.length > 0) {
+      return NextResponse.json(
+        { error: `Missing required fields: ${missing.join(", ")}` },
+        { status: 400 },
+      );
+    }
+
+    if (!/.+@.+\..+/.test(Email)) {
+      return NextResponse.json(
+        { error: "Invalid email address" },
+        { status: 400 },
+      );
+    }
+
+    if (Password.length < 8 || !/\d/.test(Password)) {
+      return NextResponse.json(
+        { error: "Password must be at least 8 characters and contain at least one number" },
+        { status: 400 },
+      );
+    }
+
+    const ssnDigits = SSN.replace(/-/g, "");
+    if (!/^\d{9}$/.test(ssnDigits)) {
+      return NextResponse.json(
+        { error: "SSN must be 9 digits (with or without dashes)" },
+        { status: 400 },
+      );
+    }
 
     // Validate role — only patient or doctor allowed via registration
     const validRoles = ["patient", "doctor"] as const;
@@ -38,10 +60,11 @@ export async function POST(request: Request) {
 
     // 2. Generate 6-Digit Code & Expiration (15 minutes)
     const verifyCode = Math.floor(100000 + Math.random() * 900000).toString();
-    const verifyExpires = new Date(Date.now() + 15 * 60 * 1000); // 15 mins from now
+    const verifyExpires = new Date(Date.now() + 15 * 60 * 1000);
 
-    // 3. Hash Password
+    // 3. Hash Password & Encrypt SSN
     const hashedPassword = await bcrypt.hash(Password, 10);
+    const encryptedSSN = encryptSSN(ssnDigits);
 
     // 4. Create User (Unverified)
     const newUser = await prisma.user.create({
@@ -51,10 +74,11 @@ export async function POST(request: Request) {
         Email,
         Password: hashedPassword,
         Phone,
-        SSN,
+        SSN: encryptedSSN,
         Role: userRole,
         VerifyCode: verifyCode,
         VerifyExpires: verifyExpires,
+        VerifyAttempts: 0,
         EmailVerified: null,
       },
     });
@@ -82,34 +106,18 @@ export async function POST(request: Request) {
       console.log("-----------------------------------");
     }
 
-    // 6. Create Session
-    const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
-    const sessionPayload: UserSessionTokenType = {
-      user: {
-        UserID: newUser.UserID,
-        Email: newUser.Email,
-        FirstName: newUser.FirstName,
-        LastName: newUser.LastName,
-        Role: newUser.Role as "patient" | "doctor" | "admin",
-      },
-      expires,
-    };
-
-    const sessionToken = await encrypt(sessionPayload);
-
-    const response = NextResponse.json(
-      { message: "Registration successful" },
-      { status: 201 },
-    );
-
-    response.cookies.set("auth_token", sessionToken, {
-      expires,
-      httpOnly: true, // prevents JavaScript from accessing the cookie, mitigates XSS attacks
-      secure: true, // Ensures cookie is only sent over HTTPS
-      sameSite: "lax", // Prevents CSRF while allowing normal navigation
+    // 6. Issue a partial session (emailVerified: false)
+    // proxy.ts will redirect to /verify-email for any protected route access
+    await login({
+      UserID: newUser.UserID,
+      Email: newUser.Email,
+      FirstName: newUser.FirstName,
+      LastName: newUser.LastName,
+      Role: newUser.Role as "patient" | "doctor" | "admin",
+      emailVerified: false,
     });
 
-    return response;
+    return NextResponse.json({ message: "Registration successful" }, { status: 201 });
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error("Registration Error:", error);
