@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { ColumnDef } from "@tanstack/react-table";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -23,6 +24,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
+import { DataTable, SortableHeader } from "@/components/ui/data-table";
 import { formatDate } from "@/lib/format";
 import { AppointmentDetail } from "@/components/details/AppointmentDetail";
 import { RecordDetail } from "@/components/details/RecordDetail";
@@ -213,12 +215,7 @@ export default function PatientDetailPage() {
     notes: "",
   });
 
-  useEffect(() => {
-    fetchAll();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
-
-  async function fetchAll() {
+  const fetchAll = useCallback(async function fetchAll() {
     try {
       const [patientRes, apptRes, recordRes, rxRes] = await Promise.all([
         fetch(`/api/doctor/patients/${id}`),
@@ -252,7 +249,11 @@ export default function PatientDetailPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [id, router]);
+
+  useEffect(() => {
+    fetchAll();
+  }, [fetchAll]);
 
   // --- Appointment edit/delete ---
 
@@ -297,13 +298,13 @@ export default function PatientDetailPage() {
     }
   }
 
-  async function handleDeleteAppt(apptId: string) {
+  const handleDeleteAppt = useCallback(async function handleDeleteAppt(apptId: string) {
     if (!confirm("Are you sure you want to delete this appointment?")) return;
     const res = await fetch(`/api/doctor/appointments/${apptId}`, {
       method: "DELETE",
     });
     if (res.ok) await fetchAll();
-  }
+  }, [fetchAll]);
 
   // --- Record edit/delete ---
 
@@ -351,13 +352,13 @@ export default function PatientDetailPage() {
     }
   }
 
-  async function handleDeleteRecord(recordId: string) {
+  const handleDeleteRecord = useCallback(async function handleDeleteRecord(recordId: string) {
     if (!confirm("Are you sure you want to delete this record?")) return;
     const res = await fetch(`/api/doctor/records/${recordId}`, {
       method: "DELETE",
     });
     if (res.ok) await fetchAll();
-  }
+  }, [fetchAll]);
 
   // --- Prescription edit/delete ---
 
@@ -404,13 +405,256 @@ export default function PatientDetailPage() {
     }
   }
 
-  async function handleDeleteRx(rxId: string) {
+  const handleDeleteRx = useCallback(async function handleDeleteRx(rxId: string) {
     if (!confirm("Are you sure you want to delete this prescription?")) return;
     const res = await fetch(`/api/doctor/prescriptions/${rxId}`, {
       method: "DELETE",
     });
     if (res.ok) await fetchAll();
-  }
+  }, [fetchAll]);
+
+  const apptColumns = useMemo<ColumnDef<Appointment, unknown>[]>(() => [
+    {
+      id: "date",
+      accessorFn: (row) => row.Date,
+      sortingFn: "datetime",
+      enableGlobalFilter: false,
+      meta: { label: "Date" },
+      header: ({ column }) => <SortableHeader column={column} label="Date" />,
+      cell: ({ row }) => formatDate(row.original.Date),
+    },
+    {
+      id: "time",
+      accessorFn: (row) => row.StartTime,
+      sortingFn: "datetime",
+      enableGlobalFilter: false,
+      meta: { label: "Time" },
+      header: ({ column }) => <SortableHeader column={column} label="Time" />,
+      cell: ({ row }) => (
+        <span className="text-muted-foreground">
+          {formatTime(row.original.StartTime)}
+        </span>
+      ),
+    },
+    {
+      id: "type",
+      accessorFn: (row) =>
+        APPT_TYPE_OPTIONS.find((t) => t.value === row.Type)?.label ?? row.Type,
+      meta: { label: "Type" },
+      header: ({ column }) => <SortableHeader column={column} label="Type" />,
+      cell: ({ getValue }) => (
+        <span className="text-muted-foreground capitalize">
+          {getValue() as string}
+        </span>
+      ),
+    },
+    {
+      id: "status",
+      accessorKey: "Status",
+      meta: { label: "Status" },
+      header: ({ column }) => <SortableHeader column={column} label="Status" />,
+      cell: ({ row }) => (
+        <Badge
+          variant="secondary"
+          className={statusVariant[row.original.Status] || ""}
+        >
+          {APPT_STATUS_OPTIONS.find((s) => s.value === row.original.Status)?.label ?? row.original.Status}
+        </Badge>
+      ),
+    },
+    {
+      id: "place",
+      accessorKey: "Place",
+      meta: { label: "Place" },
+      header: ({ column }) => <SortableHeader column={column} label="Place" />,
+      cell: ({ getValue }) => (
+        <span className="text-muted-foreground">{getValue() as string}</span>
+      ),
+    },
+    {
+      id: "actions",
+      enableSorting: false,
+      enableGlobalFilter: false,
+      meta: { label: "Actions" },
+      header: () => <span>Actions</span>,
+      cell: ({ row }) => (
+        <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
+          <Button variant="ghost" size="xs" onClick={() => startEditAppt(row.original)}>
+            <PencilSquareIcon className="h-3.5 w-3.5" /> Edit
+          </Button>
+          <Button
+            variant="ghost"
+            size="xs"
+            className="text-destructive hover:text-destructive"
+            onClick={() => handleDeleteAppt(row.original.AppointmentID)}
+          >
+            <TrashIcon className="h-3.5 w-3.5" /> Delete
+          </Button>
+        </div>
+      ),
+    },
+  ], [handleDeleteAppt]);
+
+  const recordColumns = useMemo<ColumnDef<MedicalRecord, unknown>[]>(() => [
+    {
+      id: "visitDate",
+      accessorFn: (row) => row.VisitDate,
+      sortingFn: "datetime",
+      enableGlobalFilter: false,
+      meta: { label: "Date" },
+      header: ({ column }) => <SortableHeader column={column} label="Date" />,
+      cell: ({ row }) => formatDate(row.original.VisitDate),
+    },
+    {
+      id: "type",
+      accessorFn: (row) =>
+        RECORD_TYPE_OPTIONS.find((t) => t.value === row.Type)?.label ?? row.Type,
+      meta: { label: "Type" },
+      header: ({ column }) => <SortableHeader column={column} label="Type" />,
+      cell: ({ getValue }) => (
+        <span className="text-muted-foreground">{getValue() as string}</span>
+      ),
+    },
+    {
+      id: "diagnosis",
+      accessorKey: "DiagnosisDesc",
+      meta: { label: "Diagnosis" },
+      header: ({ column }) => <SortableHeader column={column} label="Diagnosis" />,
+      cell: ({ getValue }) => (
+        <span className="text-muted-foreground">{getValue() as string}</span>
+      ),
+    },
+    {
+      id: "chiefComplaint",
+      accessorKey: "ChiefComplaint",
+      meta: { label: "Chief Complaint" },
+      header: ({ column }) => <SortableHeader column={column} label="Chief Complaint" />,
+      cell: ({ getValue }) => (
+        <span className="text-muted-foreground">{getValue() as string}</span>
+      ),
+    },
+    {
+      id: "treatmentPlan",
+      accessorKey: "TreatmentPlan",
+      meta: { label: "Treatment Plan" },
+      header: ({ column }) => <SortableHeader column={column} label="Treatment Plan" />,
+      cell: ({ getValue }) => (
+        <span className="text-muted-foreground">{getValue() as string}</span>
+      ),
+    },
+    {
+      id: "actions",
+      enableSorting: false,
+      enableGlobalFilter: false,
+      meta: { label: "Actions" },
+      header: () => <span>Actions</span>,
+      cell: ({ row }) => (
+        <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
+          <Button variant="ghost" size="xs" onClick={() => startEditRecord(row.original)}>
+            <PencilSquareIcon className="h-3.5 w-3.5" /> Edit
+          </Button>
+          <Button
+            variant="ghost"
+            size="xs"
+            className="text-destructive hover:text-destructive"
+            onClick={() => handleDeleteRecord(row.original.RecordID)}
+          >
+            <TrashIcon className="h-3.5 w-3.5" /> Delete
+          </Button>
+        </div>
+      ),
+    },
+  ], [handleDeleteRecord]);
+
+  const rxColumns = useMemo<ColumnDef<Prescription, unknown>[]>(() => [
+    {
+      id: "medication",
+      accessorKey: "Medication",
+      meta: { label: "Medication" },
+      header: ({ column }) => <SortableHeader column={column} label="Medication" />,
+      cell: ({ getValue }) => (
+        <span className="font-medium">{getValue() as string}</span>
+      ),
+    },
+    {
+      id: "dosage",
+      accessorKey: "Dosage",
+      meta: { label: "Dosage" },
+      header: ({ column }) => <SortableHeader column={column} label="Dosage" />,
+      cell: ({ getValue }) => (
+        <span className="text-muted-foreground">{getValue() as string}</span>
+      ),
+    },
+    {
+      id: "frequency",
+      accessorKey: "Frequency",
+      meta: { label: "Frequency" },
+      header: ({ column }) => <SortableHeader column={column} label="Frequency" />,
+      cell: ({ getValue }) => (
+        <span className="text-muted-foreground">{getValue() as string}</span>
+      ),
+    },
+    {
+      id: "startDate",
+      accessorFn: (row) => row.StartDate,
+      sortingFn: "datetime",
+      enableGlobalFilter: false,
+      meta: { label: "Start" },
+      header: ({ column }) => <SortableHeader column={column} label="Start" />,
+      cell: ({ row }) => (
+        <span className="text-muted-foreground">{formatDate(row.original.StartDate)}</span>
+      ),
+    },
+    {
+      id: "endDate",
+      accessorFn: (row) => row.EndDate ?? "",
+      sortingFn: "datetime",
+      enableGlobalFilter: false,
+      meta: { label: "End" },
+      header: ({ column }) => <SortableHeader column={column} label="End" />,
+      cell: ({ row }) => (
+        <span className="text-muted-foreground">
+          {row.original.EndDate ? formatDate(row.original.EndDate) : "-"}
+        </span>
+      ),
+    },
+    {
+      id: "status",
+      accessorKey: "Status",
+      meta: { label: "Status" },
+      header: ({ column }) => <SortableHeader column={column} label="Status" />,
+      cell: ({ row }) => (
+        <Badge
+          variant="secondary"
+          className={rxStatusVariant[row.original.Status] || ""}
+        >
+          {PRESCRIPTION_STATUS_OPTIONS.find((s) => s.value === row.original.Status)?.label ?? row.original.Status}
+        </Badge>
+      ),
+    },
+    {
+      id: "actions",
+      enableSorting: false,
+      enableGlobalFilter: false,
+      meta: { label: "Actions" },
+      header: () => <span>Actions</span>,
+      cell: ({ row }) => (
+        <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
+          <Button variant="ghost" size="xs" onClick={() => startEditRx(row.original)}>
+            <PencilSquareIcon className="h-3.5 w-3.5" /> Edit
+          </Button>
+          <Button
+            variant="ghost"
+            size="xs"
+            className="text-destructive hover:text-destructive"
+            onClick={() => handleDeleteRx(row.original.PrescriptionID)}
+          >
+            <TrashIcon className="h-3.5 w-3.5" /> Delete
+          </Button>
+        </div>
+      ),
+    },
+  ], [handleDeleteRx]);
 
   if (loading) {
     return (
@@ -693,81 +937,12 @@ export default function PatientDetailPage() {
           <CardTitle>Appointments</CardTitle>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Date</TableHead>
-                <TableHead>Time</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Place</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {appointments.length === 0 ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={6}
-                    className="text-center text-muted-foreground py-8"
-                  >
-                    No appointments found.
-                  </TableCell>
-                </TableRow>
-              ) : (
-                appointments.map((appt) => (
-                  <TableRow
-                    key={appt.AppointmentID}
-                    className="cursor-pointer"
-                    onClick={() => setSelectedAppt(appt)}
-                  >
-                    <TableCell>{formatDate(appt.Date)}</TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {formatTime(appt.StartTime)}
-                    </TableCell>
-                    <TableCell className="text-muted-foreground capitalize">
-                      {APPT_TYPE_OPTIONS.find((t) => t.value === appt.Type)
-                        ?.label ?? appt.Type}
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        variant="secondary"
-                        className={statusVariant[appt.Status] || ""}
-                      >
-                        {APPT_STATUS_OPTIONS.find(
-                          (s) => s.value === appt.Status,
-                        )?.label ?? appt.Status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {appt.Place}
-                    </TableCell>
-                    <TableCell onClick={(e) => e.stopPropagation()}>
-                      <div className="flex gap-2">
-                        <Button
-                          variant="ghost"
-                          size="xs"
-                          onClick={() => startEditAppt(appt)}
-                        >
-                          <PencilSquareIcon className="h-3.5 w-3.5" />
-                          Edit
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="xs"
-                          className="text-destructive hover:text-destructive"
-                          onClick={() => handleDeleteAppt(appt.AppointmentID)}
-                        >
-                          <TrashIcon className="h-3.5 w-3.5" />
-                          Delete
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
+          <DataTable
+            data={appointments}
+            columns={apptColumns}
+            searchPlaceholder="Search appointments..."
+            onRowClick={(appt) => setSelectedAppt(appt)}
+          />
         </CardContent>
       </Card>
 
@@ -974,74 +1149,12 @@ export default function PatientDetailPage() {
           <CardTitle>Medical Records</CardTitle>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Date</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Diagnosis</TableHead>
-                <TableHead>Chief Complaint</TableHead>
-                <TableHead>Treatment Plan</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {records.length === 0 ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={6}
-                    className="text-center text-muted-foreground py-8"
-                  >
-                    No medical records found.
-                  </TableCell>
-                </TableRow>
-              ) : (
-                records.map((record) => (
-                  <TableRow
-                    key={record.RecordID}
-                    className="cursor-pointer"
-                    onClick={() => setSelectedRecord(record)}
-                  >
-                    <TableCell>{formatDate(record.VisitDate)}</TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {RECORD_TYPE_OPTIONS.find((t) => t.value === record.Type)
-                        ?.label ?? record.Type}
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {record.DiagnosisDesc}
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {record.ChiefComplaint}
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {record.TreatmentPlan}
-                    </TableCell>
-                    <TableCell onClick={(e) => e.stopPropagation()}>
-                      <div className="flex gap-2">
-                        <Button
-                          variant="ghost"
-                          size="xs"
-                          onClick={() => startEditRecord(record)}
-                        >
-                          <PencilSquareIcon className="h-3.5 w-3.5" />
-                          Edit
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="xs"
-                          className="text-destructive hover:text-destructive"
-                          onClick={() => handleDeleteRecord(record.RecordID)}
-                        >
-                          <TrashIcon className="h-3.5 w-3.5" />
-                          Delete
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
+          <DataTable
+            data={records}
+            columns={recordColumns}
+            searchPlaceholder="Search records..."
+            onRowClick={(record) => setSelectedRecord(record)}
+          />
         </CardContent>
       </Card>
 
@@ -1185,86 +1298,12 @@ export default function PatientDetailPage() {
           <CardTitle>Prescriptions</CardTitle>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Medication</TableHead>
-                <TableHead>Dosage</TableHead>
-                <TableHead>Frequency</TableHead>
-                <TableHead>Start</TableHead>
-                <TableHead>End</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {prescriptions.length === 0 ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={7}
-                    className="text-center text-muted-foreground py-8"
-                  >
-                    No prescriptions found.
-                  </TableCell>
-                </TableRow>
-              ) : (
-                prescriptions.map((rx) => (
-                  <TableRow
-                    key={rx.PrescriptionID}
-                    className="cursor-pointer"
-                    onClick={() => setSelectedRx(rx)}
-                  >
-                    <TableCell className="font-medium">
-                      {rx.Medication}
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {rx.Dosage}
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {rx.Frequency}
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {formatDate(rx.StartDate)}
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {rx.EndDate ? formatDate(rx.EndDate) : "-"}
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        variant="secondary"
-                        className={rxStatusVariant[rx.Status] || ""}
-                      >
-                        {PRESCRIPTION_STATUS_OPTIONS.find(
-                          (s) => s.value === rx.Status,
-                        )?.label ?? rx.Status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell onClick={(e) => e.stopPropagation()}>
-                      <div className="flex gap-2">
-                        <Button
-                          variant="ghost"
-                          size="xs"
-                          onClick={() => startEditRx(rx)}
-                        >
-                          <PencilSquareIcon className="h-3.5 w-3.5" />
-                          Edit
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="xs"
-                          className="text-destructive hover:text-destructive"
-                          onClick={() => handleDeleteRx(rx.PrescriptionID)}
-                        >
-                          <TrashIcon className="h-3.5 w-3.5" />
-                          Delete
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
+          <DataTable
+            data={prescriptions}
+            columns={rxColumns}
+            searchPlaceholder="Search prescriptions..."
+            onRowClick={(rx) => setSelectedRx(rx)}
+          />
         </CardContent>
       </Card>
       <AppointmentDetail appointment={selectedAppt} onClose={() => setSelectedAppt(null)} />

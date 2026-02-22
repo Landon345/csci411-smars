@@ -77,7 +77,6 @@ export async function POST(request: NextRequest) {
       prisma.appointment.deleteMany({
         where: { OR: [{ DoctorID: session.UserID }, { PatientID: session.UserID }] },
       }),
-      prisma.session.deleteMany({ where: { UserID: session.UserID } }),
       prisma.user.delete({ where: { UserID: session.UserID } }),
     ]);
 

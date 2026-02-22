@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,6 +19,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { AppointmentCalendar } from "@/components/appointments/AppointmentCalendar";
 import { AppointmentDetail } from "@/components/details/AppointmentDetail";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -26,7 +28,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Skeleton } from "@/components/ui/skeleton";
+import { DataTable, SortableHeader } from "@/components/ui/data-table";
 import { formatDate } from "@/lib/format";
 
 interface Patient {
@@ -133,12 +135,7 @@ export default function AppointmentsPage() {
     visitSummary: "",
   });
 
-  useEffect(() => {
-    fetchAppointments();
-    fetchPatients();
-  }, []);
-
-  async function fetchAppointments() {
+  const fetchAppointments = useCallback(async function fetchAppointments() {
     try {
       const res = await fetch("/api/doctor/appointments");
       if (!res.ok) return;
@@ -147,7 +144,7 @@ export default function AppointmentsPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
   async function fetchPatients() {
     const res = await fetch("/api/doctor/patients/search");
@@ -155,6 +152,11 @@ export default function AppointmentsPage() {
     const data = await res.json();
     setPatients(data.patients);
   }
+
+  useEffect(() => {
+    fetchAppointments();
+    fetchPatients();
+  }, [fetchAppointments]);
 
   function resetForm() {
     setForm({
@@ -173,7 +175,7 @@ export default function AppointmentsPage() {
     setShowForm(false);
   }
 
-  function startEdit(appt: Appointment) {
+  const startEdit = useCallback(function startEdit(appt: Appointment) {
     setForm({
       patientId: appt.PatientID,
       date: new Date(appt.Date).toISOString().split("T")[0],
@@ -188,7 +190,7 @@ export default function AppointmentsPage() {
     });
     setEditing(appt);
     setShowForm(true);
-  }
+  }, []);
 
   function formatTime24(timeStr: string) {
     const d = new Date(timeStr);
@@ -226,7 +228,7 @@ export default function AppointmentsPage() {
     }
   }
 
-  async function handleDelete(id: string) {
+  const handleDelete = useCallback(async function handleDelete(id: string) {
     if (!confirm("Are you sure you want to delete this appointment?")) return;
 
     const res = await fetch(`/api/doctor/appointments/${id}`, {
@@ -235,7 +237,123 @@ export default function AppointmentsPage() {
     if (res.ok) {
       await fetchAppointments();
     }
-  }
+  }, [fetchAppointments]);
+
+  const columns = useMemo<ColumnDef<Appointment, unknown>[]>(
+    () => [
+      {
+        id: "date",
+        accessorFn: (row) => row.Date,
+        sortingFn: "datetime",
+        enableGlobalFilter: false,
+        meta: { label: "Date" },
+        header: ({ column }) => (
+          <SortableHeader column={column} label="Date" />
+        ),
+        cell: ({ row }) => formatDate(row.original.Date),
+      },
+      {
+        id: "time",
+        accessorFn: (row) => row.StartTime,
+        sortingFn: "datetime",
+        enableGlobalFilter: false,
+        meta: { label: "Time" },
+        header: ({ column }) => (
+          <SortableHeader column={column} label="Time" />
+        ),
+        cell: ({ row }) => (
+          <span className="text-muted-foreground">
+            {formatTime(row.original.StartTime)} -{" "}
+            {formatTime(row.original.EndTime)}
+          </span>
+        ),
+      },
+      {
+        id: "patient",
+        accessorFn: (row) =>
+          `${row.Patient.FirstName} ${row.Patient.LastName}`,
+        meta: { label: "Patient" },
+        header: ({ column }) => (
+          <SortableHeader column={column} label="Patient" />
+        ),
+        cell: ({ row }) => (
+          <Link
+            href={`/doctor/dashboard/patients/${row.original.PatientID}`}
+            className="font-medium hover:underline"
+          >
+            {row.original.Patient.FirstName} {row.original.Patient.LastName}
+          </Link>
+        ),
+      },
+      {
+        id: "type",
+        accessorFn: (row) => typeLabel(row.Type),
+        meta: { label: "Type" },
+        header: ({ column }) => (
+          <SortableHeader column={column} label="Type" />
+        ),
+        cell: ({ getValue }) => (
+          <span className="text-muted-foreground">{getValue() as string}</span>
+        ),
+      },
+      {
+        id: "status",
+        accessorKey: "Status",
+        meta: { label: "Status" },
+        header: ({ column }) => (
+          <SortableHeader column={column} label="Status" />
+        ),
+        cell: ({ row }) => (
+          <Badge
+            variant="secondary"
+            className={statusVariant[row.original.Status] || ""}
+          >
+            {STATUS_OPTIONS.find((s) => s.value === row.original.Status)?.label}
+          </Badge>
+        ),
+      },
+      {
+        id: "place",
+        accessorKey: "Place",
+        meta: { label: "Place" },
+        header: ({ column }) => (
+          <SortableHeader column={column} label="Place" />
+        ),
+        cell: ({ getValue }) => (
+          <span className="text-muted-foreground">{getValue() as string}</span>
+        ),
+      },
+      {
+        id: "actions",
+        enableSorting: false,
+        enableGlobalFilter: false,
+        meta: { label: "Actions" },
+        header: () => <span>Actions</span>,
+        cell: ({ row }) => (
+          <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
+            <Button
+              variant="ghost"
+              size="xs"
+              onClick={() => startEdit(row.original)}
+            >
+              <PencilSquareIcon className="h-3.5 w-3.5" />
+              Edit
+            </Button>
+            <Button
+              variant="ghost"
+              size="xs"
+              className="text-destructive hover:text-destructive"
+              onClick={() => handleDelete(row.original.AppointmentID)}
+            >
+              <TrashIcon className="h-3.5 w-3.5" />
+              Delete
+            </Button>
+          </div>
+        ),
+      },
+    ],
+    [startEdit, handleDelete],
+  );
 
   if (loading) {
     return (
@@ -501,89 +619,12 @@ export default function AppointmentsPage() {
           }
         />
       ) : (
-        <Card>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Date</TableHead>
-                <TableHead>Time</TableHead>
-                <TableHead>Patient</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Place</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {appointments.length === 0 ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={7}
-                    className="text-center text-muted-foreground py-8"
-                  >
-                    No appointments found. Create one to get started.
-                  </TableCell>
-                </TableRow>
-              ) : (
-                appointments.map((appt) => (
-                  <TableRow
-                    key={appt.AppointmentID}
-                    className="cursor-pointer"
-                    onClick={() => setSelected(appt)}
-                  >
-                    <TableCell>{formatDate(appt.Date)}</TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {formatTime(appt.StartTime)} - {formatTime(appt.EndTime)}
-                    </TableCell>
-                    <TableCell className="font-medium">
-                      <Link
-                        href={`/doctor/dashboard/patients/${appt.PatientID}`}
-                        className="hover:underline"
-                      >
-                        {appt.Patient.FirstName} {appt.Patient.LastName}
-                      </Link>
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {typeLabel(appt.Type)}
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        variant="secondary"
-                        className={statusVariant[appt.Status] || ""}
-                      >
-                        {STATUS_OPTIONS.find((s) => s.value === appt.Status)?.label}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {appt.Place}
-                    </TableCell>
-                    <TableCell onClick={(e) => e.stopPropagation()}>
-                      <div className="flex gap-2">
-                        <Button
-                          variant="ghost"
-                          size="xs"
-                          onClick={() => startEdit(appt)}
-                        >
-                          <PencilSquareIcon className="h-3.5 w-3.5" />
-                          Edit
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="xs"
-                          className="text-destructive hover:text-destructive"
-                          onClick={() => handleDelete(appt.AppointmentID)}
-                        >
-                          <TrashIcon className="h-3.5 w-3.5" />
-                          Delete
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </Card>
+        <DataTable
+          data={appointments}
+          columns={columns}
+          searchPlaceholder="Search appointments..."
+          onRowClick={(appt) => setSelected(appt)}
+        />
       )}
 
       <AppointmentDetail

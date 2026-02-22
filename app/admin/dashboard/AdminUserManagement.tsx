@@ -1,15 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Card } from "@/components/ui/card";
+import { useEffect, useMemo, useState } from "react";
+import { ColumnDef } from "@tanstack/react-table";
+import { DataTable, SortableHeader } from "@/components/ui/data-table";
 
 interface UserRow {
   UserID: string;
@@ -55,6 +48,74 @@ export default function AdminUserManagement() {
     }
   }
 
+  const columns = useMemo<ColumnDef<UserRow, unknown>[]>(
+    () => [
+      {
+        id: "name",
+        accessorFn: (row) => `${row.FirstName} ${row.LastName}`,
+        meta: { label: "Name" },
+        header: ({ column }) => (
+          <SortableHeader column={column} label="Name" />
+        ),
+        cell: ({ row }) => (
+          <span className="font-medium">
+            {row.original.FirstName} {row.original.LastName}
+          </span>
+        ),
+      },
+      {
+        id: "email",
+        accessorKey: "Email",
+        meta: { label: "Email" },
+        header: ({ column }) => (
+          <SortableHeader column={column} label="Email" />
+        ),
+        cell: ({ getValue }) => (
+          <span className="text-muted-foreground">{getValue() as string}</span>
+        ),
+      },
+      {
+        id: "role",
+        accessorKey: "Role",
+        meta: { label: "Role" },
+        header: ({ column }) => (
+          <SortableHeader column={column} label="Role" />
+        ),
+        cell: ({ row }) => (
+          <div onClick={(e) => e.stopPropagation()}>
+            <select
+              value={row.original.Role}
+              onChange={(e) =>
+                handleRoleChange(row.original.UserID, e.target.value)
+              }
+              className="rounded-md border border-input bg-background px-3 py-1.5 text-sm outline-none"
+            >
+              <option value="patient">Patient</option>
+              <option value="doctor">Doctor</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+        ),
+      },
+      {
+        id: "createdAt",
+        accessorFn: (row) => row.CreatedAt,
+        sortingFn: "datetime",
+        enableGlobalFilter: false,
+        meta: { label: "Created" },
+        header: ({ column }) => (
+          <SortableHeader column={column} label="Created" />
+        ),
+        cell: ({ row }) => (
+          <span className="text-muted-foreground">
+            {new Date(row.original.CreatedAt).toLocaleDateString()}
+          </span>
+        ),
+      },
+    ],
+    [],
+  );
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
@@ -74,46 +135,11 @@ export default function AdminUserManagement() {
         </p>
       </header>
 
-      <Card>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Role</TableHead>
-              <TableHead>Created</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {users.map((user) => (
-              <TableRow key={user.UserID}>
-                <TableCell className="font-medium">
-                  {user.FirstName} {user.LastName}
-                </TableCell>
-                <TableCell className="text-muted-foreground">
-                  {user.Email}
-                </TableCell>
-                <TableCell>
-                  <select
-                    value={user.Role}
-                    onChange={(e) =>
-                      handleRoleChange(user.UserID, e.target.value)
-                    }
-                    className="rounded-md border border-input bg-background px-3 py-1.5 text-sm outline-none"
-                  >
-                    <option value="patient">Patient</option>
-                    <option value="doctor">Doctor</option>
-                    <option value="admin">Admin</option>
-                  </select>
-                </TableCell>
-                <TableCell className="text-muted-foreground">
-                  {new Date(user.CreatedAt).toLocaleDateString()}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </Card>
+      <DataTable
+        data={users}
+        columns={columns}
+        searchPlaceholder="Search users..."
+      />
     </>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,6 +14,7 @@ import {
   PencilSquareIcon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -21,7 +23,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Skeleton } from "@/components/ui/skeleton";
+import { DataTable, SortableHeader } from "@/components/ui/data-table";
 import { RecordDetail } from "@/components/details/RecordDetail";
 import { formatDate } from "@/lib/format";
 
@@ -88,12 +90,7 @@ export default function DoctorRecordsPage() {
     followUp: "",
   });
 
-  useEffect(() => {
-    fetchRecords();
-    fetchPatients();
-  }, []);
-
-  async function fetchRecords() {
+  const fetchRecords = useCallback(async function fetchRecords() {
     try {
       const res = await fetch("/api/doctor/records");
       if (!res.ok) return;
@@ -102,7 +99,7 @@ export default function DoctorRecordsPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
   async function fetchPatients() {
     const res = await fetch("/api/doctor/patients/search");
@@ -110,6 +107,11 @@ export default function DoctorRecordsPage() {
     const data = await res.json();
     setPatients(data.patients);
   }
+
+  useEffect(() => {
+    fetchRecords();
+    fetchPatients();
+  }, [fetchRecords]);
 
   function resetForm() {
     setForm({
@@ -131,7 +133,7 @@ export default function DoctorRecordsPage() {
     setShowForm(false);
   }
 
-  function startEdit(record: MedicalRecord) {
+  const startEdit = useCallback(function startEdit(record: MedicalRecord) {
     setForm({
       patientId: record.PatientID,
       visitDate: new Date(record.VisitDate).toISOString().split("T")[0],
@@ -149,7 +151,7 @@ export default function DoctorRecordsPage() {
     });
     setEditing(record);
     setShowForm(true);
-  }
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -179,7 +181,7 @@ export default function DoctorRecordsPage() {
     }
   }
 
-  async function handleDelete(id: string) {
+  const handleDelete = useCallback(async function handleDelete(id: string) {
     if (!confirm("Are you sure you want to delete this record?")) return;
 
     const res = await fetch(`/api/doctor/records/${id}`, {
@@ -188,7 +190,102 @@ export default function DoctorRecordsPage() {
     if (res.ok) {
       await fetchRecords();
     }
-  }
+  }, [fetchRecords]);
+
+  const columns = useMemo<ColumnDef<MedicalRecord, unknown>[]>(
+    () => [
+      {
+        id: "visitDate",
+        accessorFn: (row) => row.VisitDate,
+        sortingFn: "datetime",
+        enableGlobalFilter: false,
+        meta: { label: "Date" },
+        header: ({ column }) => (
+          <SortableHeader column={column} label="Date" />
+        ),
+        cell: ({ row }) => formatDate(row.original.VisitDate),
+      },
+      {
+        id: "patient",
+        accessorFn: (row) =>
+          `${row.Patient.FirstName} ${row.Patient.LastName}`,
+        meta: { label: "Patient" },
+        header: ({ column }) => (
+          <SortableHeader column={column} label="Patient" />
+        ),
+        cell: ({ row }) => (
+          <Link
+            href={`/doctor/dashboard/patients/${row.original.PatientID}`}
+            className="font-medium hover:underline"
+          >
+            {row.original.Patient.FirstName} {row.original.Patient.LastName}
+          </Link>
+        ),
+      },
+      {
+        id: "type",
+        accessorFn: (row) => typeLabel(row.Type),
+        meta: { label: "Type" },
+        header: ({ column }) => (
+          <SortableHeader column={column} label="Type" />
+        ),
+        cell: ({ getValue }) => (
+          <span className="text-muted-foreground">{getValue() as string}</span>
+        ),
+      },
+      {
+        id: "diagnosis",
+        accessorFn: (row) => `${row.DiagnosisCode} - ${row.DiagnosisDesc}`,
+        meta: { label: "Diagnosis" },
+        header: ({ column }) => (
+          <SortableHeader column={column} label="Diagnosis" />
+        ),
+        cell: ({ getValue }) => (
+          <span className="text-muted-foreground">{getValue() as string}</span>
+        ),
+      },
+      {
+        id: "chiefComplaint",
+        accessorKey: "ChiefComplaint",
+        meta: { label: "Chief Complaint" },
+        header: ({ column }) => (
+          <SortableHeader column={column} label="Chief Complaint" />
+        ),
+        cell: ({ getValue }) => (
+          <span className="text-muted-foreground">{getValue() as string}</span>
+        ),
+      },
+      {
+        id: "actions",
+        enableSorting: false,
+        enableGlobalFilter: false,
+        meta: { label: "Actions" },
+        header: () => <span>Actions</span>,
+        cell: ({ row }) => (
+          <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
+            <Button
+              variant="ghost"
+              size="xs"
+              onClick={() => startEdit(row.original)}
+            >
+              <PencilSquareIcon className="h-3.5 w-3.5" />
+              Edit
+            </Button>
+            <Button
+              variant="ghost"
+              size="xs"
+              className="text-destructive hover:text-destructive"
+              onClick={() => handleDelete(row.original.RecordID)}
+            >
+              <TrashIcon className="h-3.5 w-3.5" />
+              Delete
+            </Button>
+          </div>
+        ),
+      },
+    ],
+    [startEdit, handleDelete],
+  );
 
   if (loading) {
     return (
@@ -453,80 +550,12 @@ export default function DoctorRecordsPage() {
         </Card>
       )}
 
-      <Card>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Date</TableHead>
-              <TableHead>Patient</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead>Diagnosis</TableHead>
-              <TableHead>Chief Complaint</TableHead>
-              <TableHead>Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {records.length === 0 ? (
-              <TableRow>
-                <TableCell
-                  colSpan={6}
-                  className="text-center text-muted-foreground py-8"
-                >
-                  No records found. Create one to get started.
-                </TableCell>
-              </TableRow>
-            ) : (
-              records.map((record) => (
-                <TableRow
-                  key={record.RecordID}
-                  className="cursor-pointer"
-                  onClick={() => setSelected(record)}
-                >
-                  <TableCell>{formatDate(record.VisitDate)}</TableCell>
-                  <TableCell className="font-medium">
-                    <Link
-                      href={`/doctor/dashboard/patients/${record.PatientID}`}
-                      className="hover:underline"
-                    >
-                      {record.Patient.FirstName} {record.Patient.LastName}
-                    </Link>
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {typeLabel(record.Type)}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {record.DiagnosisCode} - {record.DiagnosisDesc}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {record.ChiefComplaint}
-                  </TableCell>
-                  <TableCell onClick={(e) => e.stopPropagation()}>
-                    <div className="flex gap-2">
-                      <Button
-                        variant="ghost"
-                        size="xs"
-                        onClick={() => startEdit(record)}
-                      >
-                        <PencilSquareIcon className="h-3.5 w-3.5" />
-                        Edit
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="xs"
-                        className="text-destructive hover:text-destructive"
-                        onClick={() => handleDelete(record.RecordID)}
-                      >
-                        <TrashIcon className="h-3.5 w-3.5" />
-                        Delete
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </Card>
+      <DataTable
+        data={records}
+        columns={columns}
+        searchPlaceholder="Search records..."
+        onRowClick={(record) => setSelected(record)}
+      />
 
       <RecordDetail record={selected} onClose={() => setSelected(null)} />
     </>

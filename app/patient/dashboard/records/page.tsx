@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { ColumnDef } from "@tanstack/react-table";
 import { Card } from "@/components/ui/card";
 import {
   Table,
@@ -11,6 +12,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
+import { DataTable, SortableHeader } from "@/components/ui/data-table";
 import { RecordDetail } from "@/components/details/RecordDetail";
 import { formatDate } from "@/lib/format";
 
@@ -58,6 +60,100 @@ export default function PatientRecordsPage() {
       setLoading(false);
     }
   }
+
+  const columns = useMemo<ColumnDef<MedicalRecord, unknown>[]>(
+    () => [
+      {
+        id: "visitDate",
+        accessorFn: (row) => row.VisitDate,
+        sortingFn: "datetime",
+        enableGlobalFilter: false,
+        meta: { label: "Date" },
+        header: ({ column }) => (
+          <SortableHeader column={column} label="Date" />
+        ),
+        cell: ({ row }) => formatDate(row.original.VisitDate),
+      },
+      {
+        id: "doctor",
+        accessorFn: (row) =>
+          `Dr. ${row.Doctor.FirstName} ${row.Doctor.LastName}`,
+        meta: { label: "Doctor" },
+        header: ({ column }) => (
+          <SortableHeader column={column} label="Doctor" />
+        ),
+        cell: ({ getValue }) => (
+          <span className="font-medium">{getValue() as string}</span>
+        ),
+      },
+      {
+        id: "appointment",
+        accessorFn: (row) =>
+          row.Appointment ? formatDate(row.Appointment.Date) : "",
+        enableGlobalFilter: false,
+        meta: { label: "Appointment" },
+        header: ({ column }) => (
+          <SortableHeader column={column} label="Appointment" />
+        ),
+        cell: ({ row }) =>
+          row.original.Appointment ? (
+            <span className="text-muted-foreground">
+              {formatDate(row.original.Appointment.Date)}
+              <span className="block text-xs capitalize">
+                {row.original.Appointment.Type.replace("_", " ")}
+              </span>
+            </span>
+          ) : (
+            <span className="text-muted-foreground">—</span>
+          ),
+      },
+      {
+        id: "type",
+        accessorFn: (row) => typeLabel(row.Type),
+        meta: { label: "Type" },
+        header: ({ column }) => (
+          <SortableHeader column={column} label="Type" />
+        ),
+        cell: ({ getValue }) => (
+          <span className="text-muted-foreground">{getValue() as string}</span>
+        ),
+      },
+      {
+        id: "diagnosis",
+        accessorFn: (row) => `${row.DiagnosisCode} - ${row.DiagnosisDesc}`,
+        meta: { label: "Diagnosis" },
+        header: ({ column }) => (
+          <SortableHeader column={column} label="Diagnosis" />
+        ),
+        cell: ({ getValue }) => (
+          <span className="text-muted-foreground">{getValue() as string}</span>
+        ),
+      },
+      {
+        id: "chiefComplaint",
+        accessorKey: "ChiefComplaint",
+        meta: { label: "Chief Complaint" },
+        header: ({ column }) => (
+          <SortableHeader column={column} label="Chief Complaint" />
+        ),
+        cell: ({ getValue }) => (
+          <span className="text-muted-foreground">{getValue() as string}</span>
+        ),
+      },
+      {
+        id: "treatmentPlan",
+        accessorKey: "TreatmentPlan",
+        meta: { label: "Treatment Plan" },
+        header: ({ column }) => (
+          <SortableHeader column={column} label="Treatment Plan" />
+        ),
+        cell: ({ getValue }) => (
+          <span className="text-muted-foreground">{getValue() as string}</span>
+        ),
+      },
+    ],
+    [],
+  );
 
   if (loading) {
     return (
@@ -109,66 +205,12 @@ export default function PatientRecordsPage() {
         </p>
       </header>
 
-      <Card>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Date</TableHead>
-              <TableHead>Doctor</TableHead>
-              <TableHead>Appointment</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead>Diagnosis</TableHead>
-              <TableHead>Chief Complaint</TableHead>
-              <TableHead>Treatment Plan</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {records.length === 0 ? (
-              <TableRow>
-                <TableCell
-                  colSpan={7}
-                  className="text-center text-muted-foreground py-8"
-                >
-                  No records found.
-                </TableCell>
-              </TableRow>
-            ) : (
-              records.map((record) => (
-                <TableRow
-                  key={record.RecordID}
-                  className="cursor-pointer"
-                  onClick={() => setSelected(record)}
-                >
-                  <TableCell>{formatDate(record.VisitDate)}</TableCell>
-                  <TableCell className="font-medium">
-                    Dr. {record.Doctor.FirstName} {record.Doctor.LastName}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {record.Appointment ? (
-                      <span>
-                        {formatDate(record.Appointment.Date)}
-                        <span className="block text-xs capitalize">{record.Appointment.Type.replace("_", " ")}</span>
-                      </span>
-                    ) : "—"}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {typeLabel(record.Type)}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {record.DiagnosisCode} - {record.DiagnosisDesc}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {record.ChiefComplaint}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {record.TreatmentPlan}
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </Card>
+      <DataTable
+        data={records}
+        columns={columns}
+        searchPlaceholder="Search records..."
+        onRowClick={(record) => setSelected(record)}
+      />
 
       <RecordDetail record={selected} onClose={() => setSelected(null)} />
     </>
