@@ -32,6 +32,7 @@ import {
   Cog6ToothIcon,
 } from "@heroicons/react/24/outline";
 import { type ComponentType } from "react";
+import { SessionExpiryWarning } from "@/components/SessionExpiryWarning";
 
 interface NavLink {
   href: string;
@@ -92,6 +93,8 @@ export default function DashboardShell({ user, children }: DashboardShellProps) 
   }
 
   return (
+    <>
+    <SessionExpiryWarning />
     <SidebarProvider>
       <Sidebar collapsible="icon">
         {/* Logo */}
@@ -180,5 +183,6 @@ export default function DashboardShell({ user, children }: DashboardShellProps) 
         <main className="flex-1 p-10">{children}</main>
       </SidebarInset>
     </SidebarProvider>
+    </>
   );
 }
