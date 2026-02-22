@@ -73,5 +73,3 @@ Example
 ```bash
 git checkout -b feat/5-doctor-dashboard
 ```
-
-test push to main
