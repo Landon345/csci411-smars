@@ -44,11 +44,6 @@ export async function POST(request: Request) {
       },
     });
 
-    // Invalidate all existing sessions for this user
-    await prisma.session.deleteMany({
-      where: { UserID: user.UserID },
-    });
-
     // Clear the auth cookie on the response
     const response = NextResponse.json(
       { message: "Password reset successful" },

@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import {
@@ -12,6 +13,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
+import { DataTable, SortableHeader } from "@/components/ui/data-table";
 import { PrescriptionDetail } from "@/components/details/PrescriptionDetail";
 import { formatDate } from "@/lib/format";
 
@@ -63,6 +65,126 @@ export default function PatientMedicationsPage() {
       setLoading(false);
     }
   }
+
+  const columns = useMemo<ColumnDef<Prescription, unknown>[]>(
+    () => [
+      {
+        id: "medication",
+        accessorKey: "Medication",
+        meta: { label: "Medication" },
+        header: ({ column }) => (
+          <SortableHeader column={column} label="Medication" />
+        ),
+        cell: ({ getValue }) => (
+          <span className="font-medium">{getValue() as string}</span>
+        ),
+      },
+      {
+        id: "dosage",
+        accessorKey: "Dosage",
+        meta: { label: "Dosage" },
+        header: ({ column }) => (
+          <SortableHeader column={column} label="Dosage" />
+        ),
+        cell: ({ getValue }) => (
+          <span className="text-muted-foreground">{getValue() as string}</span>
+        ),
+      },
+      {
+        id: "frequency",
+        accessorKey: "Frequency",
+        meta: { label: "Frequency" },
+        header: ({ column }) => (
+          <SortableHeader column={column} label="Frequency" />
+        ),
+        cell: ({ getValue }) => (
+          <span className="text-muted-foreground">{getValue() as string}</span>
+        ),
+      },
+      {
+        id: "duration",
+        accessorKey: "Duration",
+        meta: { label: "Duration" },
+        header: ({ column }) => (
+          <SortableHeader column={column} label="Duration" />
+        ),
+        cell: ({ getValue }) => (
+          <span className="text-muted-foreground">{getValue() as string}</span>
+        ),
+      },
+      {
+        id: "refills",
+        accessorKey: "Refills",
+        meta: { label: "Refills" },
+        header: ({ column }) => (
+          <SortableHeader column={column} label="Refills" />
+        ),
+        cell: ({ getValue }) => (
+          <span className="text-muted-foreground">{getValue() as number}</span>
+        ),
+      },
+      {
+        id: "startDate",
+        accessorFn: (row) => row.StartDate,
+        sortingFn: "datetime",
+        enableGlobalFilter: false,
+        meta: { label: "Start" },
+        header: ({ column }) => (
+          <SortableHeader column={column} label="Start" />
+        ),
+        cell: ({ row }) => (
+          <span className="text-muted-foreground">
+            {formatDate(row.original.StartDate)}
+          </span>
+        ),
+      },
+      {
+        id: "endDate",
+        accessorFn: (row) => row.EndDate ?? "",
+        sortingFn: "datetime",
+        enableGlobalFilter: false,
+        meta: { label: "End" },
+        header: ({ column }) => (
+          <SortableHeader column={column} label="End" />
+        ),
+        cell: ({ row }) => (
+          <span className="text-muted-foreground">
+            {row.original.EndDate ? formatDate(row.original.EndDate) : "-"}
+          </span>
+        ),
+      },
+      {
+        id: "doctor",
+        accessorFn: (row) =>
+          `Dr. ${row.Doctor.FirstName} ${row.Doctor.LastName}`,
+        meta: { label: "Doctor" },
+        header: ({ column }) => (
+          <SortableHeader column={column} label="Doctor" />
+        ),
+        cell: ({ getValue }) => (
+          <span className="font-medium">{getValue() as string}</span>
+        ),
+      },
+      {
+        id: "status",
+        accessorKey: "Status",
+        meta: { label: "Status" },
+        header: ({ column }) => (
+          <SortableHeader column={column} label="Status" />
+        ),
+        cell: ({ row }) => (
+          <Badge
+            variant="secondary"
+            className={statusVariant[row.original.Status] || ""}
+          >
+            {STATUS_OPTIONS.find((s) => s.value === row.original.Status)
+              ?.label ?? row.original.Status}
+          </Badge>
+        ),
+      },
+    ],
+    [],
+  );
 
   if (loading) {
     return (
@@ -116,77 +238,12 @@ export default function PatientMedicationsPage() {
         </p>
       </header>
 
-      <Card>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Medication</TableHead>
-              <TableHead>Dosage</TableHead>
-              <TableHead>Frequency</TableHead>
-              <TableHead>Duration</TableHead>
-              <TableHead>Refills</TableHead>
-              <TableHead>Start</TableHead>
-              <TableHead>End</TableHead>
-              <TableHead>Doctor</TableHead>
-              <TableHead>Status</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {prescriptions.length === 0 ? (
-              <TableRow>
-                <TableCell
-                  colSpan={9}
-                  className="text-center text-muted-foreground py-8"
-                >
-                  No medications found.
-                </TableCell>
-              </TableRow>
-            ) : (
-              prescriptions.map((rx) => (
-                <TableRow
-                  key={rx.PrescriptionID}
-                  className="cursor-pointer"
-                  onClick={() => setSelected(rx)}
-                >
-                  <TableCell className="font-medium">
-                    {rx.Medication}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {rx.Dosage}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {rx.Frequency}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {rx.Duration}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {rx.Refills}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {formatDate(rx.StartDate)}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {rx.EndDate ? formatDate(rx.EndDate) : "-"}
-                  </TableCell>
-                  <TableCell className="font-medium">
-                    Dr. {rx.Doctor.FirstName} {rx.Doctor.LastName}
-                  </TableCell>
-                  <TableCell>
-                    <Badge
-                      variant="secondary"
-                      className={statusVariant[rx.Status] || ""}
-                    >
-                      {STATUS_OPTIONS.find((s) => s.value === rx.Status)
-                        ?.label ?? rx.Status}
-                    </Badge>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </Card>
+      <DataTable
+        data={prescriptions}
+        columns={columns}
+        searchPlaceholder="Search medications..."
+        onRowClick={(rx) => setSelected(rx)}
+      />
 
       <PrescriptionDetail prescription={selected} onClose={() => setSelected(null)} />
     </>

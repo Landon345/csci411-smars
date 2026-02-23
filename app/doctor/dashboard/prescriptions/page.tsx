@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,6 +15,7 @@ import {
   PencilSquareIcon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -22,7 +24,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Skeleton } from "@/components/ui/skeleton";
+import { DataTable, SortableHeader } from "@/components/ui/data-table";
 import { PrescriptionDetail } from "@/components/details/PrescriptionDetail";
 import { formatDate } from "@/lib/format";
 
@@ -86,12 +88,7 @@ export default function DoctorPrescriptionsPage() {
     notes: "",
   });
 
-  useEffect(() => {
-    fetchPrescriptions();
-    fetchPatients();
-  }, []);
-
-  async function fetchPrescriptions() {
+  const fetchPrescriptions = useCallback(async function fetchPrescriptions() {
     try {
       const res = await fetch("/api/doctor/prescriptions");
       if (!res.ok) return;
@@ -100,7 +97,7 @@ export default function DoctorPrescriptionsPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
   async function fetchPatients() {
     const res = await fetch("/api/doctor/patients/search");
@@ -108,6 +105,11 @@ export default function DoctorPrescriptionsPage() {
     const data = await res.json();
     setPatients(data.patients);
   }
+
+  useEffect(() => {
+    fetchPrescriptions();
+    fetchPatients();
+  }, [fetchPrescriptions]);
 
   function resetForm() {
     setForm({
@@ -126,7 +128,7 @@ export default function DoctorPrescriptionsPage() {
     setShowForm(false);
   }
 
-  function startEdit(rx: Prescription) {
+  const startEdit = useCallback(function startEdit(rx: Prescription) {
     setForm({
       patientId: rx.PatientID,
       medication: rx.Medication,
@@ -143,7 +145,7 @@ export default function DoctorPrescriptionsPage() {
     });
     setEditing(rx);
     setShowForm(true);
-  }
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -176,7 +178,7 @@ export default function DoctorPrescriptionsPage() {
     }
   }
 
-  async function handleDelete(id: string) {
+  const handleDelete = useCallback(async function handleDelete(id: string) {
     if (!confirm("Are you sure you want to delete this prescription?")) return;
 
     const res = await fetch(`/api/doctor/prescriptions/${id}`, {
@@ -185,7 +187,136 @@ export default function DoctorPrescriptionsPage() {
     if (res.ok) {
       await fetchPrescriptions();
     }
-  }
+  }, [fetchPrescriptions]);
+
+  const columns = useMemo<ColumnDef<Prescription, unknown>[]>(
+    () => [
+      {
+        id: "patient",
+        accessorFn: (row) =>
+          `${row.Patient.FirstName} ${row.Patient.LastName}`,
+        meta: { label: "Patient" },
+        header: ({ column }) => (
+          <SortableHeader column={column} label="Patient" />
+        ),
+        cell: ({ row }) => (
+          <Link
+            href={`/doctor/dashboard/patients/${row.original.PatientID}`}
+            className="font-medium hover:underline"
+          >
+            {row.original.Patient.FirstName} {row.original.Patient.LastName}
+          </Link>
+        ),
+      },
+      {
+        id: "medication",
+        accessorKey: "Medication",
+        meta: { label: "Medication" },
+        header: ({ column }) => (
+          <SortableHeader column={column} label="Medication" />
+        ),
+        cell: ({ getValue }) => getValue() as string,
+      },
+      {
+        id: "dosage",
+        accessorKey: "Dosage",
+        meta: { label: "Dosage" },
+        header: ({ column }) => (
+          <SortableHeader column={column} label="Dosage" />
+        ),
+        cell: ({ getValue }) => (
+          <span className="text-muted-foreground">{getValue() as string}</span>
+        ),
+      },
+      {
+        id: "frequency",
+        accessorKey: "Frequency",
+        meta: { label: "Frequency" },
+        header: ({ column }) => (
+          <SortableHeader column={column} label="Frequency" />
+        ),
+        cell: ({ getValue }) => (
+          <span className="text-muted-foreground">{getValue() as string}</span>
+        ),
+      },
+      {
+        id: "startDate",
+        accessorFn: (row) => row.StartDate,
+        sortingFn: "datetime",
+        enableGlobalFilter: false,
+        meta: { label: "Start" },
+        header: ({ column }) => (
+          <SortableHeader column={column} label="Start" />
+        ),
+        cell: ({ row }) => (
+          <span className="text-muted-foreground">
+            {formatDate(row.original.StartDate)}
+          </span>
+        ),
+      },
+      {
+        id: "endDate",
+        accessorFn: (row) => row.EndDate ?? "",
+        sortingFn: "datetime",
+        enableGlobalFilter: false,
+        meta: { label: "End" },
+        header: ({ column }) => (
+          <SortableHeader column={column} label="End" />
+        ),
+        cell: ({ row }) => (
+          <span className="text-muted-foreground">
+            {row.original.EndDate ? formatDate(row.original.EndDate) : "-"}
+          </span>
+        ),
+      },
+      {
+        id: "status",
+        accessorKey: "Status",
+        meta: { label: "Status" },
+        header: ({ column }) => (
+          <SortableHeader column={column} label="Status" />
+        ),
+        cell: ({ row }) => (
+          <Badge
+            variant="secondary"
+            className={statusVariant[row.original.Status] || ""}
+          >
+            {STATUS_OPTIONS.find((s) => s.value === row.original.Status)
+              ?.label ?? row.original.Status}
+          </Badge>
+        ),
+      },
+      {
+        id: "actions",
+        enableSorting: false,
+        enableGlobalFilter: false,
+        meta: { label: "Actions" },
+        header: () => <span>Actions</span>,
+        cell: ({ row }) => (
+          <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
+            <Button
+              variant="ghost"
+              size="xs"
+              onClick={() => startEdit(row.original)}
+            >
+              <PencilSquareIcon className="h-3.5 w-3.5" />
+              Edit
+            </Button>
+            <Button
+              variant="ghost"
+              size="xs"
+              className="text-destructive hover:text-destructive"
+              onClick={() => handleDelete(row.original.PrescriptionID)}
+            >
+              <TrashIcon className="h-3.5 w-3.5" />
+              Delete
+            </Button>
+          </div>
+        ),
+      },
+    ],
+    [startEdit, handleDelete],
+  );
 
   if (loading) {
     return (
@@ -415,94 +546,12 @@ export default function DoctorPrescriptionsPage() {
         </Card>
       )}
 
-      <Card>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Patient</TableHead>
-              <TableHead>Medication</TableHead>
-              <TableHead>Dosage</TableHead>
-              <TableHead>Frequency</TableHead>
-              <TableHead>Start</TableHead>
-              <TableHead>End</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {prescriptions.length === 0 ? (
-              <TableRow>
-                <TableCell
-                  colSpan={8}
-                  className="text-center text-muted-foreground py-8"
-                >
-                  No prescriptions found. Create one to get started.
-                </TableCell>
-              </TableRow>
-            ) : (
-              prescriptions.map((rx) => (
-                <TableRow
-                  key={rx.PrescriptionID}
-                  className="cursor-pointer"
-                  onClick={() => setSelected(rx)}
-                >
-                  <TableCell className="font-medium">
-                    <Link
-                      href={`/doctor/dashboard/patients/${rx.PatientID}`}
-                      className="hover:underline"
-                    >
-                      {rx.Patient.FirstName} {rx.Patient.LastName}
-                    </Link>
-                  </TableCell>
-                  <TableCell>{rx.Medication}</TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {rx.Dosage}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {rx.Frequency}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {formatDate(rx.StartDate)}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {rx.EndDate ? formatDate(rx.EndDate) : "-"}
-                  </TableCell>
-                  <TableCell>
-                    <Badge
-                      variant="secondary"
-                      className={statusVariant[rx.Status] || ""}
-                    >
-                      {STATUS_OPTIONS.find((s) => s.value === rx.Status)
-                        ?.label ?? rx.Status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex gap-2">
-                      <Button
-                        variant="ghost"
-                        size="xs"
-                        onClick={(e) => { e.stopPropagation(); startEdit(rx); }}
-                      >
-                        <PencilSquareIcon className="h-3.5 w-3.5" />
-                        Edit
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="xs"
-                        className="text-destructive hover:text-destructive"
-                        onClick={(e) => { e.stopPropagation(); handleDelete(rx.PrescriptionID); }}
-                      >
-                        <TrashIcon className="h-3.5 w-3.5" />
-                        Delete
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </Card>
+      <DataTable
+        data={prescriptions}
+        columns={columns}
+        searchPlaceholder="Search prescriptions..."
+        onRowClick={(rx) => setSelected(rx)}
+      />
 
       <PrescriptionDetail prescription={selected} onClose={() => setSelected(null)} />
     </>

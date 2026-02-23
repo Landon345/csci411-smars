@@ -1,15 +1,7 @@
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Card } from "@/components/ui/card";
+import { PatientsTable } from "./PatientsTable";
 
 export default async function AdminPatientsPage() {
   const user = await getSession();
@@ -29,6 +21,11 @@ export default async function AdminPatientsPage() {
     orderBy: { CreatedAt: "desc" },
   });
 
+  const serialized = patients.map((p) => ({
+    ...p,
+    CreatedAt: p.CreatedAt.toISOString(),
+  }));
+
   return (
     <>
       <header className="mb-8">
@@ -38,47 +35,7 @@ export default async function AdminPatientsPage() {
         </p>
       </header>
 
-      <Card>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Phone</TableHead>
-              <TableHead>Created</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {patients.length === 0 ? (
-              <TableRow>
-                <TableCell
-                  colSpan={4}
-                  className="text-center text-muted-foreground py-8"
-                >
-                  No patients found.
-                </TableCell>
-              </TableRow>
-            ) : (
-              patients.map((patient) => (
-                <TableRow key={patient.UserID}>
-                  <TableCell className="font-medium">
-                    {patient.FirstName} {patient.LastName}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {patient.Email}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {patient.Phone || "\u2014"}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {patient.CreatedAt.toLocaleDateString()}
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </Card>
+      <PatientsTable patients={serialized} />
     </>
   );
 }

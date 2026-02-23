@@ -27,7 +27,10 @@ Create a `.env` file in the root directory. This file contains sensitive secrets
 DATABASE_URL="your_database_connection_string"
 
 # Authentication (Random 32+ character string)
-JWT_SECRET="your_secure_jwt_secret"
+JWT_SECRET="your_random_thirty_two_character_secure_jwt_secret"
+
+# SSN Encryption (Random 32+ character string)
+SSN_ENCRYPTION_KEY="your_random_thirty_two_character_secure_ssn_encryption_secret"
 
 # Email Service (Resend.com API Key)
 RESEND_API_KEY="re_your_api_key"

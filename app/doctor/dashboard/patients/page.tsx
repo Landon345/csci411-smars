@@ -1,7 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { ColumnDef } from "@tanstack/react-table";
+import { DataTable, SortableHeader } from "@/components/ui/data-table";
+import { Card } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -10,8 +14,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Card } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
 
 interface Patient {
   UserID: string;
@@ -33,6 +35,64 @@ export default function DoctorPatientsPage() {
       .then((d) => setPatients(d.patients ?? []))
       .finally(() => setLoading(false));
   }, []);
+
+  const columns = useMemo<ColumnDef<Patient, unknown>[]>(
+    () => [
+      {
+        id: "name",
+        accessorFn: (row) => `${row.FirstName} ${row.LastName}`,
+        meta: { label: "Name" },
+        header: ({ column }) => (
+          <SortableHeader column={column} label="Name" />
+        ),
+        cell: ({ row }) => (
+          <span className="font-medium">
+            {row.original.FirstName} {row.original.LastName}
+          </span>
+        ),
+      },
+      {
+        id: "email",
+        accessorKey: "Email",
+        meta: { label: "Email" },
+        header: ({ column }) => (
+          <SortableHeader column={column} label="Email" />
+        ),
+        cell: ({ getValue }) => (
+          <span className="text-muted-foreground">{getValue() as string}</span>
+        ),
+      },
+      {
+        id: "phone",
+        accessorKey: "Phone",
+        meta: { label: "Phone" },
+        header: ({ column }) => (
+          <SortableHeader column={column} label="Phone" />
+        ),
+        cell: ({ getValue }) => (
+          <span className="text-muted-foreground">
+            {(getValue() as string | null) || "—"}
+          </span>
+        ),
+      },
+      {
+        id: "createdAt",
+        accessorFn: (row) => row.CreatedAt,
+        sortingFn: "datetime",
+        enableGlobalFilter: false,
+        meta: { label: "Created" },
+        header: ({ column }) => (
+          <SortableHeader column={column} label="Created" />
+        ),
+        cell: ({ row }) => (
+          <span className="text-muted-foreground">
+            {new Date(row.original.CreatedAt).toLocaleDateString()}
+          </span>
+        ),
+      },
+    ],
+    [],
+  );
 
   if (loading) {
     return (
@@ -74,53 +134,14 @@ export default function DoctorPatientsPage() {
         <p className="text-sm text-muted-foreground">View your patients.</p>
       </header>
 
-      <Card>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Phone</TableHead>
-              <TableHead>Created</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {patients.length === 0 ? (
-              <TableRow>
-                <TableCell
-                  colSpan={4}
-                  className="text-center text-muted-foreground py-8"
-                >
-                  No patients found.
-                </TableCell>
-              </TableRow>
-            ) : (
-              patients.map((patient) => (
-                <TableRow
-                  key={patient.UserID}
-                  className="cursor-pointer"
-                  onClick={() =>
-                    router.push(`/doctor/dashboard/patients/${patient.UserID}`)
-                  }
-                >
-                  <TableCell className="font-medium">
-                    {patient.FirstName} {patient.LastName}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {patient.Email}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {patient.Phone || "—"}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {new Date(patient.CreatedAt).toLocaleDateString()}
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </Card>
+      <DataTable
+        data={patients}
+        columns={columns}
+        searchPlaceholder="Search patients..."
+        onRowClick={(patient) =>
+          router.push(`/doctor/dashboard/patients/${patient.UserID}`)
+        }
+      />
     </>
   );
 }
