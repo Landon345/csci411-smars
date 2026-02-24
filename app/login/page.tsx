@@ -2,7 +2,7 @@
 export const dynamic = "force-dynamic";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -24,9 +24,43 @@ const loginSchema = z.object({
 
 type LoginInput = z.infer<typeof loginSchema>;
 
+function formatCountdown(seconds: number) {
+  const m = Math.floor(seconds / 60).toString().padStart(2, "0");
+  const s = (seconds % 60).toString().padStart(2, "0");
+  return `${m}:${s}`;
+}
+
 export default function SignIn() {
   const [serverError, setServerError] = useState<string | null>(null);
+  const [attemptsRemaining, setAttemptsRemaining] = useState<number | null>(null);
+  const [secondsLeft, setSecondsLeft] = useState<number | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const router = useRouter();
+
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, []);
+
+  function startLockoutTimer(lockedUntilIso: string) {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+
+    const tick = () => {
+      const remaining = Math.ceil((new Date(lockedUntilIso).getTime() - Date.now()) / 1000);
+      if (remaining <= 0) {
+        clearInterval(intervalRef.current!);
+        intervalRef.current = null;
+        setSecondsLeft(null);
+        setServerError(null);
+      } else {
+        setSecondsLeft(remaining);
+      }
+    };
+
+    tick();
+    intervalRef.current = setInterval(tick, 1000);
+  }
 
   const {
     register,
@@ -38,19 +72,27 @@ export default function SignIn() {
 
   const onSubmit = async (data: LoginInput) => {
     setServerError(null);
+    setAttemptsRemaining(null);
+    setSecondsLeft(null);
+    if (intervalRef.current) clearInterval(intervalRef.current);
     try {
       const response = await fetch("/api/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          email: data.Email, // Matches the 'email' key in our API route
+          email: data.Email,
           password: data.Password,
         }),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        console.log(errorData);
+        if (typeof errorData.attemptsRemaining === "number") {
+          setAttemptsRemaining(errorData.attemptsRemaining);
+        }
+        if (typeof errorData.lockedUntil === "string") {
+          startLockoutTimer(errorData.lockedUntil);
+        }
         throw new Error(errorData.error || "Invalid email or password");
       }
 
@@ -83,6 +125,24 @@ export default function SignIn() {
           {serverError && (
             <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive text-center">
               {serverError}
+            </div>
+          )}
+
+          {secondsLeft !== null && (
+            <div className="rounded-lg bg-amber-50 border border-amber-200 p-4 text-amber-800 text-center dark:bg-amber-950/30 dark:border-amber-800 dark:text-amber-400">
+              <p className="text-sm font-medium">Account locked</p>
+              <p className="mt-1 font-mono text-2xl font-bold tracking-widest">
+                {formatCountdown(secondsLeft)}
+              </p>
+              <p className="mt-1 text-xs">Try again when the timer reaches 00:00</p>
+            </div>
+          )}
+
+          {attemptsRemaining !== null && secondsLeft === null && (
+            <div className="rounded-lg bg-amber-50 border border-amber-200 p-3 text-sm text-amber-800 text-center dark:bg-amber-950/30 dark:border-amber-800 dark:text-amber-400">
+              {attemptsRemaining === 1
+                ? "1 attempt remaining before your account is locked."
+                : `${attemptsRemaining} attempts remaining before your account is locked.`}
             </div>
           )}
 
@@ -129,7 +189,7 @@ export default function SignIn() {
 
             <Button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSubmitting || secondsLeft !== null}
               className="mt-2 h-11 w-full"
             >
               <LockClosedIcon className="h-4 w-4" />

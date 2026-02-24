@@ -53,6 +53,7 @@ enum AuditAction {
   login_success
   login_failure
   logout
+  account_locked
   record_viewed
   record_created
   record_updated
@@ -77,8 +78,10 @@ model User {
   VerifyCode      String?   @db.VarChar(6) // The 6-digit code
   VerifyExpires   DateTime? // When the code expires
   VerifyAttempts  Int       @default(0)
-  ResetToken    String?   // Password reset token (UUID)
-  ResetExpires  DateTime? // When the reset token expires
+  ResetToken      String?   // Password reset token (UUID)
+  ResetExpires    DateTime? // When the reset token expires
+  FailedAttempts  Int       @default(0)
+  LockedUntil     DateTime? // Non-null means account is locked until this time
   DoctorAppointments  Appointment[] @relation("DoctorAppointments")
   PatientAppointments Appointment[] @relation("PatientAppointments")
   DoctorRecords       MedicalRecord[] @relation("DoctorRecords")
