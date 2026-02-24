@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/session";
+import { writeAuditLog } from "@/lib/auditLog";
 
 export async function GET(request: NextRequest) {
   const user = await getSession();
@@ -32,6 +33,11 @@ export async function POST(request: NextRequest) {
   if (!user || user.Role !== "doctor") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
   }
+
+  const ip =
+    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+    request.headers.get("x-real-ip") ??
+    "unknown";
 
   const body = await request.json();
   const {
@@ -99,6 +105,13 @@ export async function POST(request: NextRequest) {
         select: { FirstName: true, LastName: true },
       },
     },
+  });
+
+  await writeAuditLog({
+    userId: user.UserID,
+    action: "prescription_created",
+    ipAddress: ip,
+    details: { prescriptionId: prescription.PrescriptionID, patientId },
   });
 
   return NextResponse.json({ prescription }, { status: 201 });

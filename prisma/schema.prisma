@@ -49,6 +49,19 @@ enum PrescriptionStatus {
   discontinued
 }
 
+enum AuditAction {
+  login_success
+  login_failure
+  logout
+  record_viewed
+  record_created
+  record_updated
+  prescription_created
+  prescription_updated
+  password_changed
+  role_changed
+}
+
 model User {
   UserID        String    @id @default(uuid())
   Email         String    @unique @db.VarChar(255)
@@ -72,6 +85,7 @@ model User {
   PatientRecords      MedicalRecord[] @relation("PatientRecords")
   DoctorPrescriptions   Prescription[] @relation("DoctorPrescriptions")
   PatientPrescriptions  Prescription[] @relation("PatientPrescriptions")
+  AuditLogs             AuditLog[]
 
   @@index([FirstName, CreatedAt(sort: Desc)])
   @@index([LastName, CreatedAt(sort: Desc)])
@@ -151,4 +165,18 @@ model Prescription {
 
   @@index([DoctorID, StartDate])
   @@index([PatientID, StartDate])
+}
+
+model AuditLog {
+  LogID     String      @id @default(uuid())
+  UserID    String?
+  User      User?       @relation(fields: [UserID], references: [UserID])
+  Action    AuditAction
+  IPAddress String      @db.VarChar(45)
+  Details   String?     @db.Text
+  CreatedAt DateTime    @default(now()) @db.Timestamp(6)
+
+  @@index([CreatedAt(sort: Desc)])
+  @@index([UserID, CreatedAt(sort: Desc)])
+  @@index([Action, CreatedAt(sort: Desc)])
 }

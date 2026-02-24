@@ -26,6 +26,7 @@ import {
   HomeIcon,
   CalendarDaysIcon,
   ClipboardDocumentListIcon,
+  ClipboardDocumentCheckIcon,
   DocumentTextIcon,
   BeakerIcon,
   UserGroupIcon,
@@ -59,6 +60,7 @@ const NAV_LINKS: Record<string, NavLink[]> = {
   admin: [
     { href: "/admin/dashboard", label: "Overview", icon: HomeIcon },
     { href: "/admin/dashboard/patients", label: "Patient List", icon: UserGroupIcon },
+    { href: "/admin/dashboard/audit-log", label: "Audit Log", icon: ClipboardDocumentCheckIcon },
     { href: "/admin/dashboard/settings", label: "Settings", icon: Cog6ToothIcon },
   ],
 };

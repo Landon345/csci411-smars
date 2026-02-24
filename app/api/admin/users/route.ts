@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/session";
+import { writeAuditLog } from "@/lib/auditLog";
 
 export async function GET() {
   const user = await getSession();
@@ -29,6 +30,11 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
   }
 
+  const ip =
+    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+    request.headers.get("x-real-ip") ??
+    "unknown";
+
   const { userId, newRole } = await request.json();
 
   const validRoles = ["patient", "doctor", "admin"];
@@ -43,6 +49,13 @@ export async function PATCH(request: NextRequest) {
   await prisma.user.update({
     where: { UserID: userId },
     data: { Role: newRole },
+  });
+
+  await writeAuditLog({
+    userId: user.UserID,
+    action: "role_changed",
+    ipAddress: ip,
+    details: { targetUserId: userId, newRole },
   });
 
   return NextResponse.json({ success: true });
