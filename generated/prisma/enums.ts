@@ -58,3 +58,19 @@ export const PrescriptionStatus = {
 } as const
 
 export type PrescriptionStatus = (typeof PrescriptionStatus)[keyof typeof PrescriptionStatus]
+
+
+export const AuditAction = {
+  login_success: 'login_success',
+  login_failure: 'login_failure',
+  logout: 'logout',
+  record_viewed: 'record_viewed',
+  record_created: 'record_created',
+  record_updated: 'record_updated',
+  prescription_created: 'prescription_created',
+  prescription_updated: 'prescription_updated',
+  password_changed: 'password_changed',
+  role_changed: 'role_changed'
+} as const
+
+export type AuditAction = (typeof AuditAction)[keyof typeof AuditAction]

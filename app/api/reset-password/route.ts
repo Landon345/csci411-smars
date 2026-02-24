@@ -1,8 +1,14 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
+import { writeAuditLog } from "@/lib/auditLog";
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
+  const ip =
+    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+    request.headers.get("x-real-ip") ??
+    "unknown";
+
   try {
     const { token, password } = await request.json();
 
@@ -43,6 +49,8 @@ export async function POST(request: Request) {
         ResetExpires: null,
       },
     });
+
+    await writeAuditLog({ userId: user.UserID, action: "password_changed", ipAddress: ip });
 
     // Clear the auth cookie on the response
     const response = NextResponse.json(

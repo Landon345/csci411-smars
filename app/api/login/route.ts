@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import { login } from "@/lib/auth";
 import { rateLimit } from "@/lib/rateLimit";
 import { Resend } from "resend";
+import { writeAuditLog } from "@/lib/auditLog";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -29,6 +30,7 @@ export async function POST(request: NextRequest) {
           { status: 429 },
         );
       }
+      await writeAuditLog({ action: "login_failure", ipAddress: ip, details: { email } });
       return NextResponse.json(
         { error: "Invalid credentials" },
         { status: 401 },
@@ -44,6 +46,7 @@ export async function POST(request: NextRequest) {
           { status: 429 },
         );
       }
+      await writeAuditLog({ action: "login_failure", ipAddress: ip, details: { email } });
       return NextResponse.json(
         { error: "Invalid credentials" },
         { status: 401 },
@@ -108,6 +111,8 @@ export async function POST(request: NextRequest) {
       Role: user.Role as "patient" | "doctor" | "admin",
       emailVerified: true,
     });
+
+    await writeAuditLog({ userId: user.UserID, action: "login_success", ipAddress: ip });
 
     return NextResponse.json({ success: true });
   } catch {

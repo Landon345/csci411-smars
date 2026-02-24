@@ -1,12 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/session";
+import { writeAuditLog } from "@/lib/auditLog";
 
 export async function GET(request: NextRequest) {
   const user = await getSession();
   if (!user || user.Role !== "doctor") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
   }
+
+  const ip =
+    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+    request.headers.get("x-real-ip") ??
+    "unknown";
 
   const { searchParams } = new URL(request.url);
   const patientId = searchParams.get("patientId");
@@ -24,6 +30,13 @@ export async function GET(request: NextRequest) {
     orderBy: { VisitDate: "desc" },
   });
 
+  await writeAuditLog({
+    userId: user.UserID,
+    action: "record_viewed",
+    ipAddress: ip,
+    details: { patientId: patientId ?? "all" },
+  });
+
   return NextResponse.json({ records });
 }
 
@@ -32,6 +45,11 @@ export async function POST(request: NextRequest) {
   if (!user || user.Role !== "doctor") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
   }
+
+  const ip =
+    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+    request.headers.get("x-real-ip") ??
+    "unknown";
 
   const body = await request.json();
   const {
@@ -107,6 +125,13 @@ export async function POST(request: NextRequest) {
         select: { FirstName: true, LastName: true },
       },
     },
+  });
+
+  await writeAuditLog({
+    userId: user.UserID,
+    action: "record_created",
+    ipAddress: ip,
+    details: { recordId: record.RecordID, patientId },
   });
 
   return NextResponse.json({ record }, { status: 201 });

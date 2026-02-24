@@ -54,7 +54,8 @@ export const ModelName = {
   User: 'User',
   Appointment: 'Appointment',
   MedicalRecord: 'MedicalRecord',
-  Prescription: 'Prescription'
+  Prescription: 'Prescription',
+  AuditLog: 'AuditLog'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -160,6 +161,18 @@ export const PrescriptionScalarFieldEnum = {
 } as const
 
 export type PrescriptionScalarFieldEnum = (typeof PrescriptionScalarFieldEnum)[keyof typeof PrescriptionScalarFieldEnum]
+
+
+export const AuditLogScalarFieldEnum = {
+  LogID: 'LogID',
+  UserID: 'UserID',
+  Action: 'Action',
+  IPAddress: 'IPAddress',
+  Details: 'Details',
+  CreatedAt: 'CreatedAt'
+} as const
+
+export type AuditLogScalarFieldEnum = (typeof AuditLogScalarFieldEnum)[keyof typeof AuditLogScalarFieldEnum]
 
 
 export const SortOrder = {

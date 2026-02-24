@@ -3,6 +3,7 @@ import { getSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import AdminUserManagement from "./AdminUserManagement";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import {
   UsersIcon,
   UserGroupIcon,
@@ -14,8 +15,17 @@ export default async function AdminDashboard() {
   const user = await getSession();
   if (!user) redirect("/login");
 
-  const totalUsers = await prisma.user.count();
-  const patientCount = await prisma.user.count({ where: { Role: "patient" } });
+  const [totalUsers, patientCount, recentActivity] = await Promise.all([
+    prisma.user.count(),
+    prisma.user.count({ where: { Role: "patient" } }),
+    prisma.auditLog.findMany({
+      include: {
+        User: { select: { Email: true } },
+      },
+      orderBy: { CreatedAt: "desc" },
+      take: 5,
+    }),
+  ]);
 
   return (
     <>
@@ -80,8 +90,30 @@ export default async function AdminDashboard() {
             Recent Activity
           </CardTitle>
         </CardHeader>
-        <CardContent className="py-8 text-center text-muted-foreground text-sm">
-          No recent records to display.
+        <CardContent className="py-2">
+          {recentActivity.length === 0 ? (
+            <p className="py-6 text-center text-muted-foreground text-sm">
+              No recent records to display.
+            </p>
+          ) : (
+            <ul className="divide-y">
+              {recentActivity.map((entry) => (
+                <li key={entry.LogID} className="flex items-center justify-between gap-4 py-3">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <Badge variant="secondary" className="shrink-0 font-mono text-xs">
+                      {entry.Action.replace(/_/g, " ")}
+                    </Badge>
+                    <span className="text-sm text-muted-foreground truncate">
+                      {entry.User?.Email ?? "unknown"}
+                    </span>
+                  </div>
+                  <span className="text-xs text-muted-foreground whitespace-nowrap">
+                    {new Date(entry.CreatedAt).toLocaleString()}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
         </CardContent>
       </Card>
     </>

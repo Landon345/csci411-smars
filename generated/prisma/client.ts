@@ -59,3 +59,8 @@ export type MedicalRecord = Prisma.MedicalRecordModel
  * 
  */
 export type Prescription = Prisma.PrescriptionModel
+/**
+ * Model AuditLog
+ * 
+ */
+export type AuditLog = Prisma.AuditLogModel
