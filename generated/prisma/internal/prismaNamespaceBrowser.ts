@@ -90,7 +90,9 @@ export const UserScalarFieldEnum = {
   VerifyExpires: 'VerifyExpires',
   VerifyAttempts: 'VerifyAttempts',
   ResetToken: 'ResetToken',
-  ResetExpires: 'ResetExpires'
+  ResetExpires: 'ResetExpires',
+  FailedAttempts: 'FailedAttempts',
+  LockedUntil: 'LockedUntil'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]

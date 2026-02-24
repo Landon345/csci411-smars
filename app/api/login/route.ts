@@ -2,11 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { login } from "@/lib/auth";
-import { rateLimit } from "@/lib/rateLimit";
 import { Resend } from "resend";
 import { writeAuditLog } from "@/lib/auditLog";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
+
+const MAX_FAILED_ATTEMPTS = 15;
+const LOCKOUT_MINUTES = 10;
 
 export async function POST(request: NextRequest) {
   const ip =
@@ -23,13 +25,6 @@ export async function POST(request: NextRequest) {
     });
 
     if (!user || !user.Password) {
-      // Count this as a failed attempt for rate limiting
-      if (!rateLimit(ip, "login", 5, 60 * 1000)) {
-        return NextResponse.json(
-          { error: "Too many failed login attempts. Try again in a minute." },
-          { status: 429 },
-        );
-      }
       await writeAuditLog({ action: "login_failure", ipAddress: ip, details: { email } });
       return NextResponse.json(
         { error: "Invalid credentials" },
@@ -37,23 +32,98 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 2. Check password
+    // 2. Check account lockout
+    if (user.LockedUntil && user.LockedUntil > new Date()) {
+      const minutesLeft = Math.ceil(
+        (user.LockedUntil.getTime() - Date.now()) / 60_000,
+      );
+      return NextResponse.json(
+        {
+          error: `Account locked. Try again in ${minutesLeft} minute${minutesLeft === 1 ? "" : "s"}.`,
+          lockedUntil: user.LockedUntil!.toISOString(),
+        },
+        { status: 423 },
+      );
+    }
+
+    // 3. Check password
     const isMatch = await bcrypt.compare(password, user.Password);
     if (!isMatch) {
-      if (!rateLimit(ip, "login", 5, 60 * 1000)) {
+      const newFailedAttempts = user.FailedAttempts + 1;
+
+      if (newFailedAttempts >= MAX_FAILED_ATTEMPTS) {
+        const lockedUntil = new Date(Date.now() + LOCKOUT_MINUTES * 60_000);
+
+        await prisma.user.update({
+          where: { UserID: user.UserID },
+          data: { FailedAttempts: 0, LockedUntil: lockedUntil },
+        });
+
+        await writeAuditLog({
+          userId: user.UserID,
+          action: "account_locked",
+          ipAddress: ip,
+          details: { reason: `${MAX_FAILED_ATTEMPTS} failed login attempts` },
+        });
+
+        if (process.env.NODE_ENV === "production") {
+          await resend.emails.send({
+            from: "Smars <onboarding@resend.dev>",
+            to: user.Email,
+            subject: "Your SMARS account has been locked",
+            html: `
+              <div style="font-family: sans-serif; padding: 20px;">
+                <h1>Account Locked</h1>
+                <p>Hi ${user.FirstName},</p>
+                <p>Your account has been temporarily locked after ${MAX_FAILED_ATTEMPTS} failed login attempts.</p>
+                <p>You can try again in <strong>${LOCKOUT_MINUTES} minutes</strong>.</p>
+                <p>If this wasn't you, please contact support immediately.</p>
+              </div>
+            `,
+          });
+        } else {
+          console.log("--- DEVELOPMENT MODE: ACCOUNT LOCKED EMAIL ---");
+          console.log(`Account locked for ${user.Email} until ${lockedUntil.toISOString()}`);
+          console.log("----------------------------------------------");
+        }
+
         return NextResponse.json(
-          { error: "Too many failed login attempts. Try again in a minute." },
-          { status: 429 },
+          {
+            error: `Account locked after ${MAX_FAILED_ATTEMPTS} failed attempts. Try again in ${LOCKOUT_MINUTES} minutes.`,
+            lockedUntil: lockedUntil.toISOString(),
+          },
+          { status: 423 },
         );
       }
-      await writeAuditLog({ action: "login_failure", ipAddress: ip, details: { email } });
-      return NextResponse.json(
-        { error: "Invalid credentials" },
-        { status: 401 },
-      );
+
+      await prisma.user.update({
+        where: { UserID: user.UserID },
+        data: { FailedAttempts: newFailedAttempts },
+      });
+
+      await writeAuditLog({
+        userId: user.UserID,
+        action: "login_failure",
+        ipAddress: ip,
+        details: { email, failedAttempts: newFailedAttempts },
+      });
+
+      const remaining = MAX_FAILED_ATTEMPTS - newFailedAttempts;
+      const body: { error: string; attemptsRemaining?: number } = {
+        error: "Invalid credentials",
+      };
+      if (remaining <= 5) body.attemptsRemaining = remaining;
+
+      return NextResponse.json(body, { status: 401 });
     }
 
-    // 3. If email is not verified, issue a partial JWT and send a fresh OTP
+    // 4. Successful auth — reset lockout counters
+    await prisma.user.update({
+      where: { UserID: user.UserID },
+      data: { FailedAttempts: 0, LockedUntil: null },
+    });
+
+    // 5. If email is not verified, issue a partial JWT and send a fresh OTP
     if (!user.EmailVerified) {
       const verifyCode = Math.floor(100000 + Math.random() * 900000).toString();
       const verifyExpires = new Date(Date.now() + 15 * 60 * 1000);
@@ -102,7 +172,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: true });
     }
 
-    // 4. Fully verified — issue a full session
+    // 6. Fully verified — issue a full session
     await login({
       UserID: user.UserID,
       Email: user.Email,

@@ -28,10 +28,12 @@ export type AggregateUser = {
 
 export type UserAvgAggregateOutputType = {
   VerifyAttempts: number | null
+  FailedAttempts: number | null
 }
 
 export type UserSumAggregateOutputType = {
   VerifyAttempts: number | null
+  FailedAttempts: number | null
 }
 
 export type UserMinAggregateOutputType = {
@@ -51,6 +53,8 @@ export type UserMinAggregateOutputType = {
   VerifyAttempts: number | null
   ResetToken: string | null
   ResetExpires: Date | null
+  FailedAttempts: number | null
+  LockedUntil: Date | null
 }
 
 export type UserMaxAggregateOutputType = {
@@ -70,6 +74,8 @@ export type UserMaxAggregateOutputType = {
   VerifyAttempts: number | null
   ResetToken: string | null
   ResetExpires: Date | null
+  FailedAttempts: number | null
+  LockedUntil: Date | null
 }
 
 export type UserCountAggregateOutputType = {
@@ -89,16 +95,20 @@ export type UserCountAggregateOutputType = {
   VerifyAttempts: number
   ResetToken: number
   ResetExpires: number
+  FailedAttempts: number
+  LockedUntil: number
   _all: number
 }
 
 
 export type UserAvgAggregateInputType = {
   VerifyAttempts?: true
+  FailedAttempts?: true
 }
 
 export type UserSumAggregateInputType = {
   VerifyAttempts?: true
+  FailedAttempts?: true
 }
 
 export type UserMinAggregateInputType = {
@@ -118,6 +128,8 @@ export type UserMinAggregateInputType = {
   VerifyAttempts?: true
   ResetToken?: true
   ResetExpires?: true
+  FailedAttempts?: true
+  LockedUntil?: true
 }
 
 export type UserMaxAggregateInputType = {
@@ -137,6 +149,8 @@ export type UserMaxAggregateInputType = {
   VerifyAttempts?: true
   ResetToken?: true
   ResetExpires?: true
+  FailedAttempts?: true
+  LockedUntil?: true
 }
 
 export type UserCountAggregateInputType = {
@@ -156,6 +170,8 @@ export type UserCountAggregateInputType = {
   VerifyAttempts?: true
   ResetToken?: true
   ResetExpires?: true
+  FailedAttempts?: true
+  LockedUntil?: true
   _all?: true
 }
 
@@ -262,6 +278,8 @@ export type UserGroupByOutputType = {
   VerifyAttempts: number
   ResetToken: string | null
   ResetExpires: Date | null
+  FailedAttempts: number
+  LockedUntil: Date | null
   _count: UserCountAggregateOutputType | null
   _avg: UserAvgAggregateOutputType | null
   _sum: UserSumAggregateOutputType | null
@@ -304,6 +322,8 @@ export type UserWhereInput = {
   VerifyAttempts?: Prisma.IntFilter<"User"> | number
   ResetToken?: Prisma.StringNullableFilter<"User"> | string | null
   ResetExpires?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  FailedAttempts?: Prisma.IntFilter<"User"> | number
+  LockedUntil?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   DoctorAppointments?: Prisma.AppointmentListRelationFilter
   PatientAppointments?: Prisma.AppointmentListRelationFilter
   DoctorRecords?: Prisma.MedicalRecordListRelationFilter
@@ -330,6 +350,8 @@ export type UserOrderByWithRelationInput = {
   VerifyAttempts?: Prisma.SortOrder
   ResetToken?: Prisma.SortOrderInput | Prisma.SortOrder
   ResetExpires?: Prisma.SortOrderInput | Prisma.SortOrder
+  FailedAttempts?: Prisma.SortOrder
+  LockedUntil?: Prisma.SortOrderInput | Prisma.SortOrder
   DoctorAppointments?: Prisma.AppointmentOrderByRelationAggregateInput
   PatientAppointments?: Prisma.AppointmentOrderByRelationAggregateInput
   DoctorRecords?: Prisma.MedicalRecordOrderByRelationAggregateInput
@@ -359,6 +381,8 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   VerifyAttempts?: Prisma.IntFilter<"User"> | number
   ResetToken?: Prisma.StringNullableFilter<"User"> | string | null
   ResetExpires?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  FailedAttempts?: Prisma.IntFilter<"User"> | number
+  LockedUntil?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   DoctorAppointments?: Prisma.AppointmentListRelationFilter
   PatientAppointments?: Prisma.AppointmentListRelationFilter
   DoctorRecords?: Prisma.MedicalRecordListRelationFilter
@@ -385,6 +409,8 @@ export type UserOrderByWithAggregationInput = {
   VerifyAttempts?: Prisma.SortOrder
   ResetToken?: Prisma.SortOrderInput | Prisma.SortOrder
   ResetExpires?: Prisma.SortOrderInput | Prisma.SortOrder
+  FailedAttempts?: Prisma.SortOrder
+  LockedUntil?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
   _avg?: Prisma.UserAvgOrderByAggregateInput
   _max?: Prisma.UserMaxOrderByAggregateInput
@@ -412,6 +438,8 @@ export type UserScalarWhereWithAggregatesInput = {
   VerifyAttempts?: Prisma.IntWithAggregatesFilter<"User"> | number
   ResetToken?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   ResetExpires?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
+  FailedAttempts?: Prisma.IntWithAggregatesFilter<"User"> | number
+  LockedUntil?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
 }
 
 export type UserCreateInput = {
@@ -431,6 +459,8 @@ export type UserCreateInput = {
   VerifyAttempts?: number
   ResetToken?: string | null
   ResetExpires?: Date | string | null
+  FailedAttempts?: number
+  LockedUntil?: Date | string | null
   DoctorAppointments?: Prisma.AppointmentCreateNestedManyWithoutDoctorInput
   PatientAppointments?: Prisma.AppointmentCreateNestedManyWithoutPatientInput
   DoctorRecords?: Prisma.MedicalRecordCreateNestedManyWithoutDoctorInput
@@ -457,6 +487,8 @@ export type UserUncheckedCreateInput = {
   VerifyAttempts?: number
   ResetToken?: string | null
   ResetExpires?: Date | string | null
+  FailedAttempts?: number
+  LockedUntil?: Date | string | null
   DoctorAppointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutDoctorInput
   PatientAppointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutPatientInput
   DoctorRecords?: Prisma.MedicalRecordUncheckedCreateNestedManyWithoutDoctorInput
@@ -483,6 +515,8 @@ export type UserUpdateInput = {
   VerifyAttempts?: Prisma.IntFieldUpdateOperationsInput | number
   ResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  FailedAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  LockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   DoctorAppointments?: Prisma.AppointmentUpdateManyWithoutDoctorNestedInput
   PatientAppointments?: Prisma.AppointmentUpdateManyWithoutPatientNestedInput
   DoctorRecords?: Prisma.MedicalRecordUpdateManyWithoutDoctorNestedInput
@@ -509,6 +543,8 @@ export type UserUncheckedUpdateInput = {
   VerifyAttempts?: Prisma.IntFieldUpdateOperationsInput | number
   ResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  FailedAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  LockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   DoctorAppointments?: Prisma.AppointmentUncheckedUpdateManyWithoutDoctorNestedInput
   PatientAppointments?: Prisma.AppointmentUncheckedUpdateManyWithoutPatientNestedInput
   DoctorRecords?: Prisma.MedicalRecordUncheckedUpdateManyWithoutDoctorNestedInput
@@ -535,6 +571,8 @@ export type UserCreateManyInput = {
   VerifyAttempts?: number
   ResetToken?: string | null
   ResetExpires?: Date | string | null
+  FailedAttempts?: number
+  LockedUntil?: Date | string | null
 }
 
 export type UserUpdateManyMutationInput = {
@@ -554,6 +592,8 @@ export type UserUpdateManyMutationInput = {
   VerifyAttempts?: Prisma.IntFieldUpdateOperationsInput | number
   ResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  FailedAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  LockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type UserUncheckedUpdateManyInput = {
@@ -573,6 +613,8 @@ export type UserUncheckedUpdateManyInput = {
   VerifyAttempts?: Prisma.IntFieldUpdateOperationsInput | number
   ResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  FailedAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  LockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type UserCountOrderByAggregateInput = {
@@ -592,10 +634,13 @@ export type UserCountOrderByAggregateInput = {
   VerifyAttempts?: Prisma.SortOrder
   ResetToken?: Prisma.SortOrder
   ResetExpires?: Prisma.SortOrder
+  FailedAttempts?: Prisma.SortOrder
+  LockedUntil?: Prisma.SortOrder
 }
 
 export type UserAvgOrderByAggregateInput = {
   VerifyAttempts?: Prisma.SortOrder
+  FailedAttempts?: Prisma.SortOrder
 }
 
 export type UserMaxOrderByAggregateInput = {
@@ -615,6 +660,8 @@ export type UserMaxOrderByAggregateInput = {
   VerifyAttempts?: Prisma.SortOrder
   ResetToken?: Prisma.SortOrder
   ResetExpires?: Prisma.SortOrder
+  FailedAttempts?: Prisma.SortOrder
+  LockedUntil?: Prisma.SortOrder
 }
 
 export type UserMinOrderByAggregateInput = {
@@ -634,10 +681,13 @@ export type UserMinOrderByAggregateInput = {
   VerifyAttempts?: Prisma.SortOrder
   ResetToken?: Prisma.SortOrder
   ResetExpires?: Prisma.SortOrder
+  FailedAttempts?: Prisma.SortOrder
+  LockedUntil?: Prisma.SortOrder
 }
 
 export type UserSumOrderByAggregateInput = {
   VerifyAttempts?: Prisma.SortOrder
+  FailedAttempts?: Prisma.SortOrder
 }
 
 export type UserScalarRelationFilter = {
@@ -795,6 +845,8 @@ export type UserCreateWithoutDoctorAppointmentsInput = {
   VerifyAttempts?: number
   ResetToken?: string | null
   ResetExpires?: Date | string | null
+  FailedAttempts?: number
+  LockedUntil?: Date | string | null
   PatientAppointments?: Prisma.AppointmentCreateNestedManyWithoutPatientInput
   DoctorRecords?: Prisma.MedicalRecordCreateNestedManyWithoutDoctorInput
   PatientRecords?: Prisma.MedicalRecordCreateNestedManyWithoutPatientInput
@@ -820,6 +872,8 @@ export type UserUncheckedCreateWithoutDoctorAppointmentsInput = {
   VerifyAttempts?: number
   ResetToken?: string | null
   ResetExpires?: Date | string | null
+  FailedAttempts?: number
+  LockedUntil?: Date | string | null
   PatientAppointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutPatientInput
   DoctorRecords?: Prisma.MedicalRecordUncheckedCreateNestedManyWithoutDoctorInput
   PatientRecords?: Prisma.MedicalRecordUncheckedCreateNestedManyWithoutPatientInput
@@ -850,6 +904,8 @@ export type UserCreateWithoutPatientAppointmentsInput = {
   VerifyAttempts?: number
   ResetToken?: string | null
   ResetExpires?: Date | string | null
+  FailedAttempts?: number
+  LockedUntil?: Date | string | null
   DoctorAppointments?: Prisma.AppointmentCreateNestedManyWithoutDoctorInput
   DoctorRecords?: Prisma.MedicalRecordCreateNestedManyWithoutDoctorInput
   PatientRecords?: Prisma.MedicalRecordCreateNestedManyWithoutPatientInput
@@ -875,6 +931,8 @@ export type UserUncheckedCreateWithoutPatientAppointmentsInput = {
   VerifyAttempts?: number
   ResetToken?: string | null
   ResetExpires?: Date | string | null
+  FailedAttempts?: number
+  LockedUntil?: Date | string | null
   DoctorAppointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutDoctorInput
   DoctorRecords?: Prisma.MedicalRecordUncheckedCreateNestedManyWithoutDoctorInput
   PatientRecords?: Prisma.MedicalRecordUncheckedCreateNestedManyWithoutPatientInput
@@ -916,6 +974,8 @@ export type UserUpdateWithoutDoctorAppointmentsInput = {
   VerifyAttempts?: Prisma.IntFieldUpdateOperationsInput | number
   ResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  FailedAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  LockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   PatientAppointments?: Prisma.AppointmentUpdateManyWithoutPatientNestedInput
   DoctorRecords?: Prisma.MedicalRecordUpdateManyWithoutDoctorNestedInput
   PatientRecords?: Prisma.MedicalRecordUpdateManyWithoutPatientNestedInput
@@ -941,6 +1001,8 @@ export type UserUncheckedUpdateWithoutDoctorAppointmentsInput = {
   VerifyAttempts?: Prisma.IntFieldUpdateOperationsInput | number
   ResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  FailedAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  LockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   PatientAppointments?: Prisma.AppointmentUncheckedUpdateManyWithoutPatientNestedInput
   DoctorRecords?: Prisma.MedicalRecordUncheckedUpdateManyWithoutDoctorNestedInput
   PatientRecords?: Prisma.MedicalRecordUncheckedUpdateManyWithoutPatientNestedInput
@@ -977,6 +1039,8 @@ export type UserUpdateWithoutPatientAppointmentsInput = {
   VerifyAttempts?: Prisma.IntFieldUpdateOperationsInput | number
   ResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  FailedAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  LockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   DoctorAppointments?: Prisma.AppointmentUpdateManyWithoutDoctorNestedInput
   DoctorRecords?: Prisma.MedicalRecordUpdateManyWithoutDoctorNestedInput
   PatientRecords?: Prisma.MedicalRecordUpdateManyWithoutPatientNestedInput
@@ -1002,6 +1066,8 @@ export type UserUncheckedUpdateWithoutPatientAppointmentsInput = {
   VerifyAttempts?: Prisma.IntFieldUpdateOperationsInput | number
   ResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  FailedAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  LockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   DoctorAppointments?: Prisma.AppointmentUncheckedUpdateManyWithoutDoctorNestedInput
   DoctorRecords?: Prisma.MedicalRecordUncheckedUpdateManyWithoutDoctorNestedInput
   PatientRecords?: Prisma.MedicalRecordUncheckedUpdateManyWithoutPatientNestedInput
@@ -1027,6 +1093,8 @@ export type UserCreateWithoutDoctorRecordsInput = {
   VerifyAttempts?: number
   ResetToken?: string | null
   ResetExpires?: Date | string | null
+  FailedAttempts?: number
+  LockedUntil?: Date | string | null
   DoctorAppointments?: Prisma.AppointmentCreateNestedManyWithoutDoctorInput
   PatientAppointments?: Prisma.AppointmentCreateNestedManyWithoutPatientInput
   PatientRecords?: Prisma.MedicalRecordCreateNestedManyWithoutPatientInput
@@ -1052,6 +1120,8 @@ export type UserUncheckedCreateWithoutDoctorRecordsInput = {
   VerifyAttempts?: number
   ResetToken?: string | null
   ResetExpires?: Date | string | null
+  FailedAttempts?: number
+  LockedUntil?: Date | string | null
   DoctorAppointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutDoctorInput
   PatientAppointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutPatientInput
   PatientRecords?: Prisma.MedicalRecordUncheckedCreateNestedManyWithoutPatientInput
@@ -1082,6 +1152,8 @@ export type UserCreateWithoutPatientRecordsInput = {
   VerifyAttempts?: number
   ResetToken?: string | null
   ResetExpires?: Date | string | null
+  FailedAttempts?: number
+  LockedUntil?: Date | string | null
   DoctorAppointments?: Prisma.AppointmentCreateNestedManyWithoutDoctorInput
   PatientAppointments?: Prisma.AppointmentCreateNestedManyWithoutPatientInput
   DoctorRecords?: Prisma.MedicalRecordCreateNestedManyWithoutDoctorInput
@@ -1107,6 +1179,8 @@ export type UserUncheckedCreateWithoutPatientRecordsInput = {
   VerifyAttempts?: number
   ResetToken?: string | null
   ResetExpires?: Date | string | null
+  FailedAttempts?: number
+  LockedUntil?: Date | string | null
   DoctorAppointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutDoctorInput
   PatientAppointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutPatientInput
   DoctorRecords?: Prisma.MedicalRecordUncheckedCreateNestedManyWithoutDoctorInput
@@ -1148,6 +1222,8 @@ export type UserUpdateWithoutDoctorRecordsInput = {
   VerifyAttempts?: Prisma.IntFieldUpdateOperationsInput | number
   ResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  FailedAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  LockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   DoctorAppointments?: Prisma.AppointmentUpdateManyWithoutDoctorNestedInput
   PatientAppointments?: Prisma.AppointmentUpdateManyWithoutPatientNestedInput
   PatientRecords?: Prisma.MedicalRecordUpdateManyWithoutPatientNestedInput
@@ -1173,6 +1249,8 @@ export type UserUncheckedUpdateWithoutDoctorRecordsInput = {
   VerifyAttempts?: Prisma.IntFieldUpdateOperationsInput | number
   ResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  FailedAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  LockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   DoctorAppointments?: Prisma.AppointmentUncheckedUpdateManyWithoutDoctorNestedInput
   PatientAppointments?: Prisma.AppointmentUncheckedUpdateManyWithoutPatientNestedInput
   PatientRecords?: Prisma.MedicalRecordUncheckedUpdateManyWithoutPatientNestedInput
@@ -1209,6 +1287,8 @@ export type UserUpdateWithoutPatientRecordsInput = {
   VerifyAttempts?: Prisma.IntFieldUpdateOperationsInput | number
   ResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  FailedAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  LockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   DoctorAppointments?: Prisma.AppointmentUpdateManyWithoutDoctorNestedInput
   PatientAppointments?: Prisma.AppointmentUpdateManyWithoutPatientNestedInput
   DoctorRecords?: Prisma.MedicalRecordUpdateManyWithoutDoctorNestedInput
@@ -1234,6 +1314,8 @@ export type UserUncheckedUpdateWithoutPatientRecordsInput = {
   VerifyAttempts?: Prisma.IntFieldUpdateOperationsInput | number
   ResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  FailedAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  LockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   DoctorAppointments?: Prisma.AppointmentUncheckedUpdateManyWithoutDoctorNestedInput
   PatientAppointments?: Prisma.AppointmentUncheckedUpdateManyWithoutPatientNestedInput
   DoctorRecords?: Prisma.MedicalRecordUncheckedUpdateManyWithoutDoctorNestedInput
@@ -1259,6 +1341,8 @@ export type UserCreateWithoutDoctorPrescriptionsInput = {
   VerifyAttempts?: number
   ResetToken?: string | null
   ResetExpires?: Date | string | null
+  FailedAttempts?: number
+  LockedUntil?: Date | string | null
   DoctorAppointments?: Prisma.AppointmentCreateNestedManyWithoutDoctorInput
   PatientAppointments?: Prisma.AppointmentCreateNestedManyWithoutPatientInput
   DoctorRecords?: Prisma.MedicalRecordCreateNestedManyWithoutDoctorInput
@@ -1284,6 +1368,8 @@ export type UserUncheckedCreateWithoutDoctorPrescriptionsInput = {
   VerifyAttempts?: number
   ResetToken?: string | null
   ResetExpires?: Date | string | null
+  FailedAttempts?: number
+  LockedUntil?: Date | string | null
   DoctorAppointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutDoctorInput
   PatientAppointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutPatientInput
   DoctorRecords?: Prisma.MedicalRecordUncheckedCreateNestedManyWithoutDoctorInput
@@ -1314,6 +1400,8 @@ export type UserCreateWithoutPatientPrescriptionsInput = {
   VerifyAttempts?: number
   ResetToken?: string | null
   ResetExpires?: Date | string | null
+  FailedAttempts?: number
+  LockedUntil?: Date | string | null
   DoctorAppointments?: Prisma.AppointmentCreateNestedManyWithoutDoctorInput
   PatientAppointments?: Prisma.AppointmentCreateNestedManyWithoutPatientInput
   DoctorRecords?: Prisma.MedicalRecordCreateNestedManyWithoutDoctorInput
@@ -1339,6 +1427,8 @@ export type UserUncheckedCreateWithoutPatientPrescriptionsInput = {
   VerifyAttempts?: number
   ResetToken?: string | null
   ResetExpires?: Date | string | null
+  FailedAttempts?: number
+  LockedUntil?: Date | string | null
   DoctorAppointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutDoctorInput
   PatientAppointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutPatientInput
   DoctorRecords?: Prisma.MedicalRecordUncheckedCreateNestedManyWithoutDoctorInput
@@ -1380,6 +1470,8 @@ export type UserUpdateWithoutDoctorPrescriptionsInput = {
   VerifyAttempts?: Prisma.IntFieldUpdateOperationsInput | number
   ResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  FailedAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  LockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   DoctorAppointments?: Prisma.AppointmentUpdateManyWithoutDoctorNestedInput
   PatientAppointments?: Prisma.AppointmentUpdateManyWithoutPatientNestedInput
   DoctorRecords?: Prisma.MedicalRecordUpdateManyWithoutDoctorNestedInput
@@ -1405,6 +1497,8 @@ export type UserUncheckedUpdateWithoutDoctorPrescriptionsInput = {
   VerifyAttempts?: Prisma.IntFieldUpdateOperationsInput | number
   ResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  FailedAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  LockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   DoctorAppointments?: Prisma.AppointmentUncheckedUpdateManyWithoutDoctorNestedInput
   PatientAppointments?: Prisma.AppointmentUncheckedUpdateManyWithoutPatientNestedInput
   DoctorRecords?: Prisma.MedicalRecordUncheckedUpdateManyWithoutDoctorNestedInput
@@ -1441,6 +1535,8 @@ export type UserUpdateWithoutPatientPrescriptionsInput = {
   VerifyAttempts?: Prisma.IntFieldUpdateOperationsInput | number
   ResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  FailedAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  LockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   DoctorAppointments?: Prisma.AppointmentUpdateManyWithoutDoctorNestedInput
   PatientAppointments?: Prisma.AppointmentUpdateManyWithoutPatientNestedInput
   DoctorRecords?: Prisma.MedicalRecordUpdateManyWithoutDoctorNestedInput
@@ -1466,6 +1562,8 @@ export type UserUncheckedUpdateWithoutPatientPrescriptionsInput = {
   VerifyAttempts?: Prisma.IntFieldUpdateOperationsInput | number
   ResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  FailedAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  LockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   DoctorAppointments?: Prisma.AppointmentUncheckedUpdateManyWithoutDoctorNestedInput
   PatientAppointments?: Prisma.AppointmentUncheckedUpdateManyWithoutPatientNestedInput
   DoctorRecords?: Prisma.MedicalRecordUncheckedUpdateManyWithoutDoctorNestedInput
@@ -1491,6 +1589,8 @@ export type UserCreateWithoutAuditLogsInput = {
   VerifyAttempts?: number
   ResetToken?: string | null
   ResetExpires?: Date | string | null
+  FailedAttempts?: number
+  LockedUntil?: Date | string | null
   DoctorAppointments?: Prisma.AppointmentCreateNestedManyWithoutDoctorInput
   PatientAppointments?: Prisma.AppointmentCreateNestedManyWithoutPatientInput
   DoctorRecords?: Prisma.MedicalRecordCreateNestedManyWithoutDoctorInput
@@ -1516,6 +1616,8 @@ export type UserUncheckedCreateWithoutAuditLogsInput = {
   VerifyAttempts?: number
   ResetToken?: string | null
   ResetExpires?: Date | string | null
+  FailedAttempts?: number
+  LockedUntil?: Date | string | null
   DoctorAppointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutDoctorInput
   PatientAppointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutPatientInput
   DoctorRecords?: Prisma.MedicalRecordUncheckedCreateNestedManyWithoutDoctorInput
@@ -1557,6 +1659,8 @@ export type UserUpdateWithoutAuditLogsInput = {
   VerifyAttempts?: Prisma.IntFieldUpdateOperationsInput | number
   ResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  FailedAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  LockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   DoctorAppointments?: Prisma.AppointmentUpdateManyWithoutDoctorNestedInput
   PatientAppointments?: Prisma.AppointmentUpdateManyWithoutPatientNestedInput
   DoctorRecords?: Prisma.MedicalRecordUpdateManyWithoutDoctorNestedInput
@@ -1582,6 +1686,8 @@ export type UserUncheckedUpdateWithoutAuditLogsInput = {
   VerifyAttempts?: Prisma.IntFieldUpdateOperationsInput | number
   ResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  FailedAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  LockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   DoctorAppointments?: Prisma.AppointmentUncheckedUpdateManyWithoutDoctorNestedInput
   PatientAppointments?: Prisma.AppointmentUncheckedUpdateManyWithoutPatientNestedInput
   DoctorRecords?: Prisma.MedicalRecordUncheckedUpdateManyWithoutDoctorNestedInput
@@ -1692,6 +1798,8 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   VerifyAttempts?: boolean
   ResetToken?: boolean
   ResetExpires?: boolean
+  FailedAttempts?: boolean
+  LockedUntil?: boolean
   DoctorAppointments?: boolean | Prisma.User$DoctorAppointmentsArgs<ExtArgs>
   PatientAppointments?: boolean | Prisma.User$PatientAppointmentsArgs<ExtArgs>
   DoctorRecords?: boolean | Prisma.User$DoctorRecordsArgs<ExtArgs>
@@ -1719,6 +1827,8 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   VerifyAttempts?: boolean
   ResetToken?: boolean
   ResetExpires?: boolean
+  FailedAttempts?: boolean
+  LockedUntil?: boolean
 }, ExtArgs["result"]["user"]>
 
 export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1738,6 +1848,8 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   VerifyAttempts?: boolean
   ResetToken?: boolean
   ResetExpires?: boolean
+  FailedAttempts?: boolean
+  LockedUntil?: boolean
 }, ExtArgs["result"]["user"]>
 
 export type UserSelectScalar = {
@@ -1757,9 +1869,11 @@ export type UserSelectScalar = {
   VerifyAttempts?: boolean
   ResetToken?: boolean
   ResetExpires?: boolean
+  FailedAttempts?: boolean
+  LockedUntil?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"UserID" | "Email" | "Password" | "FirstName" | "LastName" | "Phone" | "SSN" | "Role" | "CreatedAt" | "UpdatedAt" | "EmailVerified" | "VerifyCode" | "VerifyExpires" | "VerifyAttempts" | "ResetToken" | "ResetExpires", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"UserID" | "Email" | "Password" | "FirstName" | "LastName" | "Phone" | "SSN" | "Role" | "CreatedAt" | "UpdatedAt" | "EmailVerified" | "VerifyCode" | "VerifyExpires" | "VerifyAttempts" | "ResetToken" | "ResetExpires" | "FailedAttempts" | "LockedUntil", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   DoctorAppointments?: boolean | Prisma.User$DoctorAppointmentsArgs<ExtArgs>
   PatientAppointments?: boolean | Prisma.User$PatientAppointmentsArgs<ExtArgs>
@@ -1801,6 +1915,8 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     VerifyAttempts: number
     ResetToken: string | null
     ResetExpires: Date | null
+    FailedAttempts: number
+    LockedUntil: Date | null
   }, ExtArgs["result"]["user"]>
   composites: {}
 }
@@ -2247,6 +2363,8 @@ export interface UserFieldRefs {
   readonly VerifyAttempts: Prisma.FieldRef<"User", 'Int'>
   readonly ResetToken: Prisma.FieldRef<"User", 'String'>
   readonly ResetExpires: Prisma.FieldRef<"User", 'DateTime'>
+  readonly FailedAttempts: Prisma.FieldRef<"User", 'Int'>
+  readonly LockedUntil: Prisma.FieldRef<"User", 'DateTime'>
 }
     
 

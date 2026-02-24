@@ -64,6 +64,7 @@ export const AuditAction = {
   login_success: 'login_success',
   login_failure: 'login_failure',
   logout: 'logout',
+  account_locked: 'account_locked',
   record_viewed: 'record_viewed',
   record_created: 'record_created',
   record_updated: 'record_updated',
