@@ -1,10 +1,34 @@
 import { NextRequest, NextResponse } from "next/server";
 import { decrypt } from "@/lib/auth";
+import { rateLimit } from "@/lib/rateLimit";
 
 export async function proxy(request: NextRequest) {
-  // --- 1. AUTHENTICATION LOGIC --
-  const token = request.cookies.get("auth_token")?.value;
   const path = request.nextUrl.pathname;
+
+  const ip =
+    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+    request.headers.get("x-real-ip") ??
+    "unknown";
+
+  // 100 requests per 60 s per IP across all /api/* routes.
+  // Fires before any route handler, stopping floods at the middleware layer.
+  // This does not stop a DDos attack. It may not even stop a web scraping bot because when a Nextjs app
+  // is in production the app's traffic is spread between many instances. At least when hosted on Vercel.
+  if (path.startsWith("/api/")) {
+    if (!rateLimit(ip, "global_api", 100, 60_000)) {
+      return new NextResponse(JSON.stringify({ error: "Too many requests" }), {
+        status: 429,
+        headers: {
+          "Content-Type": "application/json",
+          "Retry-After": "60",
+        },
+      });
+    }
+    return NextResponse.next();
+  }
+
+  // --- 2. AUTHENTICATION LOGIC ---
+  const token = request.cookies.get("auth_token")?.value;
 
   const isProtectedRoute =
     path.startsWith("/dashboard") ||
@@ -51,7 +75,7 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  // --- 2. CSP & NONCE LOGIC ---
+  // --- 3. CSP & NONCE LOGIC ---
   const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
 
   const cspHeader = `
@@ -83,3 +107,13 @@ export async function proxy(request: NextRequest) {
 
   return response;
 }
+
+export const config = {
+  matcher: [
+    "/api/:path*",
+    "/dashboard/:path*",
+    "/patient/:path*",
+    "/doctor/:path*",
+    "/admin/:path*",
+  ],
+};
