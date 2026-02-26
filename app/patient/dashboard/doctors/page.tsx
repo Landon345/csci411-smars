@@ -6,6 +6,12 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface DoctorProfile {
   ClinicalCategory: string | null;
@@ -34,6 +40,13 @@ const CATEGORY_FILTERS: { value: CategoryFilter; label: string }[] = [
   { value: "medical_specialist", label: "Medical Specialist" },
   { value: "urgent_emergency", label: "Urgent & ER" },
 ];
+
+const DEGREE_LABELS: Record<string, string> = {
+  MD: "Doctor of Medicine",
+  DO: "Doctor of Osteopathic Medicine",
+  NP: "Nurse Practitioner",
+  PA: "Physician Associate",
+};
 
 function degreeBadgeClass(degree: string) {
   if (degree === "MD" || degree === "DO") {
@@ -66,7 +79,7 @@ export default function FindADoctorPage() {
     });
 
   return (
-    <>
+    <TooltipProvider>
       <header className="mb-6">
         <h2 className="text-xl font-medium tracking-tight">Find a Doctor</h2>
         <p className="text-sm text-muted-foreground">
@@ -116,9 +129,14 @@ export default function FindADoctorPage() {
                   </CardTitle>
                   <div className="flex flex-wrap gap-1.5 mt-1">
                     {p?.Degree && (
-                      <Badge variant="secondary" className={degreeBadgeClass(p.Degree)}>
-                        {p.Degree}
-                      </Badge>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Badge variant="secondary" className={degreeBadgeClass(p.Degree)}>
+                            {p.Degree}
+                          </Badge>
+                        </TooltipTrigger>
+                        <TooltipContent>{DEGREE_LABELS[p.Degree] ?? p.Degree}</TooltipContent>
+                      </Tooltip>
                     )}
                     {p?.BoardCertified && (
                       <Badge
@@ -170,6 +188,6 @@ export default function FindADoctorPage() {
           })}
         </div>
       )}
-    </>
+    </TooltipProvider>
   );
 }
