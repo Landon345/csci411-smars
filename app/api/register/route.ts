@@ -1,16 +1,22 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { login } from "@/lib/auth";
 import { encryptSSN } from "@/lib/crypto";
+import { writeAuditLog } from "@/lib/auditLog";
 import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
+  const ip =
+    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+    request.headers.get("x-real-ip") ??
+    "unknown";
+
   try {
     const body = await request.json();
-    const { FirstName, LastName, Email, Password, Phone, SSN, Role } = body;
+    const { FirstName, LastName, Email, Password, Phone, SSN, Role, InviteToken } = body;
 
     // --- Input Validation ---
     const missing = ["FirstName", "LastName", "Email", "Password", "SSN"].filter(
@@ -49,6 +55,31 @@ export async function POST(request: Request) {
     const validRoles = ["patient", "doctor"] as const;
     const userRole = validRoles.includes(Role) ? Role : "patient";
 
+    // Doctor registrations require a valid invite token
+    if (userRole === "doctor") {
+      if (!InviteToken || typeof InviteToken !== "string") {
+        return NextResponse.json(
+          { error: "An invite token is required to register as a doctor" },
+          { status: 400 },
+        );
+      }
+
+      const invite = await prisma.inviteToken.findUnique({ where: { Token: InviteToken } });
+
+      if (!invite) {
+        return NextResponse.json({ error: "Invalid invite token" }, { status: 400 });
+      }
+      if (invite.Used) {
+        return NextResponse.json({ error: "This invite token has already been used" }, { status: 400 });
+      }
+      if (invite.ExpiresAt < new Date()) {
+        return NextResponse.json({ error: "This invite token has expired" }, { status: 400 });
+      }
+      if (invite.Email.toLowerCase() !== Email.toLowerCase()) {
+        return NextResponse.json({ error: "This invite token is not valid for this email address" }, { status: 400 });
+      }
+    }
+
     // 1. Check if user exists
     const existingUser = await prisma.user.findUnique({ where: { Email } });
     if (existingUser) {
@@ -82,6 +113,20 @@ export async function POST(request: Request) {
         EmailVerified: null,
       },
     });
+
+    // 4b. If doctor, mark invite token as used and audit
+    if (userRole === "doctor" && InviteToken) {
+      await prisma.inviteToken.update({
+        where: { Token: InviteToken },
+        data: { Used: true },
+      });
+      writeAuditLog({
+        userId: newUser.UserID,
+        action: "invite_used",
+        ipAddress: ip,
+        details: { email: Email },
+      });
+    }
 
     // 5. Send Email via Resend (Production Only)
     if (process.env.NODE_ENV === "production") {

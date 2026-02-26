@@ -55,7 +55,8 @@ export const ModelName = {
   Appointment: 'Appointment',
   MedicalRecord: 'MedicalRecord',
   Prescription: 'Prescription',
-  AuditLog: 'AuditLog'
+  AuditLog: 'AuditLog',
+  InviteToken: 'InviteToken'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -176,6 +177,19 @@ export const AuditLogScalarFieldEnum = {
 } as const
 
 export type AuditLogScalarFieldEnum = (typeof AuditLogScalarFieldEnum)[keyof typeof AuditLogScalarFieldEnum]
+
+
+export const InviteTokenScalarFieldEnum = {
+  TokenID: 'TokenID',
+  Email: 'Email',
+  Token: 'Token',
+  Used: 'Used',
+  ExpiresAt: 'ExpiresAt',
+  CreatedBy: 'CreatedBy',
+  CreatedAt: 'CreatedAt'
+} as const
+
+export type InviteTokenScalarFieldEnum = (typeof InviteTokenScalarFieldEnum)[keyof typeof InviteTokenScalarFieldEnum]
 
 
 export const SortOrder = {
