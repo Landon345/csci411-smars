@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
   }
 
   // EndTime = startTime + 30 minutes
-  const startDate = new Date(`1970-01-01T${startTime}:00`);
+  const startDate = new Date(`1970-01-01T${startTime}:00Z`);
   const endDate = new Date(startDate.getTime() + 30 * 60 * 1000);
 
   const appointment = await prisma.appointment.create({

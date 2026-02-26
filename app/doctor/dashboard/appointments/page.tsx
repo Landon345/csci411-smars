@@ -16,6 +16,8 @@ import {
   TrashIcon,
   TableCellsIcon,
   CalendarDaysIcon,
+  BellIcon,
+  BellAlertIcon,
 } from "@heroicons/react/24/outline";
 import { AppointmentCalendar } from "@/components/appointments/AppointmentCalendar";
 import { AppointmentDetail } from "@/components/details/AppointmentDetail";
@@ -52,6 +54,7 @@ interface Appointment {
   Notes: string | null;
   CanceledBy: string | null;
   VisitSummary: string | null;
+  ReminderSent: boolean;
 }
 
 const TYPE_OPTIONS = [
@@ -99,6 +102,7 @@ export default function AppointmentsPage() {
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Appointment | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [reminding, setReminding] = useState<string | null>(null);
   const [view, setView] = useState<"table" | "calendar">("table");
   const [selected, setSelected] = useState<Appointment | null>(null);
 
@@ -239,6 +243,24 @@ export default function AppointmentsPage() {
     }
   }, [fetchAppointments]);
 
+  const sendReminder = useCallback(async function sendReminder(id: string) {
+    setReminding(id);
+    try {
+      const res = await fetch(`/api/doctor/appointments/${id}/remind`, {
+        method: "POST",
+      });
+      if (res.ok) {
+        setAppointments((prev) =>
+          prev.map((a) =>
+            a.AppointmentID === id ? { ...a, ReminderSent: true } : a,
+          ),
+        );
+      }
+    } finally {
+      setReminding(null);
+    }
+  }, []);
+
   const columns = useMemo<ColumnDef<Appointment, unknown>[]>(
     () => [
       {
@@ -329,30 +351,56 @@ export default function AppointmentsPage() {
         enableGlobalFilter: false,
         meta: { label: "Actions" },
         header: () => <span>Actions</span>,
-        cell: ({ row }) => (
-          <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
-            <Button
-              variant="ghost"
-              size="xs"
-              onClick={() => startEdit(row.original)}
-            >
-              <PencilSquareIcon className="h-3.5 w-3.5" />
-              Edit
-            </Button>
-            <Button
-              variant="ghost"
-              size="xs"
-              className="text-destructive hover:text-destructive"
-              onClick={() => handleDelete(row.original.AppointmentID)}
-            >
-              <TrashIcon className="h-3.5 w-3.5" />
-              Delete
-            </Button>
-          </div>
-        ),
+        cell: ({ row }) => {
+          const appt = row.original;
+          const canRemind = ["pending", "scheduled"].includes(appt.Status);
+          const isSending = reminding === appt.AppointmentID;
+          return (
+            <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
+              <Button
+                variant="ghost"
+                size="xs"
+                onClick={() => startEdit(appt)}
+              >
+                <PencilSquareIcon className="h-3.5 w-3.5" />
+                Edit
+              </Button>
+              {canRemind && (
+                <Button
+                  variant="ghost"
+                  size="xs"
+                  disabled={isSending}
+                  className={
+                    appt.ReminderSent
+                      ? "text-muted-foreground"
+                      : "text-blue-600 hover:text-blue-700 dark:text-blue-400"
+                  }
+                  onClick={() => sendReminder(appt.AppointmentID)}
+                  title={appt.ReminderSent ? "Reminder already sent — click to resend" : "Send reminder email"}
+                >
+                  {appt.ReminderSent ? (
+                    <BellAlertIcon className="h-3.5 w-3.5" />
+                  ) : (
+                    <BellIcon className="h-3.5 w-3.5" />
+                  )}
+                  {isSending ? "Sending…" : appt.ReminderSent ? "Resend" : "Remind"}
+                </Button>
+              )}
+              <Button
+                variant="ghost"
+                size="xs"
+                className="text-destructive hover:text-destructive"
+                onClick={() => handleDelete(appt.AppointmentID)}
+              >
+                <TrashIcon className="h-3.5 w-3.5" />
+                Delete
+              </Button>
+            </div>
+          );
+        },
       },
     ],
-    [startEdit, handleDelete],
+    [startEdit, handleDelete, sendReminder, reminding],
   );
 
   if (loading) {
@@ -632,18 +680,45 @@ export default function AppointmentsPage() {
         onClose={() => setSelected(null)}
         actions={
           selected && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                setSelected(null);
-                startEdit(selected);
-                window.scrollTo({ top: 0, behavior: "smooth" });
-              }}
-            >
-              <PencilSquareIcon className="h-3.5 w-3.5" />
-              Edit Appointment
-            </Button>
+            <>
+              {["pending", "scheduled"].includes(selected.Status) && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={reminding === selected.AppointmentID}
+                  onClick={async () => {
+                    await sendReminder(selected.AppointmentID);
+                    // Sync ReminderSent state on the selected detail panel
+                    setSelected((prev) =>
+                      prev ? { ...prev, ReminderSent: true } : null,
+                    );
+                  }}
+                >
+                  {selected.ReminderSent ? (
+                    <BellAlertIcon className="h-3.5 w-3.5" />
+                  ) : (
+                    <BellIcon className="h-3.5 w-3.5" />
+                  )}
+                  {reminding === selected.AppointmentID
+                    ? "Sending…"
+                    : selected.ReminderSent
+                      ? "Resend Reminder"
+                      : "Send Reminder"}
+                </Button>
+              )}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setSelected(null);
+                  startEdit(selected);
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }}
+              >
+                <PencilSquareIcon className="h-3.5 w-3.5" />
+                Edit Appointment
+              </Button>
+            </>
           )
         }
       />

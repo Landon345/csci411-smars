@@ -38,6 +38,7 @@ export type AppointmentMinAggregateOutputType = {
   Notes: string | null
   CanceledBy: string | null
   VisitSummary: string | null
+  ReminderSent: boolean | null
   CreatedAt: Date | null
   UpdatedAt: Date | null
 }
@@ -56,6 +57,7 @@ export type AppointmentMaxAggregateOutputType = {
   Notes: string | null
   CanceledBy: string | null
   VisitSummary: string | null
+  ReminderSent: boolean | null
   CreatedAt: Date | null
   UpdatedAt: Date | null
 }
@@ -74,6 +76,7 @@ export type AppointmentCountAggregateOutputType = {
   Notes: number
   CanceledBy: number
   VisitSummary: number
+  ReminderSent: number
   CreatedAt: number
   UpdatedAt: number
   _all: number
@@ -94,6 +97,7 @@ export type AppointmentMinAggregateInputType = {
   Notes?: true
   CanceledBy?: true
   VisitSummary?: true
+  ReminderSent?: true
   CreatedAt?: true
   UpdatedAt?: true
 }
@@ -112,6 +116,7 @@ export type AppointmentMaxAggregateInputType = {
   Notes?: true
   CanceledBy?: true
   VisitSummary?: true
+  ReminderSent?: true
   CreatedAt?: true
   UpdatedAt?: true
 }
@@ -130,6 +135,7 @@ export type AppointmentCountAggregateInputType = {
   Notes?: true
   CanceledBy?: true
   VisitSummary?: true
+  ReminderSent?: true
   CreatedAt?: true
   UpdatedAt?: true
   _all?: true
@@ -221,6 +227,7 @@ export type AppointmentGroupByOutputType = {
   Notes: string | null
   CanceledBy: string | null
   VisitSummary: string | null
+  ReminderSent: boolean
   CreatedAt: Date
   UpdatedAt: Date
   _count: AppointmentCountAggregateOutputType | null
@@ -260,6 +267,7 @@ export type AppointmentWhereInput = {
   Notes?: Prisma.StringNullableFilter<"Appointment"> | string | null
   CanceledBy?: Prisma.StringNullableFilter<"Appointment"> | string | null
   VisitSummary?: Prisma.StringNullableFilter<"Appointment"> | string | null
+  ReminderSent?: Prisma.BoolFilter<"Appointment"> | boolean
   CreatedAt?: Prisma.DateTimeFilter<"Appointment"> | Date | string
   UpdatedAt?: Prisma.DateTimeFilter<"Appointment"> | Date | string
   Doctor?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -281,6 +289,7 @@ export type AppointmentOrderByWithRelationInput = {
   Notes?: Prisma.SortOrderInput | Prisma.SortOrder
   CanceledBy?: Prisma.SortOrderInput | Prisma.SortOrder
   VisitSummary?: Prisma.SortOrderInput | Prisma.SortOrder
+  ReminderSent?: Prisma.SortOrder
   CreatedAt?: Prisma.SortOrder
   UpdatedAt?: Prisma.SortOrder
   Doctor?: Prisma.UserOrderByWithRelationInput
@@ -305,6 +314,7 @@ export type AppointmentWhereUniqueInput = Prisma.AtLeast<{
   Notes?: Prisma.StringNullableFilter<"Appointment"> | string | null
   CanceledBy?: Prisma.StringNullableFilter<"Appointment"> | string | null
   VisitSummary?: Prisma.StringNullableFilter<"Appointment"> | string | null
+  ReminderSent?: Prisma.BoolFilter<"Appointment"> | boolean
   CreatedAt?: Prisma.DateTimeFilter<"Appointment"> | Date | string
   UpdatedAt?: Prisma.DateTimeFilter<"Appointment"> | Date | string
   Doctor?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -326,6 +336,7 @@ export type AppointmentOrderByWithAggregationInput = {
   Notes?: Prisma.SortOrderInput | Prisma.SortOrder
   CanceledBy?: Prisma.SortOrderInput | Prisma.SortOrder
   VisitSummary?: Prisma.SortOrderInput | Prisma.SortOrder
+  ReminderSent?: Prisma.SortOrder
   CreatedAt?: Prisma.SortOrder
   UpdatedAt?: Prisma.SortOrder
   _count?: Prisma.AppointmentCountOrderByAggregateInput
@@ -350,6 +361,7 @@ export type AppointmentScalarWhereWithAggregatesInput = {
   Notes?: Prisma.StringNullableWithAggregatesFilter<"Appointment"> | string | null
   CanceledBy?: Prisma.StringNullableWithAggregatesFilter<"Appointment"> | string | null
   VisitSummary?: Prisma.StringNullableWithAggregatesFilter<"Appointment"> | string | null
+  ReminderSent?: Prisma.BoolWithAggregatesFilter<"Appointment"> | boolean
   CreatedAt?: Prisma.DateTimeWithAggregatesFilter<"Appointment"> | Date | string
   UpdatedAt?: Prisma.DateTimeWithAggregatesFilter<"Appointment"> | Date | string
 }
@@ -366,6 +378,7 @@ export type AppointmentCreateInput = {
   Notes?: string | null
   CanceledBy?: string | null
   VisitSummary?: string | null
+  ReminderSent?: boolean
   CreatedAt?: Date | string
   UpdatedAt?: Date | string
   Doctor: Prisma.UserCreateNestedOneWithoutDoctorAppointmentsInput
@@ -387,6 +400,7 @@ export type AppointmentUncheckedCreateInput = {
   Notes?: string | null
   CanceledBy?: string | null
   VisitSummary?: string | null
+  ReminderSent?: boolean
   CreatedAt?: Date | string
   UpdatedAt?: Date | string
   MedicalRecord?: Prisma.MedicalRecordUncheckedCreateNestedManyWithoutAppointmentInput
@@ -404,6 +418,7 @@ export type AppointmentUpdateInput = {
   Notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   CanceledBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   VisitSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ReminderSent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   CreatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   UpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   Doctor?: Prisma.UserUpdateOneRequiredWithoutDoctorAppointmentsNestedInput
@@ -425,6 +440,7 @@ export type AppointmentUncheckedUpdateInput = {
   Notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   CanceledBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   VisitSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ReminderSent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   CreatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   UpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   MedicalRecord?: Prisma.MedicalRecordUncheckedUpdateManyWithoutAppointmentNestedInput
@@ -444,6 +460,7 @@ export type AppointmentCreateManyInput = {
   Notes?: string | null
   CanceledBy?: string | null
   VisitSummary?: string | null
+  ReminderSent?: boolean
   CreatedAt?: Date | string
   UpdatedAt?: Date | string
 }
@@ -460,6 +477,7 @@ export type AppointmentUpdateManyMutationInput = {
   Notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   CanceledBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   VisitSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ReminderSent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   CreatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   UpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -478,6 +496,7 @@ export type AppointmentUncheckedUpdateManyInput = {
   Notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   CanceledBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   VisitSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ReminderSent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   CreatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   UpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -506,6 +525,7 @@ export type AppointmentCountOrderByAggregateInput = {
   Notes?: Prisma.SortOrder
   CanceledBy?: Prisma.SortOrder
   VisitSummary?: Prisma.SortOrder
+  ReminderSent?: Prisma.SortOrder
   CreatedAt?: Prisma.SortOrder
   UpdatedAt?: Prisma.SortOrder
 }
@@ -524,6 +544,7 @@ export type AppointmentMaxOrderByAggregateInput = {
   Notes?: Prisma.SortOrder
   CanceledBy?: Prisma.SortOrder
   VisitSummary?: Prisma.SortOrder
+  ReminderSent?: Prisma.SortOrder
   CreatedAt?: Prisma.SortOrder
   UpdatedAt?: Prisma.SortOrder
 }
@@ -542,6 +563,7 @@ export type AppointmentMinOrderByAggregateInput = {
   Notes?: Prisma.SortOrder
   CanceledBy?: Prisma.SortOrder
   VisitSummary?: Prisma.SortOrder
+  ReminderSent?: Prisma.SortOrder
   CreatedAt?: Prisma.SortOrder
   UpdatedAt?: Prisma.SortOrder
 }
@@ -643,6 +665,10 @@ export type EnumAppointmentStatusFieldUpdateOperationsInput = {
   set?: $Enums.AppointmentStatus
 }
 
+export type BoolFieldUpdateOperationsInput = {
+  set?: boolean
+}
+
 export type AppointmentCreateNestedOneWithoutMedicalRecordInput = {
   create?: Prisma.XOR<Prisma.AppointmentCreateWithoutMedicalRecordInput, Prisma.AppointmentUncheckedCreateWithoutMedicalRecordInput>
   connectOrCreate?: Prisma.AppointmentCreateOrConnectWithoutMedicalRecordInput
@@ -671,6 +697,7 @@ export type AppointmentCreateWithoutDoctorInput = {
   Notes?: string | null
   CanceledBy?: string | null
   VisitSummary?: string | null
+  ReminderSent?: boolean
   CreatedAt?: Date | string
   UpdatedAt?: Date | string
   Patient: Prisma.UserCreateNestedOneWithoutPatientAppointmentsInput
@@ -690,6 +717,7 @@ export type AppointmentUncheckedCreateWithoutDoctorInput = {
   Notes?: string | null
   CanceledBy?: string | null
   VisitSummary?: string | null
+  ReminderSent?: boolean
   CreatedAt?: Date | string
   UpdatedAt?: Date | string
   MedicalRecord?: Prisma.MedicalRecordUncheckedCreateNestedManyWithoutAppointmentInput
@@ -717,6 +745,7 @@ export type AppointmentCreateWithoutPatientInput = {
   Notes?: string | null
   CanceledBy?: string | null
   VisitSummary?: string | null
+  ReminderSent?: boolean
   CreatedAt?: Date | string
   UpdatedAt?: Date | string
   Doctor: Prisma.UserCreateNestedOneWithoutDoctorAppointmentsInput
@@ -736,6 +765,7 @@ export type AppointmentUncheckedCreateWithoutPatientInput = {
   Notes?: string | null
   CanceledBy?: string | null
   VisitSummary?: string | null
+  ReminderSent?: boolean
   CreatedAt?: Date | string
   UpdatedAt?: Date | string
   MedicalRecord?: Prisma.MedicalRecordUncheckedCreateNestedManyWithoutAppointmentInput
@@ -784,6 +814,7 @@ export type AppointmentScalarWhereInput = {
   Notes?: Prisma.StringNullableFilter<"Appointment"> | string | null
   CanceledBy?: Prisma.StringNullableFilter<"Appointment"> | string | null
   VisitSummary?: Prisma.StringNullableFilter<"Appointment"> | string | null
+  ReminderSent?: Prisma.BoolFilter<"Appointment"> | boolean
   CreatedAt?: Prisma.DateTimeFilter<"Appointment"> | Date | string
   UpdatedAt?: Prisma.DateTimeFilter<"Appointment"> | Date | string
 }
@@ -816,6 +847,7 @@ export type AppointmentCreateWithoutMedicalRecordInput = {
   Notes?: string | null
   CanceledBy?: string | null
   VisitSummary?: string | null
+  ReminderSent?: boolean
   CreatedAt?: Date | string
   UpdatedAt?: Date | string
   Doctor: Prisma.UserCreateNestedOneWithoutDoctorAppointmentsInput
@@ -836,6 +868,7 @@ export type AppointmentUncheckedCreateWithoutMedicalRecordInput = {
   Notes?: string | null
   CanceledBy?: string | null
   VisitSummary?: string | null
+  ReminderSent?: boolean
   CreatedAt?: Date | string
   UpdatedAt?: Date | string
 }
@@ -868,6 +901,7 @@ export type AppointmentUpdateWithoutMedicalRecordInput = {
   Notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   CanceledBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   VisitSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ReminderSent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   CreatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   UpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   Doctor?: Prisma.UserUpdateOneRequiredWithoutDoctorAppointmentsNestedInput
@@ -888,6 +922,7 @@ export type AppointmentUncheckedUpdateWithoutMedicalRecordInput = {
   Notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   CanceledBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   VisitSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ReminderSent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   CreatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   UpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -905,6 +940,7 @@ export type AppointmentCreateManyDoctorInput = {
   Notes?: string | null
   CanceledBy?: string | null
   VisitSummary?: string | null
+  ReminderSent?: boolean
   CreatedAt?: Date | string
   UpdatedAt?: Date | string
 }
@@ -922,6 +958,7 @@ export type AppointmentCreateManyPatientInput = {
   Notes?: string | null
   CanceledBy?: string | null
   VisitSummary?: string | null
+  ReminderSent?: boolean
   CreatedAt?: Date | string
   UpdatedAt?: Date | string
 }
@@ -938,6 +975,7 @@ export type AppointmentUpdateWithoutDoctorInput = {
   Notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   CanceledBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   VisitSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ReminderSent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   CreatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   UpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   Patient?: Prisma.UserUpdateOneRequiredWithoutPatientAppointmentsNestedInput
@@ -957,6 +995,7 @@ export type AppointmentUncheckedUpdateWithoutDoctorInput = {
   Notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   CanceledBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   VisitSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ReminderSent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   CreatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   UpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   MedicalRecord?: Prisma.MedicalRecordUncheckedUpdateManyWithoutAppointmentNestedInput
@@ -975,6 +1014,7 @@ export type AppointmentUncheckedUpdateManyWithoutDoctorInput = {
   Notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   CanceledBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   VisitSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ReminderSent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   CreatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   UpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -991,6 +1031,7 @@ export type AppointmentUpdateWithoutPatientInput = {
   Notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   CanceledBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   VisitSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ReminderSent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   CreatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   UpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   Doctor?: Prisma.UserUpdateOneRequiredWithoutDoctorAppointmentsNestedInput
@@ -1010,6 +1051,7 @@ export type AppointmentUncheckedUpdateWithoutPatientInput = {
   Notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   CanceledBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   VisitSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ReminderSent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   CreatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   UpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   MedicalRecord?: Prisma.MedicalRecordUncheckedUpdateManyWithoutAppointmentNestedInput
@@ -1028,6 +1070,7 @@ export type AppointmentUncheckedUpdateManyWithoutPatientInput = {
   Notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   CanceledBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   VisitSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ReminderSent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   CreatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   UpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1077,6 +1120,7 @@ export type AppointmentSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   Notes?: boolean
   CanceledBy?: boolean
   VisitSummary?: boolean
+  ReminderSent?: boolean
   CreatedAt?: boolean
   UpdatedAt?: boolean
   Doctor?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -1099,6 +1143,7 @@ export type AppointmentSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   Notes?: boolean
   CanceledBy?: boolean
   VisitSummary?: boolean
+  ReminderSent?: boolean
   CreatedAt?: boolean
   UpdatedAt?: boolean
   Doctor?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -1119,6 +1164,7 @@ export type AppointmentSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   Notes?: boolean
   CanceledBy?: boolean
   VisitSummary?: boolean
+  ReminderSent?: boolean
   CreatedAt?: boolean
   UpdatedAt?: boolean
   Doctor?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -1139,11 +1185,12 @@ export type AppointmentSelectScalar = {
   Notes?: boolean
   CanceledBy?: boolean
   VisitSummary?: boolean
+  ReminderSent?: boolean
   CreatedAt?: boolean
   UpdatedAt?: boolean
 }
 
-export type AppointmentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"AppointmentID" | "DoctorID" | "PatientID" | "Date" | "StartTime" | "EndTime" | "Place" | "Reason" | "Type" | "Status" | "Notes" | "CanceledBy" | "VisitSummary" | "CreatedAt" | "UpdatedAt", ExtArgs["result"]["appointment"]>
+export type AppointmentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"AppointmentID" | "DoctorID" | "PatientID" | "Date" | "StartTime" | "EndTime" | "Place" | "Reason" | "Type" | "Status" | "Notes" | "CanceledBy" | "VisitSummary" | "ReminderSent" | "CreatedAt" | "UpdatedAt", ExtArgs["result"]["appointment"]>
 export type AppointmentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   Doctor?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   Patient?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -1180,6 +1227,7 @@ export type $AppointmentPayload<ExtArgs extends runtime.Types.Extensions.Interna
     Notes: string | null
     CanceledBy: string | null
     VisitSummary: string | null
+    ReminderSent: boolean
     CreatedAt: Date
     UpdatedAt: Date
   }, ExtArgs["result"]["appointment"]>
@@ -1621,6 +1669,7 @@ export interface AppointmentFieldRefs {
   readonly Notes: Prisma.FieldRef<"Appointment", 'String'>
   readonly CanceledBy: Prisma.FieldRef<"Appointment", 'String'>
   readonly VisitSummary: Prisma.FieldRef<"Appointment", 'String'>
+  readonly ReminderSent: Prisma.FieldRef<"Appointment", 'Boolean'>
   readonly CreatedAt: Prisma.FieldRef<"Appointment", 'DateTime'>
   readonly UpdatedAt: Prisma.FieldRef<"Appointment", 'DateTime'>
 }

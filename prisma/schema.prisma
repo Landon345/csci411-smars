@@ -111,6 +111,7 @@ model Appointment {
   Notes         String?           @db.Text
   CanceledBy    String?           @db.VarChar(255)
   VisitSummary  String?           @db.Text
+  ReminderSent  Boolean           @default(false)
   CreatedAt     DateTime          @default(now()) @db.Timestamp(6)
   UpdatedAt     DateTime          @updatedAt
   MedicalRecord MedicalRecord[]
