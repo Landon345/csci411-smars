@@ -1,11 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -24,31 +24,68 @@ const registerSchema = z.object({
   SSN: z.string().regex(/^\d{3}-\d{2}-\d{4}$/, "Must be in XXX-XX-XXXX format"),
   Password: z.string().min(8, "Password must be at least 8 characters"),
   Role: z.enum(["patient", "doctor"]),
+  inviteToken: z.string().optional(),
 });
 
 type RegisterInput = z.infer<typeof registerSchema>;
 
-export default function Register() {
+type InviteState =
+  | { status: "idle" }
+  | { status: "valid"; email: string }
+  | { status: "invalid"; reason: string };
+
+function RegisterForm() {
   const [serverError, setServerError] = useState<string | null>(null);
+  const [inviteState, setInviteState] = useState<InviteState>({ status: "idle" });
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const inviteParam = searchParams.get("invite");
 
   // 2. Initialize the Form
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<RegisterInput>({
     resolver: zodResolver(registerSchema),
+    defaultValues: { Role: "patient" },
   });
 
-  // 3. Handle Form Submission
+  // 3. Validate invite token on mount
+  useEffect(() => {
+    if (!inviteParam) return;
+
+    async function validateToken() {
+      const res = await fetch(`/api/invite/validate?token=${inviteParam}`);
+      const data = await res.json();
+
+      if (data.valid) {
+        setInviteState({ status: "valid", email: data.email });
+        setValue("Email", data.email);
+        setValue("Role", "doctor");
+        setValue("inviteToken", inviteParam ?? undefined);
+      } else {
+        setInviteState({ status: "invalid", reason: data.reason ?? "Invalid invite link" });
+      }
+    }
+
+    validateToken();
+  }, [inviteParam, setValue]);
+
+  // 4. Handle Form Submission
   const onSubmit = async (data: RegisterInput) => {
     setServerError(null);
     try {
+      const payload = {
+        ...data,
+        ...(inviteParam ? { InviteToken: inviteParam } : {}),
+      };
+
       const response = await fetch("/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
@@ -78,6 +115,18 @@ export default function Register() {
               Secure your Smars medical profile.
             </p>
           </div>
+
+          {/* Invite banners */}
+          {inviteState.status === "valid" && (
+            <div className="rounded-lg bg-green-50 border border-green-200 p-3 text-sm text-green-800 dark:bg-green-900/20 dark:border-green-800 dark:text-green-300">
+              You&apos;ve been invited as a doctor. Your email and role have been pre-filled.
+            </div>
+          )}
+          {inviteState.status === "invalid" && (
+            <div className="rounded-lg bg-destructive/10 border border-destructive/20 p-3 text-sm text-destructive">
+              This invite link is invalid or expired: {inviteState.reason}
+            </div>
+          )}
 
           {serverError && (
             <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
@@ -121,6 +170,8 @@ export default function Register() {
                 {...register("Email")}
                 id="email"
                 aria-invalid={!!errors.Email}
+                readOnly={inviteState.status === "valid"}
+                className={inviteState.status === "valid" ? "bg-muted cursor-not-allowed" : ""}
               />
               {errors.Email && (
                 <p className="text-[10px] text-destructive">
@@ -153,35 +204,37 @@ export default function Register() {
               </div>
             </div>
 
-            <div className="space-y-1.5">
-              <Label>I am a...</Label>
-              <div className="flex gap-4">
-                <label className="flex items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300 cursor-pointer">
-                  <input
-                    type="radio"
-                    value="patient"
-                    {...register("Role")}
-                    defaultChecked
-                    className="accent-zinc-900 dark:accent-zinc-50"
-                  />
-                  Patient
-                </label>
-                <label className="flex items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300 cursor-pointer">
-                  <input
-                    type="radio"
-                    value="doctor"
-                    {...register("Role")}
-                    className="accent-zinc-900 dark:accent-zinc-50"
-                  />
-                  Doctor
-                </label>
+            {/* Role selection — locked when valid invite present */}
+            {inviteState.status === "valid" ? (
+              <div className="space-y-1.5">
+                <Label>Role</Label>
+                <div className="flex items-center gap-2 rounded-md border px-3 py-2 bg-muted text-sm">
+                  <span className="font-medium">Doctor</span>
+                  <span className="text-xs text-muted-foreground">(locked by invite)</span>
+                </div>
               </div>
-              {errors.Role && (
-                <p className="text-[10px] text-destructive">
-                  {errors.Role.message}
-                </p>
-              )}
-            </div>
+            ) : (
+              <div className="space-y-1.5">
+                <Label>I am a...</Label>
+                <div className="flex gap-4">
+                  <label className="flex items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300 cursor-pointer">
+                    <input
+                      type="radio"
+                      value="patient"
+                      {...register("Role")}
+                      defaultChecked
+                      className="accent-zinc-900 dark:accent-zinc-50"
+                    />
+                    Patient
+                  </label>
+                </div>
+                {errors.Role && (
+                  <p className="text-[10px] text-destructive">
+                    {errors.Role.message}
+                  </p>
+                )}
+              </div>
+            )}
 
             <div className="space-y-1.5">
               <Label htmlFor="password">Password</Label>
@@ -220,5 +273,13 @@ export default function Register() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function Register() {
+  return (
+    <Suspense>
+      <RegisterForm />
+    </Suspense>
   );
 }

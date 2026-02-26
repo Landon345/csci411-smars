@@ -61,6 +61,8 @@ enum AuditAction {
   prescription_updated
   password_changed
   role_changed
+  invite_created
+  invite_used
 }
 
 model User {
@@ -89,6 +91,7 @@ model User {
   DoctorPrescriptions   Prescription[] @relation("DoctorPrescriptions")
   PatientPrescriptions  Prescription[] @relation("PatientPrescriptions")
   AuditLogs             AuditLog[]
+  InvitesCreated        InviteToken[] @relation("InviteCreator")
 
   @@index([FirstName, CreatedAt(sort: Desc)])
   @@index([LastName, CreatedAt(sort: Desc)])
@@ -183,4 +186,15 @@ model AuditLog {
   @@index([CreatedAt(sort: Desc)])
   @@index([UserID, CreatedAt(sort: Desc)])
   @@index([Action, CreatedAt(sort: Desc)])
+}
+
+model InviteToken {
+  TokenID   String   @id @default(uuid())
+  Email     String   @db.VarChar(255)
+  Token     String   @unique @db.VarChar(64)
+  Used      Boolean  @default(false)
+  ExpiresAt DateTime
+  CreatedBy String
+  CreatedAt DateTime @default(now()) @db.Timestamp(6)
+  Creator   User     @relation("InviteCreator", fields: [CreatedBy], references: [UserID])
 }

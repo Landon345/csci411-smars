@@ -388,7 +388,8 @@ export const ModelName = {
   Appointment: 'Appointment',
   MedicalRecord: 'MedicalRecord',
   Prescription: 'Prescription',
-  AuditLog: 'AuditLog'
+  AuditLog: 'AuditLog',
+  InviteToken: 'InviteToken'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -404,7 +405,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "appointment" | "medicalRecord" | "prescription" | "auditLog"
+    modelProps: "user" | "appointment" | "medicalRecord" | "prescription" | "auditLog" | "inviteToken"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -778,6 +779,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    InviteToken: {
+      payload: Prisma.$InviteTokenPayload<ExtArgs>
+      fields: Prisma.InviteTokenFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.InviteTokenFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InviteTokenPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.InviteTokenFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InviteTokenPayload>
+        }
+        findFirst: {
+          args: Prisma.InviteTokenFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InviteTokenPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.InviteTokenFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InviteTokenPayload>
+        }
+        findMany: {
+          args: Prisma.InviteTokenFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InviteTokenPayload>[]
+        }
+        create: {
+          args: Prisma.InviteTokenCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InviteTokenPayload>
+        }
+        createMany: {
+          args: Prisma.InviteTokenCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.InviteTokenCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InviteTokenPayload>[]
+        }
+        delete: {
+          args: Prisma.InviteTokenDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InviteTokenPayload>
+        }
+        update: {
+          args: Prisma.InviteTokenUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InviteTokenPayload>
+        }
+        deleteMany: {
+          args: Prisma.InviteTokenDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.InviteTokenUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.InviteTokenUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InviteTokenPayload>[]
+        }
+        upsert: {
+          args: Prisma.InviteTokenUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InviteTokenPayload>
+        }
+        aggregate: {
+          args: Prisma.InviteTokenAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateInviteToken>
+        }
+        groupBy: {
+          args: Prisma.InviteTokenGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.InviteTokenGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.InviteTokenCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.InviteTokenCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -919,6 +994,19 @@ export const AuditLogScalarFieldEnum = {
 } as const
 
 export type AuditLogScalarFieldEnum = (typeof AuditLogScalarFieldEnum)[keyof typeof AuditLogScalarFieldEnum]
+
+
+export const InviteTokenScalarFieldEnum = {
+  TokenID: 'TokenID',
+  Email: 'Email',
+  Token: 'Token',
+  Used: 'Used',
+  ExpiresAt: 'ExpiresAt',
+  CreatedBy: 'CreatedBy',
+  CreatedAt: 'CreatedAt'
+} as const
+
+export type InviteTokenScalarFieldEnum = (typeof InviteTokenScalarFieldEnum)[keyof typeof InviteTokenScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1211,6 +1299,7 @@ export type GlobalOmitConfig = {
   medicalRecord?: Prisma.MedicalRecordOmit
   prescription?: Prisma.PrescriptionOmit
   auditLog?: Prisma.AuditLogOmit
+  inviteToken?: Prisma.InviteTokenOmit
 }
 
 /* Types for Logging */

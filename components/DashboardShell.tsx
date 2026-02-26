@@ -31,6 +31,7 @@ import {
   BeakerIcon,
   UserGroupIcon,
   Cog6ToothIcon,
+  EnvelopeIcon,
 } from "@heroicons/react/24/outline";
 import { type ComponentType } from "react";
 import { SessionExpiryWarning } from "@/components/SessionExpiryWarning";
@@ -61,6 +62,7 @@ const NAV_LINKS: Record<string, NavLink[]> = {
     { href: "/admin/dashboard", label: "Overview", icon: HomeIcon },
     { href: "/admin/dashboard/patients", label: "Patient List", icon: UserGroupIcon },
     { href: "/admin/dashboard/audit-log", label: "Audit Log", icon: ClipboardDocumentCheckIcon },
+    { href: "/admin/dashboard/invite", label: "Invite Doctor", icon: EnvelopeIcon },
     { href: "/admin/dashboard/settings", label: "Settings", icon: Cog6ToothIcon },
   ],
 };

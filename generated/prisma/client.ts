@@ -64,3 +64,8 @@ export type Prescription = Prisma.PrescriptionModel
  * 
  */
 export type AuditLog = Prisma.AuditLogModel
+/**
+ * Model InviteToken
+ * 
+ */
+export type InviteToken = Prisma.InviteTokenModel
