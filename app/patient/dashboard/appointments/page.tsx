@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,10 +28,16 @@ import { DataTable, SortableHeader } from "@/components/ui/data-table";
 import { AppointmentDetail } from "@/components/details/AppointmentDetail";
 import { formatDate } from "@/lib/format";
 
+interface DoctorProfile {
+  Degree: string | null;
+  Specialty: string | null;
+}
+
 interface Doctor {
   UserID: string;
   FirstName: string;
   LastName: string;
+  DoctorProfile: DoctorProfile | null;
 }
 
 interface Appointment {
@@ -80,14 +87,15 @@ const statusVariant: Record<string, string> = {
 
 function formatTime(timeStr: string) {
   const d = new Date(timeStr);
-  return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", timeZone: "UTC" });
 }
 
 function typeLabel(type: string) {
   return TYPE_OPTIONS.find((t) => t.value === type)?.label ?? type;
 }
 
-export default function PatientAppointmentsPage() {
+function PatientAppointmentsContent() {
+  const searchParams = useSearchParams();
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [loading, setLoading] = useState(true);
@@ -139,6 +147,14 @@ export default function PatientAppointmentsPage() {
     fetchAppointments();
     fetchDoctors();
   }, [fetchAppointments]);
+
+  useEffect(() => {
+    const doctorId = searchParams.get("doctor");
+    if (doctorId) {
+      setForm((prev) => ({ ...prev, doctorId }));
+      setShowForm(true);
+    }
+  }, [searchParams]);
 
   function resetForm() {
     setForm({
@@ -412,6 +428,8 @@ export default function PatientAppointmentsPage() {
                     {doctors.map((d) => (
                       <option key={d.UserID} value={d.UserID}>
                         Dr. {d.FirstName} {d.LastName}
+                        {d.DoctorProfile?.Degree ? ` (${d.DoctorProfile.Degree})` : ""}
+                        {d.DoctorProfile?.Specialty ? ` · ${d.DoctorProfile.Specialty}` : ""}
                       </option>
                     ))}
                   </select>
@@ -498,5 +516,13 @@ export default function PatientAppointmentsPage() {
 
       <AppointmentDetail appointment={selected} onClose={() => setSelected(null)} />
     </>
+  );
+}
+
+export default function PatientAppointmentsPage() {
+  return (
+    <Suspense>
+      <PatientAppointmentsContent />
+    </Suspense>
   );
 }

@@ -331,6 +331,40 @@ export type EnumAuditActionWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumAuditActionFilter<$PrismaModel>
 }
 
+export type EnumClinicalCategoryNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.ClinicalCategory | Prisma.EnumClinicalCategoryFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ClinicalCategory[] | Prisma.ListEnumClinicalCategoryFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ClinicalCategory[] | Prisma.ListEnumClinicalCategoryFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumClinicalCategoryNullableFilter<$PrismaModel> | $Enums.ClinicalCategory | null
+}
+
+export type EnumMedicalDegreeNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.MedicalDegree | Prisma.EnumMedicalDegreeFieldRefInput<$PrismaModel> | null
+  in?: $Enums.MedicalDegree[] | Prisma.ListEnumMedicalDegreeFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.MedicalDegree[] | Prisma.ListEnumMedicalDegreeFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumMedicalDegreeNullableFilter<$PrismaModel> | $Enums.MedicalDegree | null
+}
+
+export type EnumClinicalCategoryNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ClinicalCategory | Prisma.EnumClinicalCategoryFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ClinicalCategory[] | Prisma.ListEnumClinicalCategoryFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ClinicalCategory[] | Prisma.ListEnumClinicalCategoryFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumClinicalCategoryNullableWithAggregatesFilter<$PrismaModel> | $Enums.ClinicalCategory | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumClinicalCategoryNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumClinicalCategoryNullableFilter<$PrismaModel>
+}
+
+export type EnumMedicalDegreeNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.MedicalDegree | Prisma.EnumMedicalDegreeFieldRefInput<$PrismaModel> | null
+  in?: $Enums.MedicalDegree[] | Prisma.ListEnumMedicalDegreeFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.MedicalDegree[] | Prisma.ListEnumMedicalDegreeFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumMedicalDegreeNullableWithAggregatesFilter<$PrismaModel> | $Enums.MedicalDegree | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumMedicalDegreeNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumMedicalDegreeNullableFilter<$PrismaModel>
+}
+
 export type NestedStringFilter<$PrismaModel = never> = {
   equals?: string | Prisma.StringFieldRefInput<$PrismaModel>
   in?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
@@ -659,6 +693,40 @@ export type NestedEnumAuditActionWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumAuditActionFilter<$PrismaModel>
   _max?: Prisma.NestedEnumAuditActionFilter<$PrismaModel>
+}
+
+export type NestedEnumClinicalCategoryNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.ClinicalCategory | Prisma.EnumClinicalCategoryFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ClinicalCategory[] | Prisma.ListEnumClinicalCategoryFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ClinicalCategory[] | Prisma.ListEnumClinicalCategoryFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumClinicalCategoryNullableFilter<$PrismaModel> | $Enums.ClinicalCategory | null
+}
+
+export type NestedEnumMedicalDegreeNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.MedicalDegree | Prisma.EnumMedicalDegreeFieldRefInput<$PrismaModel> | null
+  in?: $Enums.MedicalDegree[] | Prisma.ListEnumMedicalDegreeFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.MedicalDegree[] | Prisma.ListEnumMedicalDegreeFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumMedicalDegreeNullableFilter<$PrismaModel> | $Enums.MedicalDegree | null
+}
+
+export type NestedEnumClinicalCategoryNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ClinicalCategory | Prisma.EnumClinicalCategoryFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ClinicalCategory[] | Prisma.ListEnumClinicalCategoryFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ClinicalCategory[] | Prisma.ListEnumClinicalCategoryFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumClinicalCategoryNullableWithAggregatesFilter<$PrismaModel> | $Enums.ClinicalCategory | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumClinicalCategoryNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumClinicalCategoryNullableFilter<$PrismaModel>
+}
+
+export type NestedEnumMedicalDegreeNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.MedicalDegree | Prisma.EnumMedicalDegreeFieldRefInput<$PrismaModel> | null
+  in?: $Enums.MedicalDegree[] | Prisma.ListEnumMedicalDegreeFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.MedicalDegree[] | Prisma.ListEnumMedicalDegreeFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumMedicalDegreeNullableWithAggregatesFilter<$PrismaModel> | $Enums.MedicalDegree | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumMedicalDegreeNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumMedicalDegreeNullableFilter<$PrismaModel>
 }
 
 
