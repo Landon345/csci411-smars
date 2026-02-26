@@ -25,8 +25,8 @@ export async function PATCH(
 
   const data: Record<string, unknown> = {};
   if (date) data.Date = new Date(date);
-  if (startTime) data.StartTime = new Date(`1970-01-01T${startTime}:00`);
-  if (endTime) data.EndTime = new Date(`1970-01-01T${endTime}:00`);
+  if (startTime) data.StartTime = new Date(`1970-01-01T${startTime}:00Z`);
+  if (endTime) data.EndTime = new Date(`1970-01-01T${endTime}:00Z`);
   if (place) data.Place = place;
   if (reason) data.Reason = reason;
   if (type) data.Type = type;
