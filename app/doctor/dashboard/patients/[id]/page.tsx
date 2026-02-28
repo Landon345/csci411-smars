@@ -143,6 +143,7 @@ function formatTime(timeStr: string) {
   return new Date(timeStr).toLocaleTimeString([], {
     hour: "2-digit",
     minute: "2-digit",
+    timeZone: "UTC",
   });
 }
 

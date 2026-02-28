@@ -56,7 +56,8 @@ export const ModelName = {
   MedicalRecord: 'MedicalRecord',
   Prescription: 'Prescription',
   AuditLog: 'AuditLog',
-  InviteToken: 'InviteToken'
+  InviteToken: 'InviteToken',
+  DoctorProfile: 'DoctorProfile'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -190,6 +191,22 @@ export const InviteTokenScalarFieldEnum = {
 } as const
 
 export type InviteTokenScalarFieldEnum = (typeof InviteTokenScalarFieldEnum)[keyof typeof InviteTokenScalarFieldEnum]
+
+
+export const DoctorProfileScalarFieldEnum = {
+  ProfileID: 'ProfileID',
+  UserID: 'UserID',
+  ClinicalCategory: 'ClinicalCategory',
+  Specialty: 'Specialty',
+  Degree: 'Degree',
+  BoardCertified: 'BoardCertified',
+  SubSpecialties: 'SubSpecialties',
+  Bio: 'Bio',
+  Telehealth: 'Telehealth',
+  UpdatedAt: 'UpdatedAt'
+} as const
+
+export type DoctorProfileScalarFieldEnum = (typeof DoctorProfileScalarFieldEnum)[keyof typeof DoctorProfileScalarFieldEnum]
 
 
 export const SortOrder = {

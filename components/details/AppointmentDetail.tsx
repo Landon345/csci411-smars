@@ -61,7 +61,7 @@ function formatDate(d: string) {
 }
 
 function formatTime(t: string) {
-  return new Date(t).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+  return new Date(t).toLocaleTimeString([], { hour: "numeric", minute: "2-digit", timeZone: "UTC" });
 }
 
 function Field({ label, value }: { label: string; value: React.ReactNode }) {

@@ -60,6 +60,27 @@ export const PrescriptionStatus = {
 export type PrescriptionStatus = (typeof PrescriptionStatus)[keyof typeof PrescriptionStatus]
 
 
+export const ClinicalCategory = {
+  primary_care: 'primary_care',
+  mental_health: 'mental_health',
+  surgical_specialist: 'surgical_specialist',
+  medical_specialist: 'medical_specialist',
+  urgent_emergency: 'urgent_emergency'
+} as const
+
+export type ClinicalCategory = (typeof ClinicalCategory)[keyof typeof ClinicalCategory]
+
+
+export const MedicalDegree = {
+  MD: 'MD',
+  DO: 'DO',
+  NP: 'NP',
+  PA: 'PA'
+} as const
+
+export type MedicalDegree = (typeof MedicalDegree)[keyof typeof MedicalDegree]
+
+
 export const AuditAction = {
   login_success: 'login_success',
   login_failure: 'login_failure',

@@ -49,6 +49,21 @@ enum PrescriptionStatus {
   discontinued
 }
 
+enum ClinicalCategory {
+  primary_care
+  mental_health
+  surgical_specialist
+  medical_specialist
+  urgent_emergency
+}
+
+enum MedicalDegree {
+  MD
+  DO
+  NP
+  PA
+}
+
 enum AuditAction {
   login_success
   login_failure
@@ -92,6 +107,7 @@ model User {
   PatientPrescriptions  Prescription[] @relation("PatientPrescriptions")
   AuditLogs             AuditLog[]
   InvitesCreated        InviteToken[] @relation("InviteCreator")
+  DoctorProfile         DoctorProfile? @relation("DoctorProfile")
 
   @@index([FirstName, CreatedAt(sort: Desc)])
   @@index([LastName, CreatedAt(sort: Desc)])
@@ -197,4 +213,18 @@ model InviteToken {
   CreatedBy String
   CreatedAt DateTime @default(now()) @db.Timestamp(6)
   Creator   User     @relation("InviteCreator", fields: [CreatedBy], references: [UserID])
+}
+
+model DoctorProfile {
+  ProfileID        String            @id @default(uuid())
+  UserID           String            @unique
+  User             User              @relation("DoctorProfile", fields: [UserID], references: [UserID])
+  ClinicalCategory ClinicalCategory?
+  Specialty        String?           @db.VarChar(255)
+  Degree           MedicalDegree?
+  BoardCertified   Boolean           @default(false)
+  SubSpecialties   String[]
+  Bio              String?           @db.Text
+  Telehealth       Boolean           @default(false)
+  UpdatedAt        DateTime          @updatedAt
 }

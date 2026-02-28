@@ -88,7 +88,7 @@ const statusVariant: Record<string, string> = {
 
 function formatTime(timeStr: string) {
   const d = new Date(timeStr);
-  return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", timeZone: "UTC" });
 }
 
 function typeLabel(type: string) {

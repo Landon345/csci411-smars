@@ -47,3 +47,8 @@ export type AuditLog = Prisma.AuditLogModel
  * 
  */
 export type InviteToken = Prisma.InviteTokenModel
+/**
+ * Model DoctorProfile
+ * 
+ */
+export type DoctorProfile = Prisma.DoctorProfileModel
