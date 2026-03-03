@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -12,6 +11,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { BookAppointmentModal } from "@/components/appointments/BookAppointmentModal";
 
 interface DoctorProfile {
   ClinicalCategory: string | null;
@@ -56,11 +56,11 @@ function degreeBadgeClass(degree: string) {
 }
 
 export default function FindADoctorPage() {
-  const router = useRouter();
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [loading, setLoading] = useState(true);
   const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>("all");
   const [search, setSearch] = useState("");
+  const [bookingDoctor, setBookingDoctor] = useState<Doctor | null>(null);
 
   useEffect(() => {
     fetch("/api/patient/doctors")
@@ -175,9 +175,7 @@ export default function FindADoctorPage() {
                   <div className="pt-2">
                     <Button
                       size="sm"
-                      onClick={() =>
-                        router.push(`/patient/dashboard/appointments?doctor=${d.UserID}`)
-                      }
+                      onClick={() => setBookingDoctor(d)}
                     >
                       Book Appointment →
                     </Button>
@@ -188,6 +186,12 @@ export default function FindADoctorPage() {
           })}
         </div>
       )}
+
+      <BookAppointmentModal
+        doctor={bookingDoctor}
+        onClose={() => setBookingDoctor(null)}
+        onBooked={() => setBookingDoctor(null)}
+      />
     </TooltipProvider>
   );
 }
