@@ -29,6 +29,7 @@ import { formatDate } from "@/lib/format";
 import { AppointmentDetail } from "@/components/details/AppointmentDetail";
 import { RecordDetail } from "@/components/details/RecordDetail";
 import { PrescriptionDetail } from "@/components/details/PrescriptionDetail";
+import PatientHealthProfileModal from "@/components/PatientHealthProfileModal";
 
 interface PatientProfile {
   BloodType: string | null;
@@ -38,6 +39,7 @@ interface PatientProfile {
   EmergencyContactPhone: string | null;
   EmergencyContactRelationship: string | null;
   PrimaryCarePhysician: { FirstName: string; LastName: string } | null;
+  PrimaryCarePhysicianID?: string | null;
 }
 
 interface Allergy {
@@ -196,6 +198,7 @@ export default function PatientDetailPage() {
   const [records, setRecords] = useState<MedicalRecord[]>([]);
   const [prescriptions, setPrescriptions] = useState<Prescription[]>([]);
   const [loading, setLoading] = useState(true);
+  const [profileModalOpen, setProfileModalOpen] = useState(false);
 
   // Detail view state
   const [selectedAppt, setSelectedAppt] = useState<Appointment | null>(null);
@@ -817,14 +820,42 @@ export default function PatientDetailPage() {
         >
           &larr; Back to Patient List
         </Link>
-        <h1 className="text-2xl font-medium tracking-tight mt-2">
-          {patient.FirstName} {patient.LastName}
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          {patient.Email}
-          {patient.Phone ? ` · ${patient.Phone}` : ""}
-        </p>
+        <div className="flex items-start justify-between mt-2">
+          <div>
+            <h1 className="text-2xl font-medium tracking-tight">
+              {patient.FirstName} {patient.LastName}
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              {patient.Email}
+              {patient.Phone ? ` · ${patient.Phone}` : ""}
+            </p>
+          </div>
+          <Button size="sm" variant="outline" onClick={() => setProfileModalOpen(true)}>
+            Edit Health Profile
+          </Button>
+        </div>
       </header>
+
+      <PatientHealthProfileModal
+        patientId={patient.UserID}
+        open={profileModalOpen}
+        onClose={() => setProfileModalOpen(false)}
+        onSaved={({ profile, allergies, conditions }) => {
+          setPatient((prev) =>
+            prev
+              ? {
+                  ...prev,
+                  PatientProfile: profile,
+                  PatientAllergies: allergies,
+                  PatientConditions: conditions,
+                }
+              : prev,
+          );
+        }}
+        initialProfile={patient.PatientProfile}
+        initialAllergies={patient.PatientAllergies ?? []}
+        initialConditions={patient.PatientConditions ?? []}
+      />
 
       {/* Health Profile — row 1: 4 stat cards */}
       <div className="grid grid-cols-4 gap-4 mb-4">
