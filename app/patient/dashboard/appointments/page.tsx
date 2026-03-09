@@ -5,12 +5,9 @@ import { useSearchParams } from "next/navigation";
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   PlusIcon,
-  XMarkIcon,
   TableCellsIcon,
   CalendarDaysIcon,
 } from "@heroicons/react/24/outline";
@@ -27,10 +24,24 @@ import {
 import { DataTable, SortableHeader } from "@/components/ui/data-table";
 import { AppointmentDetail } from "@/components/details/AppointmentDetail";
 import { formatDate } from "@/lib/format";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogBody,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { BookAppointmentModal } from "@/components/appointments/BookAppointmentModal";
 
 interface DoctorProfile {
-  Degree: string | null;
+  ClinicalCategory: string | null;
   Specialty: string | null;
+  Degree: string | null;
+  BoardCertified: boolean;
+  SubSpecialties: string[];
+  Bio: string | null;
+  Telehealth: boolean;
 }
 
 interface Doctor {
@@ -84,7 +95,6 @@ const statusVariant: Record<string, string> = {
     "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400",
 };
 
-
 function formatTime(timeStr: string) {
   const d = new Date(timeStr);
   return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", timeZone: "UTC" });
@@ -99,10 +109,11 @@ function PatientAppointmentsContent() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
   const [view, setView] = useState<"table" | "calendar">("table");
   const [selected, setSelected] = useState<Appointment | null>(null);
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [pickerSearch, setPickerSearch] = useState("");
+  const [bookingDoctor, setBookingDoctor] = useState<Doctor | null>(null);
 
   useEffect(() => {
     const saved = sessionStorage.getItem("patient-appt-view") as
@@ -117,14 +128,6 @@ function PatientAppointmentsContent() {
     sessionStorage.setItem("patient-appt-view", v);
   }
 
-  const [form, setForm] = useState({
-    doctorId: "",
-    date: "",
-    startTime: "",
-    reason: "",
-    type: "checkup",
-  });
-
   const fetchAppointments = useCallback(async function fetchAppointments() {
     try {
       const res = await fetch("/api/patient/appointments");
@@ -136,55 +139,21 @@ function PatientAppointmentsContent() {
     }
   }, []);
 
-  async function fetchDoctors() {
-    const res = await fetch("/api/patient/doctors");
-    if (!res.ok) return;
-    const data = await res.json();
-    setDoctors(data.doctors);
-  }
-
   useEffect(() => {
     fetchAppointments();
-    fetchDoctors();
+    fetch("/api/patient/doctors")
+      .then((r) => r.json())
+      .then(({ doctors }) => setDoctors(doctors ?? []));
   }, [fetchAppointments]);
 
+  // Handle ?doctor= param — open booking modal directly for that doctor
   useEffect(() => {
     const doctorId = searchParams.get("doctor");
-    if (doctorId) {
-      setForm((prev) => ({ ...prev, doctorId }));
-      setShowForm(true);
+    if (doctorId && doctors.length > 0) {
+      const found = doctors.find((d) => d.UserID === doctorId);
+      if (found) setBookingDoctor(found);
     }
-  }, [searchParams]);
-
-  function resetForm() {
-    setForm({
-      doctorId: "",
-      date: "",
-      startTime: "",
-      reason: "",
-      type: "checkup",
-    });
-    setShowForm(false);
-  }
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setSubmitting(true);
-
-    try {
-      const res = await fetch("/api/patient/appointments", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-      if (!res.ok) return;
-
-      resetForm();
-      await fetchAppointments();
-    } finally {
-      setSubmitting(false);
-    }
-  }
+  }, [searchParams, doctors]);
 
   const handleCancel = useCallback(async function handleCancel(id: string) {
     if (!confirm("Are you sure you want to cancel this appointment?")) return;
@@ -198,6 +167,14 @@ function PatientAppointmentsContent() {
       await fetchAppointments();
     }
   }, [fetchAppointments]);
+
+  const filteredDoctors = pickerSearch
+    ? doctors.filter((d) =>
+        `${d.FirstName} ${d.LastName}`
+          .toLowerCase()
+          .includes(pickerSearch.toLowerCase())
+      )
+    : doctors;
 
   const columns = useMemo<ColumnDef<Appointment, unknown>[]>(
     () => [
@@ -317,34 +294,32 @@ function PatientAppointmentsContent() {
             <Skeleton className="h-9 w-44" />
           </div>
         </header>
-        <Card>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Date</TableHead>
-                <TableHead>Time</TableHead>
-                <TableHead>Doctor</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Place</TableHead>
-                <TableHead>Actions</TableHead>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Date</TableHead>
+              <TableHead>Time</TableHead>
+              <TableHead>Doctor</TableHead>
+              <TableHead>Type</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Place</TableHead>
+              <TableHead>Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {Array.from({ length: 5 }).map((_, i) => (
+              <TableRow key={i}>
+                <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+                <TableCell><Skeleton className="h-4 w-28" /></TableCell>
+                <TableCell><Skeleton className="h-4 w-32" /></TableCell>
+                <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+                <TableCell><Skeleton className="h-5 w-20 rounded-full" /></TableCell>
+                <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+                <TableCell><Skeleton className="h-7 w-16" /></TableCell>
               </TableRow>
-            </TableHeader>
-            <TableBody>
-              {Array.from({ length: 5 }).map((_, i) => (
-                <TableRow key={i}>
-                  <TableCell><Skeleton className="h-4 w-20" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-28" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-32" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-20" /></TableCell>
-                  <TableCell><Skeleton className="h-5 w-20 rounded-full" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-20" /></TableCell>
-                  <TableCell><Skeleton className="h-7 w-16" /></TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </Card>
+            ))}
+          </TableBody>
+        </Table>
       </>
     );
   }
@@ -361,7 +336,6 @@ function PatientAppointmentsContent() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          {/* View toggle */}
           <div className="flex items-center rounded-md border bg-background p-0.5 gap-0.5">
             <Button
               variant={view === "table" ? "secondary" : "ghost"}
@@ -382,119 +356,12 @@ function PatientAppointmentsContent() {
               Calendar
             </Button>
           </div>
-          <Button
-            onClick={() => {
-              if (showForm) {
-                resetForm();
-              } else {
-                setShowForm(true);
-              }
-            }}
-          >
-            {showForm ? (
-              <>
-                <XMarkIcon className="h-4 w-4" /> Cancel
-              </>
-            ) : (
-              <>
-                <PlusIcon className="h-4 w-4" /> Request Appointment
-              </>
-            )}
+          <Button onClick={() => setPickerOpen(true)}>
+            <PlusIcon className="h-4 w-4" />
+            Request Appointment
           </Button>
         </div>
       </header>
-
-      {showForm && (
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle className="text-sm font-medium">
-              Request Appointment
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit}>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <Label>Doctor</Label>
-                  <select
-                    required
-                    value={form.doctorId}
-                    onChange={(e) =>
-                      setForm({ ...form, doctorId: e.target.value })
-                    }
-                    className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm outline-none"
-                  >
-                    <option value="">Select doctor...</option>
-                    {doctors.map((d) => (
-                      <option key={d.UserID} value={d.UserID}>
-                        Dr. {d.FirstName} {d.LastName}
-                        {d.DoctorProfile?.Degree ? ` (${d.DoctorProfile.Degree})` : ""}
-                        {d.DoctorProfile?.Specialty ? ` · ${d.DoctorProfile.Specialty}` : ""}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="space-y-1.5">
-                  <Label>Date</Label>
-                  <Input
-                    type="date"
-                    required
-                    value={form.date}
-                    onChange={(e) => setForm({ ...form, date: e.target.value })}
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <Label>Preferred Time</Label>
-                  <Input
-                    type="time"
-                    required
-                    value={form.startTime}
-                    onChange={(e) =>
-                      setForm({ ...form, startTime: e.target.value })
-                    }
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <Label>Type</Label>
-                  <select
-                    value={form.type}
-                    onChange={(e) =>
-                      setForm({ ...form, type: e.target.value })
-                    }
-                    className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm outline-none"
-                  >
-                    {TYPE_OPTIONS.map((t) => (
-                      <option key={t.value} value={t.value}>
-                        {t.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="col-span-2 space-y-1.5">
-                  <Label>Reason</Label>
-                  <Input
-                    type="text"
-                    required
-                    value={form.reason}
-                    onChange={(e) =>
-                      setForm({ ...form, reason: e.target.value })
-                    }
-                    placeholder="Reason for visit"
-                  />
-                </div>
-              </div>
-              <div className="mt-4 flex justify-end gap-2">
-                <Button type="button" variant="outline" onClick={resetForm}>
-                  Cancel
-                </Button>
-                <Button type="submit" disabled={submitting}>
-                  {submitting ? "Submitting..." : "Submit Request"}
-                </Button>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
-      )}
 
       {view === "calendar" ? (
         <AppointmentCalendar
@@ -513,6 +380,70 @@ function PatientAppointmentsContent() {
           onRowClick={(appt) => setSelected(appt)}
         />
       )}
+
+      {/* Doctor picker modal */}
+      <Dialog open={pickerOpen} onOpenChange={(open) => {
+        setPickerOpen(open);
+        if (!open) setPickerSearch("");
+      }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Choose a Doctor</DialogTitle>
+            <DialogDescription>
+              Select a doctor to book an appointment with.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogBody>
+            <Input
+              placeholder="Search by name..."
+              value={pickerSearch}
+              onChange={(e) => setPickerSearch(e.target.value)}
+              className="mb-3"
+            />
+            <div className="space-y-1.5 max-h-[400px] overflow-y-auto pr-1">
+              {filteredDoctors.length === 0 ? (
+                <p className="text-sm text-muted-foreground py-4 text-center">No doctors found.</p>
+              ) : (
+                filteredDoctors.map((d) => (
+                  <button
+                    key={d.UserID}
+                    className="w-full text-left rounded-lg border px-4 py-3 hover:bg-accent transition-colors"
+                    onClick={() => {
+                      setBookingDoctor(d);
+                      setPickerOpen(false);
+                      setPickerSearch("");
+                    }}
+                  >
+                    <p className="font-medium text-sm">
+                      Dr. {d.FirstName} {d.LastName}
+                      {d.DoctorProfile?.Degree ? (
+                        <span className="ml-1.5 text-xs font-normal text-muted-foreground">
+                          {d.DoctorProfile.Degree}
+                        </span>
+                      ) : null}
+                    </p>
+                    {d.DoctorProfile?.Specialty && (
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        {d.DoctorProfile.Specialty}
+                      </p>
+                    )}
+                  </button>
+                ))
+              )}
+            </div>
+          </DialogBody>
+        </DialogContent>
+      </Dialog>
+
+      {/* Booking modal */}
+      <BookAppointmentModal
+        doctor={bookingDoctor}
+        onClose={() => setBookingDoctor(null)}
+        onBooked={() => {
+          setBookingDoctor(null);
+          fetchAppointments();
+        }}
+      />
 
       <AppointmentDetail appointment={selected} onClose={() => setSelected(null)} />
     </>
