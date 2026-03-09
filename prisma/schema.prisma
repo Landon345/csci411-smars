@@ -64,6 +64,24 @@ enum MedicalDegree {
   PA
 }
 
+enum BloodType {
+  A_positive
+  A_negative
+  B_positive
+  B_negative
+  AB_positive
+  AB_negative
+  O_positive
+  O_negative
+}
+
+enum AllergySeverity {
+  low
+  medium
+  high
+  severe
+}
+
 enum AuditAction {
   login_success
   login_failure
@@ -108,6 +126,10 @@ model User {
   AuditLogs             AuditLog[]
   InvitesCreated        InviteToken[] @relation("InviteCreator")
   DoctorProfile         DoctorProfile? @relation("DoctorProfile")
+  PatientProfile        PatientProfile?    @relation("PatientProfile")
+  PCPPatients           PatientProfile[]   @relation("PatientPCP")
+  PatientAllergies      Allergy[]          @relation("PatientAllergies")
+  PatientConditions     ChronicCondition[] @relation("PatientConditions")
 
   @@index([FirstName, CreatedAt(sort: Desc)])
   @@index([LastName, CreatedAt(sort: Desc)])
@@ -227,4 +249,37 @@ model DoctorProfile {
   Bio              String?           @db.Text
   Telehealth       Boolean           @default(false)
   UpdatedAt        DateTime          @updatedAt
+}
+
+model PatientProfile {
+  ProfileID                    String     @id @default(uuid())
+  UserID                       String     @unique
+  User                         User       @relation("PatientProfile", fields: [UserID], references: [UserID])
+  BloodType                    BloodType?
+  InsuranceProvider            String?    @db.VarChar(255)
+  InsurancePolicyNumber        String?    @db.VarChar(100)
+  EmergencyContactName         String?    @db.VarChar(255)
+  EmergencyContactPhone        String?    @db.VarChar(23)
+  EmergencyContactRelationship String?    @db.VarChar(100)
+  PrimaryCarePhysicianID       String?
+  PrimaryCarePhysician         User?      @relation("PatientPCP", fields: [PrimaryCarePhysicianID], references: [UserID])
+  UpdatedAt                    DateTime   @updatedAt
+}
+
+model Allergy {
+  AllergyID String          @id @default(uuid())
+  PatientID String
+  Patient   User            @relation("PatientAllergies", fields: [PatientID], references: [UserID])
+  Name      String          @db.VarChar(255)
+  Severity  AllergySeverity
+  Reaction  String?         @db.VarChar(500)
+  CreatedAt DateTime        @default(now()) @db.Timestamp(6)
+}
+
+model ChronicCondition {
+  ConditionID String   @id @default(uuid())
+  PatientID   String
+  Patient     User     @relation("PatientConditions", fields: [PatientID], references: [UserID])
+  Name        String   @db.VarChar(255)
+  CreatedAt   DateTime @default(now()) @db.Timestamp(6)
 }

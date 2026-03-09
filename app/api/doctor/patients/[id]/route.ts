@@ -28,6 +28,14 @@ export async function GET(
       LastName: true,
       Email: true,
       Phone: true,
+      PatientProfile: {
+        include: {
+          PrimaryCarePhysician: { select: { FirstName: true, LastName: true } },
+        },
+      },
+      PatientAllergies: true,
+      PatientConditions: true,
+      PatientPrescriptions: { where: { Status: "active" } },
     },
   });
 

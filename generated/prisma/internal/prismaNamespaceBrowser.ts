@@ -57,7 +57,10 @@ export const ModelName = {
   Prescription: 'Prescription',
   AuditLog: 'AuditLog',
   InviteToken: 'InviteToken',
-  DoctorProfile: 'DoctorProfile'
+  DoctorProfile: 'DoctorProfile',
+  PatientProfile: 'PatientProfile',
+  Allergy: 'Allergy',
+  ChronicCondition: 'ChronicCondition'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -207,6 +210,44 @@ export const DoctorProfileScalarFieldEnum = {
 } as const
 
 export type DoctorProfileScalarFieldEnum = (typeof DoctorProfileScalarFieldEnum)[keyof typeof DoctorProfileScalarFieldEnum]
+
+
+export const PatientProfileScalarFieldEnum = {
+  ProfileID: 'ProfileID',
+  UserID: 'UserID',
+  BloodType: 'BloodType',
+  InsuranceProvider: 'InsuranceProvider',
+  InsurancePolicyNumber: 'InsurancePolicyNumber',
+  EmergencyContactName: 'EmergencyContactName',
+  EmergencyContactPhone: 'EmergencyContactPhone',
+  EmergencyContactRelationship: 'EmergencyContactRelationship',
+  PrimaryCarePhysicianID: 'PrimaryCarePhysicianID',
+  UpdatedAt: 'UpdatedAt'
+} as const
+
+export type PatientProfileScalarFieldEnum = (typeof PatientProfileScalarFieldEnum)[keyof typeof PatientProfileScalarFieldEnum]
+
+
+export const AllergyScalarFieldEnum = {
+  AllergyID: 'AllergyID',
+  PatientID: 'PatientID',
+  Name: 'Name',
+  Severity: 'Severity',
+  Reaction: 'Reaction',
+  CreatedAt: 'CreatedAt'
+} as const
+
+export type AllergyScalarFieldEnum = (typeof AllergyScalarFieldEnum)[keyof typeof AllergyScalarFieldEnum]
+
+
+export const ChronicConditionScalarFieldEnum = {
+  ConditionID: 'ConditionID',
+  PatientID: 'PatientID',
+  Name: 'Name',
+  CreatedAt: 'CreatedAt'
+} as const
+
+export type ChronicConditionScalarFieldEnum = (typeof ChronicConditionScalarFieldEnum)[keyof typeof ChronicConditionScalarFieldEnum]
 
 
 export const SortOrder = {

@@ -74,3 +74,18 @@ export type InviteToken = Prisma.InviteTokenModel
  * 
  */
 export type DoctorProfile = Prisma.DoctorProfileModel
+/**
+ * Model PatientProfile
+ * 
+ */
+export type PatientProfile = Prisma.PatientProfileModel
+/**
+ * Model Allergy
+ * 
+ */
+export type Allergy = Prisma.AllergyModel
+/**
+ * Model ChronicCondition
+ * 
+ */
+export type ChronicCondition = Prisma.ChronicConditionModel
