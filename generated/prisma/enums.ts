@@ -81,6 +81,30 @@ export const MedicalDegree = {
 export type MedicalDegree = (typeof MedicalDegree)[keyof typeof MedicalDegree]
 
 
+export const BloodType = {
+  A_positive: 'A_positive',
+  A_negative: 'A_negative',
+  B_positive: 'B_positive',
+  B_negative: 'B_negative',
+  AB_positive: 'AB_positive',
+  AB_negative: 'AB_negative',
+  O_positive: 'O_positive',
+  O_negative: 'O_negative'
+} as const
+
+export type BloodType = (typeof BloodType)[keyof typeof BloodType]
+
+
+export const AllergySeverity = {
+  low: 'low',
+  medium: 'medium',
+  high: 'high',
+  severe: 'severe'
+} as const
+
+export type AllergySeverity = (typeof AllergySeverity)[keyof typeof AllergySeverity]
+
+
 export const AuditAction = {
   login_success: 'login_success',
   login_failure: 'login_failure',
