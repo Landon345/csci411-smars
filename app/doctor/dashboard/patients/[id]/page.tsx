@@ -30,12 +30,37 @@ import { AppointmentDetail } from "@/components/details/AppointmentDetail";
 import { RecordDetail } from "@/components/details/RecordDetail";
 import { PrescriptionDetail } from "@/components/details/PrescriptionDetail";
 
+interface PatientProfile {
+  BloodType: string | null;
+  InsuranceProvider: string | null;
+  InsurancePolicyNumber: string | null;
+  EmergencyContactName: string | null;
+  EmergencyContactPhone: string | null;
+  EmergencyContactRelationship: string | null;
+  PrimaryCarePhysician: { FirstName: string; LastName: string } | null;
+}
+
+interface Allergy {
+  AllergyID: string;
+  Name: string;
+  Severity: string;
+  Reaction: string | null;
+}
+
+interface ChronicCondition {
+  ConditionID: string;
+  Name: string;
+}
+
 interface Patient {
   UserID: string;
   FirstName: string;
   LastName: string;
   Email: string;
   Phone: string | null;
+  PatientProfile?: PatientProfile | null;
+  PatientAllergies?: Allergy[];
+  PatientConditions?: ChronicCondition[];
 }
 
 interface Appointment {
@@ -138,6 +163,17 @@ const rxStatusVariant: Record<string, string> = {
     "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
 };
 
+const severityColors: Record<string, string> = {
+  low: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
+  medium: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400",
+  high: "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400",
+  severe: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
+};
+
+function formatBloodType(bt: string | null | undefined) {
+  if (!bt) return null;
+  return bt.replace("_positive", "+").replace("_negative", "-");
+}
 
 function formatTime(timeStr: string) {
   return new Date(timeStr).toLocaleTimeString([], {
@@ -789,6 +825,133 @@ export default function PatientDetailPage() {
           {patient.Phone ? ` · ${patient.Phone}` : ""}
         </p>
       </header>
+
+      {/* Health Profile — row 1: 4 stat cards */}
+      <div className="grid grid-cols-4 gap-4 mb-4">
+        <Card>
+          <CardHeader className="pb-1 pt-4 px-4">
+            <CardTitle className="text-sm font-medium">Blood Type</CardTitle>
+          </CardHeader>
+          <CardContent className="px-4 pb-4">
+            <p className="text-sm">
+              {formatBloodType(patient.PatientProfile?.BloodType) ?? (
+                <span className="text-muted-foreground">None on file</span>
+              )}
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-1 pt-4 px-4">
+            <CardTitle className="text-sm font-medium">Primary Care Physician</CardTitle>
+          </CardHeader>
+          <CardContent className="px-4 pb-4">
+            <p className="text-sm">
+              {patient.PatientProfile?.PrimaryCarePhysician ? (
+                `Dr. ${patient.PatientProfile.PrimaryCarePhysician.FirstName} ${patient.PatientProfile.PrimaryCarePhysician.LastName}`
+              ) : (
+                <span className="text-muted-foreground">None on file</span>
+              )}
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-1 pt-4 px-4">
+            <CardTitle className="text-sm font-medium">Insurance Provider</CardTitle>
+          </CardHeader>
+          <CardContent className="px-4 pb-4">
+            <p className="text-sm">
+              {patient.PatientProfile?.InsuranceProvider ?? (
+                <span className="text-muted-foreground">None on file</span>
+              )}
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-1 pt-4 px-4">
+            <CardTitle className="text-sm font-medium">Policy Number</CardTitle>
+          </CardHeader>
+          <CardContent className="px-4 pb-4">
+            <p className="text-sm">
+              {patient.PatientProfile?.InsurancePolicyNumber ?? (
+                <span className="text-muted-foreground">None on file</span>
+              )}
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Health Profile — row 2: emergency contact, allergies, conditions */}
+      <div className="grid grid-cols-3 gap-4 mb-6">
+        <Card>
+          <CardHeader className="pb-2 pt-4 px-4">
+            <CardTitle className="text-sm font-medium">Emergency Contact</CardTitle>
+          </CardHeader>
+          <CardContent className="px-4 pb-4">
+            {patient.PatientProfile?.EmergencyContactName ? (
+              <div className="space-y-0.5">
+                <p className="text-sm font-medium">{patient.PatientProfile.EmergencyContactName}</p>
+                {patient.PatientProfile.EmergencyContactRelationship && (
+                  <p className="text-sm text-muted-foreground">{patient.PatientProfile.EmergencyContactRelationship}</p>
+                )}
+                {patient.PatientProfile.EmergencyContactPhone && (
+                  <p className="text-sm text-muted-foreground">{patient.PatientProfile.EmergencyContactPhone}</p>
+                )}
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">None on file</p>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2 pt-4 px-4">
+            <CardTitle className="text-sm font-medium">Allergies</CardTitle>
+          </CardHeader>
+          <CardContent className="px-4 pb-4">
+            {patient.PatientAllergies && patient.PatientAllergies.length > 0 ? (
+              <ul className="space-y-2">
+                {patient.PatientAllergies.map((a) => (
+                  <li key={a.AllergyID} className="flex items-center justify-between gap-2 rounded-md border px-3 py-2">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium">{a.Name}</p>
+                      {a.Reaction && (
+                        <p className="text-xs text-muted-foreground truncate">{a.Reaction}</p>
+                      )}
+                    </div>
+                    <Badge className={severityColors[a.Severity.toLowerCase()] ?? "bg-gray-100 text-gray-700"}>
+                      {a.Severity}
+                    </Badge>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-sm text-muted-foreground">None on file</p>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2 pt-4 px-4">
+            <CardTitle className="text-sm font-medium">Chronic Conditions</CardTitle>
+          </CardHeader>
+          <CardContent className="px-4 pb-4">
+            {patient.PatientConditions && patient.PatientConditions.length > 0 ? (
+              <ul className="space-y-2">
+                {patient.PatientConditions.map((c) => (
+                  <li key={c.ConditionID} className="rounded-md border px-3 py-2 text-sm">
+                    {c.Name}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-sm text-muted-foreground">None on file</p>
+            )}
+          </CardContent>
+        </Card>
+      </div>
 
       {/* Appointment Edit Form */}
       {editingAppt && (
