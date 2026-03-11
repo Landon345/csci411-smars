@@ -4,13 +4,9 @@ import { useCallback, useEffect, useMemo, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import Link from "next/link";
-import { XMarkIcon as XMarkFilterIcon } from "@heroicons/react/24/outline";
 import {
   PlusIcon,
   XMarkIcon,
@@ -23,6 +19,10 @@ import {
 } from "@heroicons/react/24/outline";
 import { AppointmentCalendar } from "@/components/appointments/AppointmentCalendar";
 import { AppointmentDetail } from "@/components/details/AppointmentDetail";
+import {
+  DoctorAppointmentModal,
+  type ModalAppointment,
+} from "@/components/appointments/DoctorAppointmentModal";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -87,7 +87,6 @@ const statusVariant: Record<string, string> = {
     "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400",
 };
 
-
 function formatTime(timeStr: string) {
   const d = new Date(timeStr);
   return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", timeZone: "UTC" });
@@ -95,6 +94,22 @@ function formatTime(timeStr: string) {
 
 function typeLabel(type: string) {
   return TYPE_OPTIONS.find((t) => t.value === type)?.label ?? type;
+}
+
+function toModalAppointment(a: Appointment): ModalAppointment {
+  return {
+    AppointmentID: a.AppointmentID,
+    PatientID: a.PatientID,
+    Date: a.Date,
+    StartTime: a.StartTime,
+    EndTime: a.EndTime,
+    Place: a.Place,
+    Reason: a.Reason,
+    Type: a.Type,
+    Status: a.Status,
+    Notes: a.Notes,
+    VisitSummary: a.VisitSummary,
+  };
 }
 
 function AppointmentsPageContent() {
@@ -105,12 +120,11 @@ function AppointmentsPageContent() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [patients, setPatients] = useState<Patient[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false);
-  const [editing, setEditing] = useState<Appointment | null>(null);
-  const [submitting, setSubmitting] = useState(false);
   const [reminding, setReminding] = useState<string | null>(null);
   const [view, setView] = useState<"table" | "calendar">("table");
   const [selected, setSelected] = useState<Appointment | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editingAppt, setEditingAppt] = useState<ModalAppointment | null>(null);
 
   useEffect(() => {
     const saved = sessionStorage.getItem("doctor-appt-view") as
@@ -125,25 +139,20 @@ function AppointmentsPageContent() {
     sessionStorage.setItem("doctor-appt-view", v);
   }
 
-  function handleChipEdit(id: string) {
-    const appt = appointments.find((a) => a.AppointmentID === id);
-    if (!appt) return;
-    startEdit(appt);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+  function openNew() {
+    setEditingAppt(null);
+    setModalOpen(true);
   }
 
-  const [form, setForm] = useState({
-    patientId: "",
-    date: "",
-    startTime: "",
-    endTime: "",
-    place: "",
-    reason: "",
-    type: "checkup",
-    status: "scheduled",
-    notes: "",
-    visitSummary: "",
-  });
+  const openEdit = useCallback(function openEdit(appt: Appointment) {
+    setEditingAppt(toModalAppointment(appt));
+    setModalOpen(true);
+  }, []);
+
+  function handleChipEdit(id: string) {
+    const appt = appointments.find((a) => a.AppointmentID === id);
+    if (appt) openEdit(appt);
+  }
 
   const fetchAppointments = useCallback(async function fetchAppointments() {
     try {
@@ -168,98 +177,19 @@ function AppointmentsPageContent() {
     fetchPatients();
   }, [fetchAppointments]);
 
-  function resetForm() {
-    setForm({
-      patientId: "",
-      date: "",
-      startTime: "",
-      endTime: "",
-      place: "",
-      reason: "",
-      type: "checkup",
-      status: "scheduled",
-      notes: "",
-      visitSummary: "",
-    });
-    setEditing(null);
-    setShowForm(false);
-  }
-
-  const startEdit = useCallback(function startEdit(appt: Appointment) {
-    setForm({
-      patientId: appt.PatientID,
-      date: new Date(appt.Date).toISOString().split("T")[0],
-      startTime: formatTime24(appt.StartTime),
-      endTime: formatTime24(appt.EndTime),
-      place: appt.Place,
-      reason: appt.Reason,
-      type: appt.Type,
-      status: appt.Status,
-      notes: appt.Notes || "",
-      visitSummary: appt.VisitSummary || "",
-    });
-    setEditing(appt);
-    setShowForm(true);
-  }, []);
-
-  function formatTime24(timeStr: string) {
-    const d = new Date(timeStr);
-    return d.toTimeString().slice(0, 5);
-  }
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setSubmitting(true);
-
-    try {
-      if (editing) {
-        const res = await fetch(
-          `/api/doctor/appointments/${editing.AppointmentID}`,
-          {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(form),
-          },
-        );
-        if (!res.ok) return;
-      } else {
-        const res = await fetch("/api/doctor/appointments", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(form),
-        });
-        if (!res.ok) return;
-      }
-
-      resetForm();
-      await fetchAppointments();
-    } finally {
-      setSubmitting(false);
-    }
-  }
-
   const handleDelete = useCallback(async function handleDelete(id: string) {
     if (!confirm("Are you sure you want to delete this appointment?")) return;
-
-    const res = await fetch(`/api/doctor/appointments/${id}`, {
-      method: "DELETE",
-    });
-    if (res.ok) {
-      await fetchAppointments();
-    }
+    const res = await fetch(`/api/doctor/appointments/${id}`, { method: "DELETE" });
+    if (res.ok) await fetchAppointments();
   }, [fetchAppointments]);
 
   const sendReminder = useCallback(async function sendReminder(id: string) {
     setReminding(id);
     try {
-      const res = await fetch(`/api/doctor/appointments/${id}/remind`, {
-        method: "POST",
-      });
+      const res = await fetch(`/api/doctor/appointments/${id}/remind`, { method: "POST" });
       if (res.ok) {
         setAppointments((prev) =>
-          prev.map((a) =>
-            a.AppointmentID === id ? { ...a, ReminderSent: true } : a,
-          ),
+          prev.map((a) => (a.AppointmentID === id ? { ...a, ReminderSent: true } : a)),
         );
       }
     } finally {
@@ -317,7 +247,7 @@ function AppointmentsPageContent() {
         ),
         cell: ({ row }) => (
           <span className="text-muted-foreground">
-            {formatTime(row.original.StartTime)} -{" "}
+            {formatTime(row.original.StartTime)} –{" "}
             {formatTime(row.original.EndTime)}
           </span>
         ),
@@ -392,7 +322,7 @@ function AppointmentsPageContent() {
               <Button
                 variant="ghost"
                 size="xs"
-                onClick={() => startEdit(appt)}
+                onClick={() => openEdit(appt)}
               >
                 <PencilSquareIcon className="h-3.5 w-3.5" />
                 Edit
@@ -432,7 +362,7 @@ function AppointmentsPageContent() {
         },
       },
     ],
-    [startEdit, handleDelete, sendReminder, reminding],
+    [openEdit, handleDelete, sendReminder, reminding],
   );
 
   if (loading) {
@@ -490,7 +420,6 @@ function AppointmentsPageContent() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          {/* View toggle */}
           <div className="flex items-center rounded-md border bg-background p-0.5 gap-0.5">
             <Button
               variant={view === "table" ? "secondary" : "ghost"}
@@ -511,183 +440,12 @@ function AppointmentsPageContent() {
               Calendar
             </Button>
           </div>
-          <Button
-            onClick={() => {
-              if (showForm) {
-                resetForm();
-              } else {
-                setShowForm(true);
-              }
-            }}
-          >
-            {showForm ? (
-              <><XMarkIcon className="h-4 w-4" /> Cancel</>
-            ) : (
-              <><PlusIcon className="h-4 w-4" /> New Appointment</>
-            )}
+          <Button onClick={openNew}>
+            <PlusIcon className="h-4 w-4" />
+            New Appointment
           </Button>
         </div>
       </header>
-
-      {showForm && (
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle className="text-sm font-medium">
-              {editing ? "Edit Appointment" : "New Appointment"}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit}>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <Label>Patient</Label>
-                  <select
-                    required
-                    disabled={!!editing}
-                    value={form.patientId}
-                    onChange={(e) =>
-                      setForm({ ...form, patientId: e.target.value })
-                    }
-                    className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm outline-none disabled:opacity-50"
-                  >
-                    <option value="">Select patient...</option>
-                    {patients.map((p) => (
-                      <option key={p.UserID} value={p.UserID}>
-                        {p.FirstName} {p.LastName}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="space-y-1.5">
-                  <Label>Date</Label>
-                  <Input
-                    type="date"
-                    required
-                    value={form.date}
-                    onChange={(e) => setForm({ ...form, date: e.target.value })}
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <Label>Start Time</Label>
-                  <Input
-                    type="time"
-                    required
-                    value={form.startTime}
-                    onChange={(e) =>
-                      setForm({ ...form, startTime: e.target.value })
-                    }
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <Label>End Time</Label>
-                  <Input
-                    type="time"
-                    required
-                    value={form.endTime}
-                    onChange={(e) =>
-                      setForm({ ...form, endTime: e.target.value })
-                    }
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <Label>Place</Label>
-                  <Input
-                    type="text"
-                    required
-                    value={form.place}
-                    onChange={(e) =>
-                      setForm({ ...form, place: e.target.value })
-                    }
-                    placeholder="e.g. Room 204"
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <Label>Type</Label>
-                  <select
-                    value={form.type}
-                    onChange={(e) =>
-                      setForm({ ...form, type: e.target.value })
-                    }
-                    className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm outline-none"
-                  >
-                    {TYPE_OPTIONS.map((t) => (
-                      <option key={t.value} value={t.value}>
-                        {t.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                {editing && (
-                  <div className="space-y-1.5">
-                    <Label>Status</Label>
-                    <select
-                      value={form.status}
-                      onChange={(e) =>
-                        setForm({ ...form, status: e.target.value })
-                      }
-                      className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm outline-none"
-                    >
-                      {STATUS_OPTIONS.map((s) => (
-                        <option key={s.value} value={s.value}>
-                          {s.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                )}
-                <div className="col-span-2 space-y-1.5">
-                  <Label>Reason</Label>
-                  <Input
-                    type="text"
-                    required
-                    value={form.reason}
-                    onChange={(e) =>
-                      setForm({ ...form, reason: e.target.value })
-                    }
-                    placeholder="Reason for visit"
-                  />
-                </div>
-                <div className="col-span-2 space-y-1.5">
-                  <Label>Notes (optional)</Label>
-                  <Textarea
-                    value={form.notes}
-                    onChange={(e) =>
-                      setForm({ ...form, notes: e.target.value })
-                    }
-                    rows={3}
-                    placeholder="Additional notes..."
-                  />
-                </div>
-                {editing && form.status === "completed" && (
-                  <div className="col-span-2 space-y-1.5">
-                    <Label>Visit Summary (SOAP Note)</Label>
-                    <Textarea
-                      value={form.visitSummary}
-                      onChange={(e) =>
-                        setForm({ ...form, visitSummary: e.target.value })
-                      }
-                      rows={5}
-                      placeholder="S: Subjective&#10;O: Objective&#10;A: Assessment&#10;P: Plan"
-                    />
-                  </div>
-                )}
-              </div>
-              <div className="mt-4 flex justify-end gap-2">
-                <Button type="button" variant="outline" onClick={resetForm}>
-                  Cancel
-                </Button>
-                <Button type="submit" disabled={submitting}>
-                  {submitting
-                    ? "Saving..."
-                    : editing
-                      ? "Update Appointment"
-                      : "Create Appointment"}
-                </Button>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
-      )}
 
       {filterLabel && (
         <div className="mb-4 flex items-center gap-2 rounded-md border bg-muted/40 px-4 py-2 text-sm">
@@ -697,7 +455,7 @@ function AppointmentsPageContent() {
             href="/doctor/dashboard/appointments"
             className="ml-auto flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
           >
-            <XMarkFilterIcon className="h-3.5 w-3.5" />
+            <XMarkIcon className="h-3.5 w-3.5" />
             Clear
           </Link>
         </div>
@@ -716,11 +474,20 @@ function AppointmentsPageContent() {
         <DataTable
           data={displayedAppointments}
           columns={columns}
-          searchPlaceholder="Search appointments..."
+          searchPlaceholder="Search appointments…"
           onRowClick={(appt) => setSelected(appt)}
           initialFilter={effectiveInitialFilter}
         />
       )}
+
+      <DoctorAppointmentModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onSaved={fetchAppointments}
+        patients={patients}
+        editing={editingAppt}
+        existingAppointments={appointments.map(toModalAppointment)}
+      />
 
       <AppointmentDetail
         appointment={selected}
@@ -735,7 +502,6 @@ function AppointmentsPageContent() {
                   disabled={reminding === selected.AppointmentID}
                   onClick={async () => {
                     await sendReminder(selected.AppointmentID);
-                    // Sync ReminderSent state on the selected detail panel
                     setSelected((prev) =>
                       prev ? { ...prev, ReminderSent: true } : null,
                     );
@@ -757,9 +523,8 @@ function AppointmentsPageContent() {
                 variant="outline"
                 size="sm"
                 onClick={() => {
+                  openEdit(selected);
                   setSelected(null);
-                  startEdit(selected);
-                  window.scrollTo({ top: 0, behavior: "smooth" });
                 }}
               >
                 <PencilSquareIcon className="h-3.5 w-3.5" />
