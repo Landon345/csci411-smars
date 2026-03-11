@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTable, SortableHeader } from "@/components/ui/data-table";
 
@@ -14,6 +15,9 @@ interface UserRow {
 }
 
 export default function AdminUserManagement() {
+  const searchParams = useSearchParams();
+  const searchParam = searchParams.get("search") ?? "";
+
   const [users, setUsers] = useState<UserRow[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -139,6 +143,7 @@ export default function AdminUserManagement() {
         data={users}
         columns={columns}
         searchPlaceholder="Search users..."
+        initialFilter={searchParam}
       />
     </>
   );

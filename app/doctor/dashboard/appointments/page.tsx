@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
+import { XMarkIcon as XMarkFilterIcon } from "@heroicons/react/24/outline";
 import {
   PlusIcon,
   XMarkIcon,
@@ -95,7 +97,11 @@ function typeLabel(type: string) {
   return TYPE_OPTIONS.find((t) => t.value === type)?.label ?? type;
 }
 
-export default function AppointmentsPage() {
+function AppointmentsPageContent() {
+  const searchParams = useSearchParams();
+  const searchParam = searchParams.get("search") ?? "";
+  const filterParam = searchParams.get("filter") ?? "";
+
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [patients, setPatients] = useState<Patient[]>([]);
   const [loading, setLoading] = useState(true);
@@ -260,6 +266,32 @@ export default function AppointmentsPage() {
       setReminding(null);
     }
   }, []);
+
+  const displayedAppointments = useMemo(() => {
+    if (filterParam === "today") {
+      const todayStr = new Date().toISOString().split("T")[0];
+      return appointments.filter((a) => a.Date.startsWith(todayStr));
+    }
+    if (filterParam === "recent") {
+      const cutoff = new Date();
+      cutoff.setDate(cutoff.getDate() - 3);
+      cutoff.setHours(0, 0, 0, 0);
+      return appointments.filter(
+        (a) => new Date(a.Date) >= cutoff && a.Status === "completed",
+      );
+    }
+    return appointments;
+  }, [appointments, filterParam]);
+
+  const filterLabel =
+    filterParam === "today"
+      ? "Today's appointments"
+      : filterParam === "recent"
+        ? "Last 3 days"
+        : null;
+
+  const effectiveInitialFilter =
+    searchParam || (filterParam === "recent" ? "completed" : "");
 
   const columns = useMemo<ColumnDef<Appointment, unknown>[]>(
     () => [
@@ -657,9 +689,23 @@ export default function AppointmentsPage() {
         </Card>
       )}
 
+      {filterLabel && (
+        <div className="mb-4 flex items-center gap-2 rounded-md border bg-muted/40 px-4 py-2 text-sm">
+          <span className="text-muted-foreground">Filtered:</span>
+          <Badge variant="secondary">{filterLabel}</Badge>
+          <Link
+            href="/doctor/dashboard/appointments"
+            className="ml-auto flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
+          >
+            <XMarkFilterIcon className="h-3.5 w-3.5" />
+            Clear
+          </Link>
+        </div>
+      )}
+
       {view === "calendar" ? (
         <AppointmentCalendar
-          appointments={appointments}
+          appointments={displayedAppointments}
           role="doctor"
           onEditAppt={handleChipEdit}
           onViewDetail={(appt) =>
@@ -668,10 +714,11 @@ export default function AppointmentsPage() {
         />
       ) : (
         <DataTable
-          data={appointments}
+          data={displayedAppointments}
           columns={columns}
           searchPlaceholder="Search appointments..."
           onRowClick={(appt) => setSelected(appt)}
+          initialFilter={effectiveInitialFilter}
         />
       )}
 
@@ -723,5 +770,13 @@ export default function AppointmentsPage() {
         }
       />
     </>
+  );
+}
+
+export default function AppointmentsPage() {
+  return (
+    <Suspense>
+      <AppointmentsPageContent />
+    </Suspense>
   );
 }

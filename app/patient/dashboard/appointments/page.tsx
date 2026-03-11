@@ -106,6 +106,7 @@ function typeLabel(type: string) {
 
 function PatientAppointmentsContent() {
   const searchParams = useSearchParams();
+  const searchParam = searchParams.get("search") ?? "";
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [loading, setLoading] = useState(true);
@@ -378,6 +379,7 @@ function PatientAppointmentsContent() {
           columns={columns}
           searchPlaceholder="Search appointments..."
           onRowClick={(appt) => setSelected(appt)}
+          initialFilter={searchParam}
         />
       )}
 

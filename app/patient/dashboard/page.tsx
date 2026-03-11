@@ -6,6 +6,9 @@ import { Badge } from "@/components/ui/badge";
 import {
   ShieldCheckIcon,
   ClockIcon,
+  CalendarDaysIcon,
+  ClipboardDocumentListIcon,
+  BeakerIcon,
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
 
@@ -25,24 +28,46 @@ export default async function PatientDashboard() {
   const user = await getSession();
   if (!user) redirect("/login");
 
-  const [profile, allergies, conditions, activeMeds] = await Promise.all([
-    prisma.patientProfile.findUnique({
-      where: { UserID: user.UserID },
-      include: { PrimaryCarePhysician: { select: { FirstName: true, LastName: true } } },
-    }),
-    prisma.allergy.findMany({
-      where: { PatientID: user.UserID },
-      orderBy: { CreatedAt: "desc" },
-    }),
-    prisma.chronicCondition.findMany({
-      where: { PatientID: user.UserID },
-      orderBy: { CreatedAt: "desc" },
-    }),
-    prisma.prescription.findMany({
-      where: { PatientID: user.UserID, Status: "active" },
-      orderBy: { StartDate: "desc" },
-    }),
-  ]);
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+  const thirtyDaysFromNow = new Date(startOfToday);
+  thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);
+
+  const [profile, allergies, conditions, activeMeds, upcomingAppointments, recordCount, lastVisit] =
+    await Promise.all([
+      prisma.patientProfile.findUnique({
+        where: { UserID: user.UserID },
+        include: { PrimaryCarePhysician: { select: { FirstName: true, LastName: true } } },
+      }),
+      prisma.allergy.findMany({
+        where: { PatientID: user.UserID },
+        orderBy: { CreatedAt: "desc" },
+      }),
+      prisma.chronicCondition.findMany({
+        where: { PatientID: user.UserID },
+        orderBy: { CreatedAt: "desc" },
+      }),
+      prisma.prescription.findMany({
+        where: { PatientID: user.UserID, Status: "active" },
+        orderBy: { StartDate: "desc" },
+      }),
+      prisma.appointment.findMany({
+        where: {
+          PatientID: user.UserID,
+          Date: { gte: startOfToday, lte: thirtyDaysFromNow },
+          Status: { notIn: ["canceled", "no_show"] },
+        },
+        orderBy: { Date: "asc" },
+      }),
+      prisma.medicalRecord.count({
+        where: { PatientID: user.UserID },
+      }),
+      prisma.appointment.findFirst({
+        where: { PatientID: user.UserID, Status: "completed" },
+        orderBy: { Date: "desc" },
+        select: { Date: true },
+      }),
+    ]);
 
   return (
     <>
@@ -66,6 +91,96 @@ export default async function PatientDashboard() {
           </p>
         </CardContent>
       </Card>
+
+      {/* Stats Row */}
+      <div className="grid grid-cols-4 gap-6 mb-6">
+        <Link href="/patient/dashboard/appointments?search=scheduled" className="group">
+          <Card className="h-full transition-colors group-hover:bg-muted/50">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                <CalendarDaysIcon className="h-4 w-4" />
+                Upcoming (30 days)
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {upcomingAppointments.length === 0 ? (
+                <p className="text-sm text-muted-foreground">None scheduled.</p>
+              ) : (
+                <div className="flex flex-wrap gap-1.5">
+                  {upcomingAppointments.map((appt) => (
+                    <Badge key={appt.AppointmentID} variant="secondary" className="text-xs">
+                      {new Date(appt.Date).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                        timeZone: "UTC",
+                      })}
+                    </Badge>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </Link>
+
+        <Link href="/patient/dashboard/records" className="group">
+          <Card className="h-full transition-colors group-hover:bg-muted/50">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                <ClipboardDocumentListIcon className="h-4 w-4" />
+                Records
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-2xl font-medium">{recordCount}</p>
+              {recordCount === 0 && (
+                <p className="text-xs text-muted-foreground mt-1">No records yet.</p>
+              )}
+            </CardContent>
+          </Card>
+        </Link>
+
+        <Link href="/patient/dashboard/medications?search=active" className="group">
+          <Card className="h-full transition-colors group-hover:bg-muted/50">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                <BeakerIcon className="h-4 w-4" />
+                Active Prescriptions
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-2xl font-medium">{activeMeds.length}</p>
+              {activeMeds.length === 0 && (
+                <p className="text-xs text-muted-foreground mt-1">None active.</p>
+              )}
+            </CardContent>
+          </Card>
+        </Link>
+
+        <Link href="/patient/dashboard/appointments?search=completed" className="group">
+          <Card className="h-full transition-colors group-hover:bg-muted/50">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                <ClockIcon className="h-4 w-4" />
+                Last Visit
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {lastVisit ? (
+                <p className="text-lg font-medium">
+                  {new Date(lastVisit.Date).toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                    timeZone: "UTC",
+                  })}
+                </p>
+              ) : (
+                <p className="text-sm text-muted-foreground">No visits yet.</p>
+              )}
+            </CardContent>
+          </Card>
+        </Link>
+      </div>
 
       {/* Medical Identity Row */}
       <div className="grid grid-cols-3 gap-6 mb-6">

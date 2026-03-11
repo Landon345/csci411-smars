@@ -2,36 +2,56 @@ import { redirect } from "next/navigation";
 import { getSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import {
-  UserGroupIcon,
   CalendarDaysIcon,
+  UserGroupIcon,
+  ExclamationCircleIcon,
   ShieldCheckIcon,
-  ClockIcon,
 } from "@heroicons/react/24/outline";
+import Link from "next/link";
 
 export default async function DoctorDashboard() {
   const user = await getSession();
   if (!user) redirect("/login");
 
-  const patientCount = await prisma.user.count({
-    where: {
-      Role: "patient",
-      OR: [
-        { PatientAppointments: { some: { DoctorID: user.UserID } } },
-        { PatientRecords: { some: { DoctorID: user.UserID } } },
-      ],
-    },
-  });
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+  const tomorrow = new Date(todayStart);
+  tomorrow.setDate(tomorrow.getDate() + 1);
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const upcomingCount = await prisma.appointment.count({
-    where: {
-      DoctorID: user.UserID,
-      Status: "scheduled",
-      Date: { gte: today },
-    },
-  });
+  const threeDaysAgo = new Date(todayStart);
+  threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+
+  const [todaysAppointments, recentlySeenPatients, pendingCount] = await Promise.all([
+    prisma.appointment.findMany({
+      where: {
+        DoctorID: user.UserID,
+        Date: { gte: todayStart, lt: tomorrow },
+        Status: { notIn: ["canceled", "no_show"] },
+      },
+      include: { Patient: { select: { FirstName: true, LastName: true } } },
+      orderBy: { StartTime: "asc" },
+    }),
+    prisma.appointment.findMany({
+      where: {
+        DoctorID: user.UserID,
+        Status: "completed",
+        Date: { gte: threeDaysAgo, lt: tomorrow },
+      },
+      select: {
+        PatientID: true,
+        Patient: { select: { FirstName: true, LastName: true } },
+      },
+      distinct: ["PatientID"],
+    }),
+    prisma.appointment.count({
+      where: {
+        DoctorID: user.UserID,
+        Status: "pending",
+      },
+    }),
+  ]);
 
   return (
     <>
@@ -56,42 +76,79 @@ export default async function DoctorDashboard() {
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-              <UserGroupIcon className="h-4 w-4" />
-              Your Patients
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-medium">{patientCount}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-              <CalendarDaysIcon className="h-4 w-4" />
-              Upcoming Appointments
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-medium">{upcomingCount}</p>
-          </CardContent>
-        </Card>
-      </div>
+      <div className="grid grid-cols-3 gap-6">
+        {/* Today's Appointments */}
+        <Link href="/doctor/dashboard/appointments?filter=today" className="group">
+          <Card className="h-full transition-colors group-hover:bg-muted/50">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                <CalendarDaysIcon className="h-4 w-4" />
+                Today&apos;s Appointments
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {todaysAppointments.length === 0 ? (
+                <p className="text-sm text-muted-foreground">No appointments today.</p>
+              ) : (
+                <div className="flex flex-wrap gap-1.5">
+                  {todaysAppointments.map((appt) => (
+                    <Badge key={appt.AppointmentID} variant="secondary" className="text-xs">
+                      {appt.Patient.FirstName} {appt.Patient.LastName}
+                    </Badge>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </Link>
 
-      <Card className="mt-6">
-        <CardHeader className="border-b">
-          <CardTitle className="flex items-center gap-1.5 text-sm font-medium">
-            <ClockIcon className="h-4 w-4" />
-            Recent Activity
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="py-8 text-center text-muted-foreground text-sm">
-          No recent records to display.
-        </CardContent>
-      </Card>
+        {/* Patients Seen Recently */}
+        <Link href="/doctor/dashboard/appointments?filter=recent" className="group">
+          <Card className="h-full transition-colors group-hover:bg-muted/50">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                <UserGroupIcon className="h-4 w-4" />
+                Patients Seen (3 days)
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {recentlySeenPatients.length === 0 ? (
+                <p className="text-sm text-muted-foreground">No completed visits recently.</p>
+              ) : (
+                <div className="flex flex-wrap gap-1.5">
+                  {recentlySeenPatients.map((appt) => (
+                    <Badge key={appt.PatientID} variant="secondary" className="text-xs">
+                      {appt.Patient.FirstName} {appt.Patient.LastName}
+                    </Badge>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </Link>
+
+        {/* Pending Requests */}
+        <Link href="/doctor/dashboard/appointments?search=pending" className="group">
+          <Card className="h-full transition-colors group-hover:bg-muted/50">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                <ExclamationCircleIcon className="h-4 w-4" />
+                Pending Requests
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-2xl font-medium">{pendingCount}</p>
+              {pendingCount === 0 ? (
+                <p className="text-xs text-muted-foreground mt-1">No pending requests.</p>
+              ) : (
+                <p className="text-xs text-muted-foreground mt-1">
+                  View in appointments
+                </p>
+              )}
+            </CardContent>
+          </Card>
+        </Link>
+      </div>
     </>
   );
 }
