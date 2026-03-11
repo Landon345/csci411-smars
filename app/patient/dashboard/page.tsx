@@ -94,7 +94,7 @@ export default async function PatientDashboard() {
 
       {/* Stats Row */}
       <div className="grid grid-cols-4 gap-6 mb-6">
-        <Link href="/patient/dashboard/appointments" className="group">
+        <Link href="/patient/dashboard/appointments?search=scheduled" className="group">
           <Card className="h-full transition-colors group-hover:bg-muted/50">
             <CardHeader>
               <CardTitle className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
@@ -139,7 +139,7 @@ export default async function PatientDashboard() {
           </Card>
         </Link>
 
-        <Link href="/patient/dashboard/medications" className="group">
+        <Link href="/patient/dashboard/medications?search=active" className="group">
           <Card className="h-full transition-colors group-hover:bg-muted/50">
             <CardHeader>
               <CardTitle className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
@@ -156,7 +156,7 @@ export default async function PatientDashboard() {
           </Card>
         </Link>
 
-        <Link href="/patient/dashboard/appointments" className="group">
+        <Link href="/patient/dashboard/appointments?search=completed" className="group">
           <Card className="h-full transition-colors group-hover:bg-muted/50">
             <CardHeader>
               <CardTitle className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">

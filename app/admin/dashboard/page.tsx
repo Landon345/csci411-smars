@@ -12,6 +12,8 @@ import {
   ShieldCheckIcon,
   ClockIcon,
 } from "@heroicons/react/24/outline";
+import Link from "next/link";
+import { Suspense } from "react";
 
 export default async function AdminDashboard() {
   const user = await getSession();
@@ -139,9 +141,12 @@ export default async function AdminDashboard() {
               <ul className="space-y-1">
                 {userDistribution.map((row) => (
                   <li key={row.Role} className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">
+                    <Link
+                      href={`/admin/dashboard?search=${row.Role}`}
+                      className="text-muted-foreground hover:text-foreground hover:underline"
+                    >
                       {roleLabels[row.Role] ?? row.Role}
-                    </span>
+                    </Link>
                     <span className="font-medium">{row._count.UserID}</span>
                   </li>
                 ))}
@@ -152,7 +157,9 @@ export default async function AdminDashboard() {
       </div>
 
       <div className="mt-8">
-        <AdminUserManagement />
+        <Suspense fallback={<div className="py-10 text-center text-sm text-muted-foreground">Loading users…</div>}>
+          <AdminUserManagement />
+        </Suspense>
       </div>
 
       <Card className="mt-6">

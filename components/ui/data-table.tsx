@@ -80,6 +80,7 @@ interface DataTableProps<TData> {
   columns: ColumnDef<TData, unknown>[];
   searchPlaceholder?: string;
   onRowClick?: (row: TData) => void;
+  initialFilter?: string;
 }
 
 export function DataTable<TData>({
@@ -87,11 +88,16 @@ export function DataTable<TData>({
   columns,
   searchPlaceholder = "Search...",
   onRowClick,
+  initialFilter,
 }: DataTableProps<TData>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [globalFilter, setGlobalFilter] = React.useState("");
+  const [globalFilter, setGlobalFilter] = React.useState(initialFilter ?? "");
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
+
+  React.useEffect(() => {
+    setGlobalFilter(initialFilter ?? "");
+  }, [initialFilter]);
 
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({

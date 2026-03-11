@@ -78,7 +78,7 @@ export default async function DoctorDashboard() {
 
       <div className="grid grid-cols-3 gap-6">
         {/* Today's Appointments */}
-        <Link href="/doctor/dashboard/appointments" className="group">
+        <Link href="/doctor/dashboard/appointments?filter=today" className="group">
           <Card className="h-full transition-colors group-hover:bg-muted/50">
             <CardHeader>
               <CardTitle className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
@@ -103,7 +103,7 @@ export default async function DoctorDashboard() {
         </Link>
 
         {/* Patients Seen Recently */}
-        <Link href="/doctor/dashboard/appointments" className="group">
+        <Link href="/doctor/dashboard/appointments?filter=recent" className="group">
           <Card className="h-full transition-colors group-hover:bg-muted/50">
             <CardHeader>
               <CardTitle className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
@@ -128,7 +128,7 @@ export default async function DoctorDashboard() {
         </Link>
 
         {/* Pending Requests */}
-        <Link href="/doctor/dashboard/appointments" className="group">
+        <Link href="/doctor/dashboard/appointments?search=pending" className="group">
           <Card className="h-full transition-colors group-hover:bg-muted/50">
             <CardHeader>
               <CardTitle className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">

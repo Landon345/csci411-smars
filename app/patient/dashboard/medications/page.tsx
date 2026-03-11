@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
@@ -45,8 +46,10 @@ const statusVariant: Record<string, string> = {
     "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
 };
 
+function PatientMedicationsContent() {
+  const searchParams = useSearchParams();
+  const searchParam = searchParams.get("search") ?? "";
 
-export default function PatientMedicationsPage() {
   const [prescriptions, setPrescriptions] = useState<Prescription[]>([]);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<Prescription | null>(null);
@@ -243,9 +246,18 @@ export default function PatientMedicationsPage() {
         columns={columns}
         searchPlaceholder="Search medications..."
         onRowClick={(rx) => setSelected(rx)}
+        initialFilter={searchParam}
       />
 
       <PrescriptionDetail prescription={selected} onClose={() => setSelected(null)} />
     </>
+  );
+}
+
+export default function PatientMedicationsPage() {
+  return (
+    <Suspense>
+      <PatientMedicationsContent />
+    </Suspense>
   );
 }
