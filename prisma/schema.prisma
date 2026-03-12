@@ -96,6 +96,8 @@ enum AuditAction {
   role_changed
   invite_created
   invite_used
+  document_uploaded
+  document_deleted
 }
 
 model User {
@@ -117,6 +119,7 @@ model User {
   ResetExpires    DateTime? // When the reset token expires
   FailedAttempts  Int       @default(0)
   LockedUntil     DateTime? // Non-null means account is locked until this time
+  UploadedDocuments   RecordDocument[] @relation("DocumentUploader")
   DoctorAppointments  Appointment[] @relation("DoctorAppointments")
   PatientAppointments Appointment[] @relation("PatientAppointments")
   DoctorRecords       MedicalRecord[] @relation("DoctorRecords")
@@ -184,6 +187,7 @@ model MedicalRecord {
   Type           RecordType @default(office_visit)
   CreatedAt      DateTime   @default(now()) @db.Timestamp(6)
   UpdatedAt      DateTime   @updatedAt
+  Documents      RecordDocument[]
 
   @@index([DoctorID, VisitDate])
   @@index([PatientID, VisitDate])
@@ -295,4 +299,20 @@ model ChronicCondition {
   Patient     User     @relation("PatientConditions", fields: [PatientID], references: [UserID])
   Name        String   @db.VarChar(255)
   CreatedAt   DateTime @default(now()) @db.Timestamp(6)
+}
+
+model RecordDocument {
+  DocumentID  String        @id @default(uuid())
+  RecordID    String
+  Record      MedicalRecord @relation(fields: [RecordID], references: [RecordID], onDelete: Cascade)
+  UploadedBy  String
+  Uploader    User          @relation("DocumentUploader", fields: [UploadedBy], references: [UserID])
+  S3Key       String        @db.VarChar(500)
+  S3Bucket    String        @db.VarChar(255)
+  FileName    String        @db.VarChar(255)
+  ContentType String        @db.VarChar(100)
+  SizeBytes   Int
+  UploadedAt  DateTime      @default(now()) @db.Timestamp(6)
+
+  @@index([RecordID])
 }

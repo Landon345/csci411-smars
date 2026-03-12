@@ -61,7 +61,8 @@ export const ModelName = {
   PatientProfile: 'PatientProfile',
   Allergy: 'Allergy',
   ProfilePhoto: 'ProfilePhoto',
-  ChronicCondition: 'ChronicCondition'
+  ChronicCondition: 'ChronicCondition',
+  RecordDocument: 'RecordDocument'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -263,6 +264,21 @@ export const ChronicConditionScalarFieldEnum = {
 } as const
 
 export type ChronicConditionScalarFieldEnum = (typeof ChronicConditionScalarFieldEnum)[keyof typeof ChronicConditionScalarFieldEnum]
+
+
+export const RecordDocumentScalarFieldEnum = {
+  DocumentID: 'DocumentID',
+  RecordID: 'RecordID',
+  UploadedBy: 'UploadedBy',
+  S3Key: 'S3Key',
+  S3Bucket: 'S3Bucket',
+  FileName: 'FileName',
+  ContentType: 'ContentType',
+  SizeBytes: 'SizeBytes',
+  UploadedAt: 'UploadedAt'
+} as const
+
+export type RecordDocumentScalarFieldEnum = (typeof RecordDocumentScalarFieldEnum)[keyof typeof RecordDocumentScalarFieldEnum]
 
 
 export const SortOrder = {

@@ -394,7 +394,8 @@ export const ModelName = {
   PatientProfile: 'PatientProfile',
   Allergy: 'Allergy',
   ProfilePhoto: 'ProfilePhoto',
-  ChronicCondition: 'ChronicCondition'
+  ChronicCondition: 'ChronicCondition',
+  RecordDocument: 'RecordDocument'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -410,7 +411,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "appointment" | "medicalRecord" | "prescription" | "auditLog" | "inviteToken" | "doctorProfile" | "patientProfile" | "allergy" | "profilePhoto" | "chronicCondition"
+    modelProps: "user" | "appointment" | "medicalRecord" | "prescription" | "auditLog" | "inviteToken" | "doctorProfile" | "patientProfile" | "allergy" | "profilePhoto" | "chronicCondition" | "recordDocument"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1228,6 +1229,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    RecordDocument: {
+      payload: Prisma.$RecordDocumentPayload<ExtArgs>
+      fields: Prisma.RecordDocumentFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.RecordDocumentFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecordDocumentPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.RecordDocumentFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecordDocumentPayload>
+        }
+        findFirst: {
+          args: Prisma.RecordDocumentFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecordDocumentPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.RecordDocumentFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecordDocumentPayload>
+        }
+        findMany: {
+          args: Prisma.RecordDocumentFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecordDocumentPayload>[]
+        }
+        create: {
+          args: Prisma.RecordDocumentCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecordDocumentPayload>
+        }
+        createMany: {
+          args: Prisma.RecordDocumentCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.RecordDocumentCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecordDocumentPayload>[]
+        }
+        delete: {
+          args: Prisma.RecordDocumentDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecordDocumentPayload>
+        }
+        update: {
+          args: Prisma.RecordDocumentUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecordDocumentPayload>
+        }
+        deleteMany: {
+          args: Prisma.RecordDocumentDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.RecordDocumentUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.RecordDocumentUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecordDocumentPayload>[]
+        }
+        upsert: {
+          args: Prisma.RecordDocumentUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecordDocumentPayload>
+        }
+        aggregate: {
+          args: Prisma.RecordDocumentAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateRecordDocument>
+        }
+        groupBy: {
+          args: Prisma.RecordDocumentGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RecordDocumentGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.RecordDocumentCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RecordDocumentCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1450,6 +1525,21 @@ export const ChronicConditionScalarFieldEnum = {
 } as const
 
 export type ChronicConditionScalarFieldEnum = (typeof ChronicConditionScalarFieldEnum)[keyof typeof ChronicConditionScalarFieldEnum]
+
+
+export const RecordDocumentScalarFieldEnum = {
+  DocumentID: 'DocumentID',
+  RecordID: 'RecordID',
+  UploadedBy: 'UploadedBy',
+  S3Key: 'S3Key',
+  S3Bucket: 'S3Bucket',
+  FileName: 'FileName',
+  ContentType: 'ContentType',
+  SizeBytes: 'SizeBytes',
+  UploadedAt: 'UploadedAt'
+} as const
+
+export type RecordDocumentScalarFieldEnum = (typeof RecordDocumentScalarFieldEnum)[keyof typeof RecordDocumentScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1804,6 +1894,7 @@ export type GlobalOmitConfig = {
   allergy?: Prisma.AllergyOmit
   profilePhoto?: Prisma.ProfilePhotoOmit
   chronicCondition?: Prisma.ChronicConditionOmit
+  recordDocument?: Prisma.RecordDocumentOmit
 }
 
 /* Types for Logging */

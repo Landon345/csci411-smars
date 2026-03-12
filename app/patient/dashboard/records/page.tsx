@@ -212,7 +212,7 @@ export default function PatientRecordsPage() {
         onRowClick={(record) => setSelected(record)}
       />
 
-      <RecordDetail record={selected} onClose={() => setSelected(null)} />
+      <RecordDetail record={selected} onClose={() => setSelected(null)} role="patient" />
     </>
   );
 }

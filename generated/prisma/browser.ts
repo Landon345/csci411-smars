@@ -72,3 +72,8 @@ export type ProfilePhoto = Prisma.ProfilePhotoModel
  * 
  */
 export type ChronicCondition = Prisma.ChronicConditionModel
+/**
+ * Model RecordDocument
+ * 
+ */
+export type RecordDocument = Prisma.RecordDocumentModel

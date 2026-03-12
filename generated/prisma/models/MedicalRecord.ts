@@ -335,6 +335,7 @@ export type MedicalRecordWhereInput = {
   Doctor?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   Patient?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   Appointment?: Prisma.XOR<Prisma.AppointmentNullableScalarRelationFilter, Prisma.AppointmentWhereInput> | null
+  Documents?: Prisma.RecordDocumentListRelationFilter
 }
 
 export type MedicalRecordOrderByWithRelationInput = {
@@ -359,6 +360,7 @@ export type MedicalRecordOrderByWithRelationInput = {
   Doctor?: Prisma.UserOrderByWithRelationInput
   Patient?: Prisma.UserOrderByWithRelationInput
   Appointment?: Prisma.AppointmentOrderByWithRelationInput
+  Documents?: Prisma.RecordDocumentOrderByRelationAggregateInput
 }
 
 export type MedicalRecordWhereUniqueInput = Prisma.AtLeast<{
@@ -386,6 +388,7 @@ export type MedicalRecordWhereUniqueInput = Prisma.AtLeast<{
   Doctor?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   Patient?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   Appointment?: Prisma.XOR<Prisma.AppointmentNullableScalarRelationFilter, Prisma.AppointmentWhereInput> | null
+  Documents?: Prisma.RecordDocumentListRelationFilter
 }, "RecordID">
 
 export type MedicalRecordOrderByWithAggregationInput = {
@@ -457,6 +460,7 @@ export type MedicalRecordCreateInput = {
   Doctor: Prisma.UserCreateNestedOneWithoutDoctorRecordsInput
   Patient: Prisma.UserCreateNestedOneWithoutPatientRecordsInput
   Appointment?: Prisma.AppointmentCreateNestedOneWithoutMedicalRecordInput
+  Documents?: Prisma.RecordDocumentCreateNestedManyWithoutRecordInput
 }
 
 export type MedicalRecordUncheckedCreateInput = {
@@ -478,6 +482,7 @@ export type MedicalRecordUncheckedCreateInput = {
   Type?: $Enums.RecordType
   CreatedAt?: Date | string
   UpdatedAt?: Date | string
+  Documents?: Prisma.RecordDocumentUncheckedCreateNestedManyWithoutRecordInput
 }
 
 export type MedicalRecordUpdateInput = {
@@ -499,6 +504,7 @@ export type MedicalRecordUpdateInput = {
   Doctor?: Prisma.UserUpdateOneRequiredWithoutDoctorRecordsNestedInput
   Patient?: Prisma.UserUpdateOneRequiredWithoutPatientRecordsNestedInput
   Appointment?: Prisma.AppointmentUpdateOneWithoutMedicalRecordNestedInput
+  Documents?: Prisma.RecordDocumentUpdateManyWithoutRecordNestedInput
 }
 
 export type MedicalRecordUncheckedUpdateInput = {
@@ -520,6 +526,7 @@ export type MedicalRecordUncheckedUpdateInput = {
   Type?: Prisma.EnumRecordTypeFieldUpdateOperationsInput | $Enums.RecordType
   CreatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   UpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  Documents?: Prisma.RecordDocumentUncheckedUpdateManyWithoutRecordNestedInput
 }
 
 export type MedicalRecordCreateManyInput = {
@@ -669,6 +676,11 @@ export type MedicalRecordSumOrderByAggregateInput = {
   Height?: Prisma.SortOrder
 }
 
+export type MedicalRecordScalarRelationFilter = {
+  is?: Prisma.MedicalRecordWhereInput
+  isNot?: Prisma.MedicalRecordWhereInput
+}
+
 export type MedicalRecordCreateNestedManyWithoutDoctorInput = {
   create?: Prisma.XOR<Prisma.MedicalRecordCreateWithoutDoctorInput, Prisma.MedicalRecordUncheckedCreateWithoutDoctorInput> | Prisma.MedicalRecordCreateWithoutDoctorInput[] | Prisma.MedicalRecordUncheckedCreateWithoutDoctorInput[]
   connectOrCreate?: Prisma.MedicalRecordCreateOrConnectWithoutDoctorInput | Prisma.MedicalRecordCreateOrConnectWithoutDoctorInput[]
@@ -815,6 +827,20 @@ export type EnumRecordTypeFieldUpdateOperationsInput = {
   set?: $Enums.RecordType
 }
 
+export type MedicalRecordCreateNestedOneWithoutDocumentsInput = {
+  create?: Prisma.XOR<Prisma.MedicalRecordCreateWithoutDocumentsInput, Prisma.MedicalRecordUncheckedCreateWithoutDocumentsInput>
+  connectOrCreate?: Prisma.MedicalRecordCreateOrConnectWithoutDocumentsInput
+  connect?: Prisma.MedicalRecordWhereUniqueInput
+}
+
+export type MedicalRecordUpdateOneRequiredWithoutDocumentsNestedInput = {
+  create?: Prisma.XOR<Prisma.MedicalRecordCreateWithoutDocumentsInput, Prisma.MedicalRecordUncheckedCreateWithoutDocumentsInput>
+  connectOrCreate?: Prisma.MedicalRecordCreateOrConnectWithoutDocumentsInput
+  upsert?: Prisma.MedicalRecordUpsertWithoutDocumentsInput
+  connect?: Prisma.MedicalRecordWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.MedicalRecordUpdateToOneWithWhereWithoutDocumentsInput, Prisma.MedicalRecordUpdateWithoutDocumentsInput>, Prisma.MedicalRecordUncheckedUpdateWithoutDocumentsInput>
+}
+
 export type MedicalRecordCreateWithoutDoctorInput = {
   RecordID?: string
   VisitDate: Date | string
@@ -833,6 +859,7 @@ export type MedicalRecordCreateWithoutDoctorInput = {
   UpdatedAt?: Date | string
   Patient: Prisma.UserCreateNestedOneWithoutPatientRecordsInput
   Appointment?: Prisma.AppointmentCreateNestedOneWithoutMedicalRecordInput
+  Documents?: Prisma.RecordDocumentCreateNestedManyWithoutRecordInput
 }
 
 export type MedicalRecordUncheckedCreateWithoutDoctorInput = {
@@ -853,6 +880,7 @@ export type MedicalRecordUncheckedCreateWithoutDoctorInput = {
   Type?: $Enums.RecordType
   CreatedAt?: Date | string
   UpdatedAt?: Date | string
+  Documents?: Prisma.RecordDocumentUncheckedCreateNestedManyWithoutRecordInput
 }
 
 export type MedicalRecordCreateOrConnectWithoutDoctorInput = {
@@ -883,6 +911,7 @@ export type MedicalRecordCreateWithoutPatientInput = {
   UpdatedAt?: Date | string
   Doctor: Prisma.UserCreateNestedOneWithoutDoctorRecordsInput
   Appointment?: Prisma.AppointmentCreateNestedOneWithoutMedicalRecordInput
+  Documents?: Prisma.RecordDocumentCreateNestedManyWithoutRecordInput
 }
 
 export type MedicalRecordUncheckedCreateWithoutPatientInput = {
@@ -903,6 +932,7 @@ export type MedicalRecordUncheckedCreateWithoutPatientInput = {
   Type?: $Enums.RecordType
   CreatedAt?: Date | string
   UpdatedAt?: Date | string
+  Documents?: Prisma.RecordDocumentUncheckedCreateNestedManyWithoutRecordInput
 }
 
 export type MedicalRecordCreateOrConnectWithoutPatientInput = {
@@ -989,6 +1019,7 @@ export type MedicalRecordCreateWithoutAppointmentInput = {
   UpdatedAt?: Date | string
   Doctor: Prisma.UserCreateNestedOneWithoutDoctorRecordsInput
   Patient: Prisma.UserCreateNestedOneWithoutPatientRecordsInput
+  Documents?: Prisma.RecordDocumentCreateNestedManyWithoutRecordInput
 }
 
 export type MedicalRecordUncheckedCreateWithoutAppointmentInput = {
@@ -1009,6 +1040,7 @@ export type MedicalRecordUncheckedCreateWithoutAppointmentInput = {
   Type?: $Enums.RecordType
   CreatedAt?: Date | string
   UpdatedAt?: Date | string
+  Documents?: Prisma.RecordDocumentUncheckedCreateNestedManyWithoutRecordInput
 }
 
 export type MedicalRecordCreateOrConnectWithoutAppointmentInput = {
@@ -1035,6 +1067,106 @@ export type MedicalRecordUpdateWithWhereUniqueWithoutAppointmentInput = {
 export type MedicalRecordUpdateManyWithWhereWithoutAppointmentInput = {
   where: Prisma.MedicalRecordScalarWhereInput
   data: Prisma.XOR<Prisma.MedicalRecordUpdateManyMutationInput, Prisma.MedicalRecordUncheckedUpdateManyWithoutAppointmentInput>
+}
+
+export type MedicalRecordCreateWithoutDocumentsInput = {
+  RecordID?: string
+  VisitDate: Date | string
+  ChiefComplaint: string
+  DiagnosisCode: string
+  DiagnosisDesc: string
+  TreatmentPlan: string
+  HeartRate?: number | null
+  BloodPressure?: string | null
+  Temperature?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  Weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  Height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  FollowUp?: string | null
+  Type?: $Enums.RecordType
+  CreatedAt?: Date | string
+  UpdatedAt?: Date | string
+  Doctor: Prisma.UserCreateNestedOneWithoutDoctorRecordsInput
+  Patient: Prisma.UserCreateNestedOneWithoutPatientRecordsInput
+  Appointment?: Prisma.AppointmentCreateNestedOneWithoutMedicalRecordInput
+}
+
+export type MedicalRecordUncheckedCreateWithoutDocumentsInput = {
+  RecordID?: string
+  DoctorID: string
+  PatientID: string
+  AppointmentID?: string | null
+  VisitDate: Date | string
+  ChiefComplaint: string
+  DiagnosisCode: string
+  DiagnosisDesc: string
+  TreatmentPlan: string
+  HeartRate?: number | null
+  BloodPressure?: string | null
+  Temperature?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  Weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  Height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  FollowUp?: string | null
+  Type?: $Enums.RecordType
+  CreatedAt?: Date | string
+  UpdatedAt?: Date | string
+}
+
+export type MedicalRecordCreateOrConnectWithoutDocumentsInput = {
+  where: Prisma.MedicalRecordWhereUniqueInput
+  create: Prisma.XOR<Prisma.MedicalRecordCreateWithoutDocumentsInput, Prisma.MedicalRecordUncheckedCreateWithoutDocumentsInput>
+}
+
+export type MedicalRecordUpsertWithoutDocumentsInput = {
+  update: Prisma.XOR<Prisma.MedicalRecordUpdateWithoutDocumentsInput, Prisma.MedicalRecordUncheckedUpdateWithoutDocumentsInput>
+  create: Prisma.XOR<Prisma.MedicalRecordCreateWithoutDocumentsInput, Prisma.MedicalRecordUncheckedCreateWithoutDocumentsInput>
+  where?: Prisma.MedicalRecordWhereInput
+}
+
+export type MedicalRecordUpdateToOneWithWhereWithoutDocumentsInput = {
+  where?: Prisma.MedicalRecordWhereInput
+  data: Prisma.XOR<Prisma.MedicalRecordUpdateWithoutDocumentsInput, Prisma.MedicalRecordUncheckedUpdateWithoutDocumentsInput>
+}
+
+export type MedicalRecordUpdateWithoutDocumentsInput = {
+  RecordID?: Prisma.StringFieldUpdateOperationsInput | string
+  VisitDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ChiefComplaint?: Prisma.StringFieldUpdateOperationsInput | string
+  DiagnosisCode?: Prisma.StringFieldUpdateOperationsInput | string
+  DiagnosisDesc?: Prisma.StringFieldUpdateOperationsInput | string
+  TreatmentPlan?: Prisma.StringFieldUpdateOperationsInput | string
+  HeartRate?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  BloodPressure?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  Temperature?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  Weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  Height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  FollowUp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  Type?: Prisma.EnumRecordTypeFieldUpdateOperationsInput | $Enums.RecordType
+  CreatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  UpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  Doctor?: Prisma.UserUpdateOneRequiredWithoutDoctorRecordsNestedInput
+  Patient?: Prisma.UserUpdateOneRequiredWithoutPatientRecordsNestedInput
+  Appointment?: Prisma.AppointmentUpdateOneWithoutMedicalRecordNestedInput
+}
+
+export type MedicalRecordUncheckedUpdateWithoutDocumentsInput = {
+  RecordID?: Prisma.StringFieldUpdateOperationsInput | string
+  DoctorID?: Prisma.StringFieldUpdateOperationsInput | string
+  PatientID?: Prisma.StringFieldUpdateOperationsInput | string
+  AppointmentID?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  VisitDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ChiefComplaint?: Prisma.StringFieldUpdateOperationsInput | string
+  DiagnosisCode?: Prisma.StringFieldUpdateOperationsInput | string
+  DiagnosisDesc?: Prisma.StringFieldUpdateOperationsInput | string
+  TreatmentPlan?: Prisma.StringFieldUpdateOperationsInput | string
+  HeartRate?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  BloodPressure?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  Temperature?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  Weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  Height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  FollowUp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  Type?: Prisma.EnumRecordTypeFieldUpdateOperationsInput | $Enums.RecordType
+  CreatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  UpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type MedicalRecordCreateManyDoctorInput = {
@@ -1095,6 +1227,7 @@ export type MedicalRecordUpdateWithoutDoctorInput = {
   UpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   Patient?: Prisma.UserUpdateOneRequiredWithoutPatientRecordsNestedInput
   Appointment?: Prisma.AppointmentUpdateOneWithoutMedicalRecordNestedInput
+  Documents?: Prisma.RecordDocumentUpdateManyWithoutRecordNestedInput
 }
 
 export type MedicalRecordUncheckedUpdateWithoutDoctorInput = {
@@ -1115,6 +1248,7 @@ export type MedicalRecordUncheckedUpdateWithoutDoctorInput = {
   Type?: Prisma.EnumRecordTypeFieldUpdateOperationsInput | $Enums.RecordType
   CreatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   UpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  Documents?: Prisma.RecordDocumentUncheckedUpdateManyWithoutRecordNestedInput
 }
 
 export type MedicalRecordUncheckedUpdateManyWithoutDoctorInput = {
@@ -1155,6 +1289,7 @@ export type MedicalRecordUpdateWithoutPatientInput = {
   UpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   Doctor?: Prisma.UserUpdateOneRequiredWithoutDoctorRecordsNestedInput
   Appointment?: Prisma.AppointmentUpdateOneWithoutMedicalRecordNestedInput
+  Documents?: Prisma.RecordDocumentUpdateManyWithoutRecordNestedInput
 }
 
 export type MedicalRecordUncheckedUpdateWithoutPatientInput = {
@@ -1175,6 +1310,7 @@ export type MedicalRecordUncheckedUpdateWithoutPatientInput = {
   Type?: Prisma.EnumRecordTypeFieldUpdateOperationsInput | $Enums.RecordType
   CreatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   UpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  Documents?: Prisma.RecordDocumentUncheckedUpdateManyWithoutRecordNestedInput
 }
 
 export type MedicalRecordUncheckedUpdateManyWithoutPatientInput = {
@@ -1235,6 +1371,7 @@ export type MedicalRecordUpdateWithoutAppointmentInput = {
   UpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   Doctor?: Prisma.UserUpdateOneRequiredWithoutDoctorRecordsNestedInput
   Patient?: Prisma.UserUpdateOneRequiredWithoutPatientRecordsNestedInput
+  Documents?: Prisma.RecordDocumentUpdateManyWithoutRecordNestedInput
 }
 
 export type MedicalRecordUncheckedUpdateWithoutAppointmentInput = {
@@ -1255,6 +1392,7 @@ export type MedicalRecordUncheckedUpdateWithoutAppointmentInput = {
   Type?: Prisma.EnumRecordTypeFieldUpdateOperationsInput | $Enums.RecordType
   CreatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   UpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  Documents?: Prisma.RecordDocumentUncheckedUpdateManyWithoutRecordNestedInput
 }
 
 export type MedicalRecordUncheckedUpdateManyWithoutAppointmentInput = {
@@ -1277,6 +1415,35 @@ export type MedicalRecordUncheckedUpdateManyWithoutAppointmentInput = {
   UpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
+
+/**
+ * Count Type MedicalRecordCountOutputType
+ */
+
+export type MedicalRecordCountOutputType = {
+  Documents: number
+}
+
+export type MedicalRecordCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  Documents?: boolean | MedicalRecordCountOutputTypeCountDocumentsArgs
+}
+
+/**
+ * MedicalRecordCountOutputType without action
+ */
+export type MedicalRecordCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the MedicalRecordCountOutputType
+   */
+  select?: Prisma.MedicalRecordCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * MedicalRecordCountOutputType without action
+ */
+export type MedicalRecordCountOutputTypeCountDocumentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RecordDocumentWhereInput
+}
 
 
 export type MedicalRecordSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1301,6 +1468,8 @@ export type MedicalRecordSelect<ExtArgs extends runtime.Types.Extensions.Interna
   Doctor?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   Patient?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   Appointment?: boolean | Prisma.MedicalRecord$AppointmentArgs<ExtArgs>
+  Documents?: boolean | Prisma.MedicalRecord$DocumentsArgs<ExtArgs>
+  _count?: boolean | Prisma.MedicalRecordCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["medicalRecord"]>
 
 export type MedicalRecordSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1377,6 +1546,8 @@ export type MedicalRecordInclude<ExtArgs extends runtime.Types.Extensions.Intern
   Doctor?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   Patient?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   Appointment?: boolean | Prisma.MedicalRecord$AppointmentArgs<ExtArgs>
+  Documents?: boolean | Prisma.MedicalRecord$DocumentsArgs<ExtArgs>
+  _count?: boolean | Prisma.MedicalRecordCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type MedicalRecordIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   Doctor?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -1395,6 +1566,7 @@ export type $MedicalRecordPayload<ExtArgs extends runtime.Types.Extensions.Inter
     Doctor: Prisma.$UserPayload<ExtArgs>
     Patient: Prisma.$UserPayload<ExtArgs>
     Appointment: Prisma.$AppointmentPayload<ExtArgs> | null
+    Documents: Prisma.$RecordDocumentPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     RecordID: string
@@ -1812,6 +1984,7 @@ export interface Prisma__MedicalRecordClient<T, Null = never, ExtArgs extends ru
   Doctor<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   Patient<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   Appointment<T extends Prisma.MedicalRecord$AppointmentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MedicalRecord$AppointmentArgs<ExtArgs>>): Prisma.Prisma__AppointmentClient<runtime.Types.Result.GetResult<Prisma.$AppointmentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  Documents<T extends Prisma.MedicalRecord$DocumentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MedicalRecord$DocumentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RecordDocumentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2271,6 +2444,30 @@ export type MedicalRecord$AppointmentArgs<ExtArgs extends runtime.Types.Extensio
    */
   include?: Prisma.AppointmentInclude<ExtArgs> | null
   where?: Prisma.AppointmentWhereInput
+}
+
+/**
+ * MedicalRecord.Documents
+ */
+export type MedicalRecord$DocumentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RecordDocument
+   */
+  select?: Prisma.RecordDocumentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the RecordDocument
+   */
+  omit?: Prisma.RecordDocumentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RecordDocumentInclude<ExtArgs> | null
+  where?: Prisma.RecordDocumentWhereInput
+  orderBy?: Prisma.RecordDocumentOrderByWithRelationInput | Prisma.RecordDocumentOrderByWithRelationInput[]
+  cursor?: Prisma.RecordDocumentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RecordDocumentScalarFieldEnum | Prisma.RecordDocumentScalarFieldEnum[]
 }
 
 /**
