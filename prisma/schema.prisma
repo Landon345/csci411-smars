@@ -130,6 +130,7 @@ model User {
   PCPPatients           PatientProfile[]   @relation("PatientPCP")
   PatientAllergies      Allergy[]          @relation("PatientAllergies")
   PatientConditions     ChronicCondition[] @relation("PatientConditions")
+  ProfilePhoto          ProfilePhoto?      @relation("UserProfilePhoto")
 
   @@index([FirstName, CreatedAt(sort: Desc)])
   @@index([LastName, CreatedAt(sort: Desc)])
@@ -274,6 +275,18 @@ model Allergy {
   Severity  AllergySeverity
   Reaction  String?         @db.VarChar(500)
   CreatedAt DateTime        @default(now()) @db.Timestamp(6)
+}
+
+model ProfilePhoto {
+  PhotoID     String   @id @default(uuid())
+  UserID      String   @unique
+  User        User     @relation("UserProfilePhoto", fields: [UserID], references: [UserID])
+  S3Key       String   @db.VarChar(500)
+  S3Bucket    String   @db.VarChar(255)
+  ContentType String   @db.VarChar(100)
+  SizeBytes   Int
+  UploadedAt  DateTime @default(now()) @db.Timestamp(6)
+  UpdatedAt   DateTime @updatedAt
 }
 
 model ChronicCondition {

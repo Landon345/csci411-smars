@@ -393,6 +393,7 @@ export const ModelName = {
   DoctorProfile: 'DoctorProfile',
   PatientProfile: 'PatientProfile',
   Allergy: 'Allergy',
+  ProfilePhoto: 'ProfilePhoto',
   ChronicCondition: 'ChronicCondition'
 } as const
 
@@ -409,7 +410,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "appointment" | "medicalRecord" | "prescription" | "auditLog" | "inviteToken" | "doctorProfile" | "patientProfile" | "allergy" | "chronicCondition"
+    modelProps: "user" | "appointment" | "medicalRecord" | "prescription" | "auditLog" | "inviteToken" | "doctorProfile" | "patientProfile" | "allergy" | "profilePhoto" | "chronicCondition"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1079,6 +1080,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ProfilePhoto: {
+      payload: Prisma.$ProfilePhotoPayload<ExtArgs>
+      fields: Prisma.ProfilePhotoFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ProfilePhotoFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProfilePhotoPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ProfilePhotoFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProfilePhotoPayload>
+        }
+        findFirst: {
+          args: Prisma.ProfilePhotoFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProfilePhotoPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ProfilePhotoFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProfilePhotoPayload>
+        }
+        findMany: {
+          args: Prisma.ProfilePhotoFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProfilePhotoPayload>[]
+        }
+        create: {
+          args: Prisma.ProfilePhotoCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProfilePhotoPayload>
+        }
+        createMany: {
+          args: Prisma.ProfilePhotoCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ProfilePhotoCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProfilePhotoPayload>[]
+        }
+        delete: {
+          args: Prisma.ProfilePhotoDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProfilePhotoPayload>
+        }
+        update: {
+          args: Prisma.ProfilePhotoUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProfilePhotoPayload>
+        }
+        deleteMany: {
+          args: Prisma.ProfilePhotoDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ProfilePhotoUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ProfilePhotoUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProfilePhotoPayload>[]
+        }
+        upsert: {
+          args: Prisma.ProfilePhotoUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProfilePhotoPayload>
+        }
+        aggregate: {
+          args: Prisma.ProfilePhotoAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateProfilePhoto>
+        }
+        groupBy: {
+          args: Prisma.ProfilePhotoGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProfilePhotoGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ProfilePhotoCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProfilePhotoCountAggregateOutputType> | number
+        }
+      }
+    }
     ChronicCondition: {
       payload: Prisma.$ChronicConditionPayload<ExtArgs>
       fields: Prisma.ChronicConditionFieldRefs
@@ -1351,6 +1426,20 @@ export const AllergyScalarFieldEnum = {
 } as const
 
 export type AllergyScalarFieldEnum = (typeof AllergyScalarFieldEnum)[keyof typeof AllergyScalarFieldEnum]
+
+
+export const ProfilePhotoScalarFieldEnum = {
+  PhotoID: 'PhotoID',
+  UserID: 'UserID',
+  S3Key: 'S3Key',
+  S3Bucket: 'S3Bucket',
+  ContentType: 'ContentType',
+  SizeBytes: 'SizeBytes',
+  UploadedAt: 'UploadedAt',
+  UpdatedAt: 'UpdatedAt'
+} as const
+
+export type ProfilePhotoScalarFieldEnum = (typeof ProfilePhotoScalarFieldEnum)[keyof typeof ProfilePhotoScalarFieldEnum]
 
 
 export const ChronicConditionScalarFieldEnum = {
@@ -1713,6 +1802,7 @@ export type GlobalOmitConfig = {
   doctorProfile?: Prisma.DoctorProfileOmit
   patientProfile?: Prisma.PatientProfileOmit
   allergy?: Prisma.AllergyOmit
+  profilePhoto?: Prisma.ProfilePhotoOmit
   chronicCondition?: Prisma.ChronicConditionOmit
 }
 

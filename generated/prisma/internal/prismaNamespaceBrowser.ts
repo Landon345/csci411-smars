@@ -60,6 +60,7 @@ export const ModelName = {
   DoctorProfile: 'DoctorProfile',
   PatientProfile: 'PatientProfile',
   Allergy: 'Allergy',
+  ProfilePhoto: 'ProfilePhoto',
   ChronicCondition: 'ChronicCondition'
 } as const
 
@@ -238,6 +239,20 @@ export const AllergyScalarFieldEnum = {
 } as const
 
 export type AllergyScalarFieldEnum = (typeof AllergyScalarFieldEnum)[keyof typeof AllergyScalarFieldEnum]
+
+
+export const ProfilePhotoScalarFieldEnum = {
+  PhotoID: 'PhotoID',
+  UserID: 'UserID',
+  S3Key: 'S3Key',
+  S3Bucket: 'S3Bucket',
+  ContentType: 'ContentType',
+  SizeBytes: 'SizeBytes',
+  UploadedAt: 'UploadedAt',
+  UpdatedAt: 'UpdatedAt'
+} as const
+
+export type ProfilePhotoScalarFieldEnum = (typeof ProfilePhotoScalarFieldEnum)[keyof typeof ProfilePhotoScalarFieldEnum]
 
 
 export const ChronicConditionScalarFieldEnum = {

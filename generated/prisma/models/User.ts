@@ -337,6 +337,7 @@ export type UserWhereInput = {
   PCPPatients?: Prisma.PatientProfileListRelationFilter
   PatientAllergies?: Prisma.AllergyListRelationFilter
   PatientConditions?: Prisma.ChronicConditionListRelationFilter
+  ProfilePhoto?: Prisma.XOR<Prisma.ProfilePhotoNullableScalarRelationFilter, Prisma.ProfilePhotoWhereInput> | null
 }
 
 export type UserOrderByWithRelationInput = {
@@ -371,6 +372,7 @@ export type UserOrderByWithRelationInput = {
   PCPPatients?: Prisma.PatientProfileOrderByRelationAggregateInput
   PatientAllergies?: Prisma.AllergyOrderByRelationAggregateInput
   PatientConditions?: Prisma.ChronicConditionOrderByRelationAggregateInput
+  ProfilePhoto?: Prisma.ProfilePhotoOrderByWithRelationInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -408,6 +410,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   PCPPatients?: Prisma.PatientProfileListRelationFilter
   PatientAllergies?: Prisma.AllergyListRelationFilter
   PatientConditions?: Prisma.ChronicConditionListRelationFilter
+  ProfilePhoto?: Prisma.XOR<Prisma.ProfilePhotoNullableScalarRelationFilter, Prisma.ProfilePhotoWhereInput> | null
 }, "UserID" | "Email" | "SSN">
 
 export type UserOrderByWithAggregationInput = {
@@ -492,6 +495,7 @@ export type UserCreateInput = {
   PCPPatients?: Prisma.PatientProfileCreateNestedManyWithoutPrimaryCarePhysicianInput
   PatientAllergies?: Prisma.AllergyCreateNestedManyWithoutPatientInput
   PatientConditions?: Prisma.ChronicConditionCreateNestedManyWithoutPatientInput
+  ProfilePhoto?: Prisma.ProfilePhotoCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -526,6 +530,7 @@ export type UserUncheckedCreateInput = {
   PCPPatients?: Prisma.PatientProfileUncheckedCreateNestedManyWithoutPrimaryCarePhysicianInput
   PatientAllergies?: Prisma.AllergyUncheckedCreateNestedManyWithoutPatientInput
   PatientConditions?: Prisma.ChronicConditionUncheckedCreateNestedManyWithoutPatientInput
+  ProfilePhoto?: Prisma.ProfilePhotoUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -560,6 +565,7 @@ export type UserUpdateInput = {
   PCPPatients?: Prisma.PatientProfileUpdateManyWithoutPrimaryCarePhysicianNestedInput
   PatientAllergies?: Prisma.AllergyUpdateManyWithoutPatientNestedInput
   PatientConditions?: Prisma.ChronicConditionUpdateManyWithoutPatientNestedInput
+  ProfilePhoto?: Prisma.ProfilePhotoUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -594,6 +600,7 @@ export type UserUncheckedUpdateInput = {
   PCPPatients?: Prisma.PatientProfileUncheckedUpdateManyWithoutPrimaryCarePhysicianNestedInput
   PatientAllergies?: Prisma.AllergyUncheckedUpdateManyWithoutPatientNestedInput
   PatientConditions?: Prisma.ChronicConditionUncheckedUpdateManyWithoutPatientNestedInput
+  ProfilePhoto?: Prisma.ProfilePhotoUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -942,6 +949,20 @@ export type UserUpdateOneRequiredWithoutPatientAllergiesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutPatientAllergiesInput, Prisma.UserUpdateWithoutPatientAllergiesInput>, Prisma.UserUncheckedUpdateWithoutPatientAllergiesInput>
 }
 
+export type UserCreateNestedOneWithoutProfilePhotoInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutProfilePhotoInput, Prisma.UserUncheckedCreateWithoutProfilePhotoInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutProfilePhotoInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutProfilePhotoNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutProfilePhotoInput, Prisma.UserUncheckedCreateWithoutProfilePhotoInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutProfilePhotoInput
+  upsert?: Prisma.UserUpsertWithoutProfilePhotoInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutProfilePhotoInput, Prisma.UserUpdateWithoutProfilePhotoInput>, Prisma.UserUncheckedUpdateWithoutProfilePhotoInput>
+}
+
 export type UserCreateNestedOneWithoutPatientConditionsInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutPatientConditionsInput, Prisma.UserUncheckedCreateWithoutPatientConditionsInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutPatientConditionsInput
@@ -987,6 +1008,7 @@ export type UserCreateWithoutDoctorAppointmentsInput = {
   PCPPatients?: Prisma.PatientProfileCreateNestedManyWithoutPrimaryCarePhysicianInput
   PatientAllergies?: Prisma.AllergyCreateNestedManyWithoutPatientInput
   PatientConditions?: Prisma.ChronicConditionCreateNestedManyWithoutPatientInput
+  ProfilePhoto?: Prisma.ProfilePhotoCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutDoctorAppointmentsInput = {
@@ -1020,6 +1042,7 @@ export type UserUncheckedCreateWithoutDoctorAppointmentsInput = {
   PCPPatients?: Prisma.PatientProfileUncheckedCreateNestedManyWithoutPrimaryCarePhysicianInput
   PatientAllergies?: Prisma.AllergyUncheckedCreateNestedManyWithoutPatientInput
   PatientConditions?: Prisma.ChronicConditionUncheckedCreateNestedManyWithoutPatientInput
+  ProfilePhoto?: Prisma.ProfilePhotoUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutDoctorAppointmentsInput = {
@@ -1058,6 +1081,7 @@ export type UserCreateWithoutPatientAppointmentsInput = {
   PCPPatients?: Prisma.PatientProfileCreateNestedManyWithoutPrimaryCarePhysicianInput
   PatientAllergies?: Prisma.AllergyCreateNestedManyWithoutPatientInput
   PatientConditions?: Prisma.ChronicConditionCreateNestedManyWithoutPatientInput
+  ProfilePhoto?: Prisma.ProfilePhotoCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutPatientAppointmentsInput = {
@@ -1091,6 +1115,7 @@ export type UserUncheckedCreateWithoutPatientAppointmentsInput = {
   PCPPatients?: Prisma.PatientProfileUncheckedCreateNestedManyWithoutPrimaryCarePhysicianInput
   PatientAllergies?: Prisma.AllergyUncheckedCreateNestedManyWithoutPatientInput
   PatientConditions?: Prisma.ChronicConditionUncheckedCreateNestedManyWithoutPatientInput
+  ProfilePhoto?: Prisma.ProfilePhotoUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutPatientAppointmentsInput = {
@@ -1140,6 +1165,7 @@ export type UserUpdateWithoutDoctorAppointmentsInput = {
   PCPPatients?: Prisma.PatientProfileUpdateManyWithoutPrimaryCarePhysicianNestedInput
   PatientAllergies?: Prisma.AllergyUpdateManyWithoutPatientNestedInput
   PatientConditions?: Prisma.ChronicConditionUpdateManyWithoutPatientNestedInput
+  ProfilePhoto?: Prisma.ProfilePhotoUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutDoctorAppointmentsInput = {
@@ -1173,6 +1199,7 @@ export type UserUncheckedUpdateWithoutDoctorAppointmentsInput = {
   PCPPatients?: Prisma.PatientProfileUncheckedUpdateManyWithoutPrimaryCarePhysicianNestedInput
   PatientAllergies?: Prisma.AllergyUncheckedUpdateManyWithoutPatientNestedInput
   PatientConditions?: Prisma.ChronicConditionUncheckedUpdateManyWithoutPatientNestedInput
+  ProfilePhoto?: Prisma.ProfilePhotoUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserUpsertWithoutPatientAppointmentsInput = {
@@ -1217,6 +1244,7 @@ export type UserUpdateWithoutPatientAppointmentsInput = {
   PCPPatients?: Prisma.PatientProfileUpdateManyWithoutPrimaryCarePhysicianNestedInput
   PatientAllergies?: Prisma.AllergyUpdateManyWithoutPatientNestedInput
   PatientConditions?: Prisma.ChronicConditionUpdateManyWithoutPatientNestedInput
+  ProfilePhoto?: Prisma.ProfilePhotoUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPatientAppointmentsInput = {
@@ -1250,6 +1278,7 @@ export type UserUncheckedUpdateWithoutPatientAppointmentsInput = {
   PCPPatients?: Prisma.PatientProfileUncheckedUpdateManyWithoutPrimaryCarePhysicianNestedInput
   PatientAllergies?: Prisma.AllergyUncheckedUpdateManyWithoutPatientNestedInput
   PatientConditions?: Prisma.ChronicConditionUncheckedUpdateManyWithoutPatientNestedInput
+  ProfilePhoto?: Prisma.ProfilePhotoUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutDoctorRecordsInput = {
@@ -1283,6 +1312,7 @@ export type UserCreateWithoutDoctorRecordsInput = {
   PCPPatients?: Prisma.PatientProfileCreateNestedManyWithoutPrimaryCarePhysicianInput
   PatientAllergies?: Prisma.AllergyCreateNestedManyWithoutPatientInput
   PatientConditions?: Prisma.ChronicConditionCreateNestedManyWithoutPatientInput
+  ProfilePhoto?: Prisma.ProfilePhotoCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutDoctorRecordsInput = {
@@ -1316,6 +1346,7 @@ export type UserUncheckedCreateWithoutDoctorRecordsInput = {
   PCPPatients?: Prisma.PatientProfileUncheckedCreateNestedManyWithoutPrimaryCarePhysicianInput
   PatientAllergies?: Prisma.AllergyUncheckedCreateNestedManyWithoutPatientInput
   PatientConditions?: Prisma.ChronicConditionUncheckedCreateNestedManyWithoutPatientInput
+  ProfilePhoto?: Prisma.ProfilePhotoUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutDoctorRecordsInput = {
@@ -1354,6 +1385,7 @@ export type UserCreateWithoutPatientRecordsInput = {
   PCPPatients?: Prisma.PatientProfileCreateNestedManyWithoutPrimaryCarePhysicianInput
   PatientAllergies?: Prisma.AllergyCreateNestedManyWithoutPatientInput
   PatientConditions?: Prisma.ChronicConditionCreateNestedManyWithoutPatientInput
+  ProfilePhoto?: Prisma.ProfilePhotoCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutPatientRecordsInput = {
@@ -1387,6 +1419,7 @@ export type UserUncheckedCreateWithoutPatientRecordsInput = {
   PCPPatients?: Prisma.PatientProfileUncheckedCreateNestedManyWithoutPrimaryCarePhysicianInput
   PatientAllergies?: Prisma.AllergyUncheckedCreateNestedManyWithoutPatientInput
   PatientConditions?: Prisma.ChronicConditionUncheckedCreateNestedManyWithoutPatientInput
+  ProfilePhoto?: Prisma.ProfilePhotoUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutPatientRecordsInput = {
@@ -1436,6 +1469,7 @@ export type UserUpdateWithoutDoctorRecordsInput = {
   PCPPatients?: Prisma.PatientProfileUpdateManyWithoutPrimaryCarePhysicianNestedInput
   PatientAllergies?: Prisma.AllergyUpdateManyWithoutPatientNestedInput
   PatientConditions?: Prisma.ChronicConditionUpdateManyWithoutPatientNestedInput
+  ProfilePhoto?: Prisma.ProfilePhotoUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutDoctorRecordsInput = {
@@ -1469,6 +1503,7 @@ export type UserUncheckedUpdateWithoutDoctorRecordsInput = {
   PCPPatients?: Prisma.PatientProfileUncheckedUpdateManyWithoutPrimaryCarePhysicianNestedInput
   PatientAllergies?: Prisma.AllergyUncheckedUpdateManyWithoutPatientNestedInput
   PatientConditions?: Prisma.ChronicConditionUncheckedUpdateManyWithoutPatientNestedInput
+  ProfilePhoto?: Prisma.ProfilePhotoUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserUpsertWithoutPatientRecordsInput = {
@@ -1513,6 +1548,7 @@ export type UserUpdateWithoutPatientRecordsInput = {
   PCPPatients?: Prisma.PatientProfileUpdateManyWithoutPrimaryCarePhysicianNestedInput
   PatientAllergies?: Prisma.AllergyUpdateManyWithoutPatientNestedInput
   PatientConditions?: Prisma.ChronicConditionUpdateManyWithoutPatientNestedInput
+  ProfilePhoto?: Prisma.ProfilePhotoUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPatientRecordsInput = {
@@ -1546,6 +1582,7 @@ export type UserUncheckedUpdateWithoutPatientRecordsInput = {
   PCPPatients?: Prisma.PatientProfileUncheckedUpdateManyWithoutPrimaryCarePhysicianNestedInput
   PatientAllergies?: Prisma.AllergyUncheckedUpdateManyWithoutPatientNestedInput
   PatientConditions?: Prisma.ChronicConditionUncheckedUpdateManyWithoutPatientNestedInput
+  ProfilePhoto?: Prisma.ProfilePhotoUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutDoctorPrescriptionsInput = {
@@ -1579,6 +1616,7 @@ export type UserCreateWithoutDoctorPrescriptionsInput = {
   PCPPatients?: Prisma.PatientProfileCreateNestedManyWithoutPrimaryCarePhysicianInput
   PatientAllergies?: Prisma.AllergyCreateNestedManyWithoutPatientInput
   PatientConditions?: Prisma.ChronicConditionCreateNestedManyWithoutPatientInput
+  ProfilePhoto?: Prisma.ProfilePhotoCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutDoctorPrescriptionsInput = {
@@ -1612,6 +1650,7 @@ export type UserUncheckedCreateWithoutDoctorPrescriptionsInput = {
   PCPPatients?: Prisma.PatientProfileUncheckedCreateNestedManyWithoutPrimaryCarePhysicianInput
   PatientAllergies?: Prisma.AllergyUncheckedCreateNestedManyWithoutPatientInput
   PatientConditions?: Prisma.ChronicConditionUncheckedCreateNestedManyWithoutPatientInput
+  ProfilePhoto?: Prisma.ProfilePhotoUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutDoctorPrescriptionsInput = {
@@ -1650,6 +1689,7 @@ export type UserCreateWithoutPatientPrescriptionsInput = {
   PCPPatients?: Prisma.PatientProfileCreateNestedManyWithoutPrimaryCarePhysicianInput
   PatientAllergies?: Prisma.AllergyCreateNestedManyWithoutPatientInput
   PatientConditions?: Prisma.ChronicConditionCreateNestedManyWithoutPatientInput
+  ProfilePhoto?: Prisma.ProfilePhotoCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutPatientPrescriptionsInput = {
@@ -1683,6 +1723,7 @@ export type UserUncheckedCreateWithoutPatientPrescriptionsInput = {
   PCPPatients?: Prisma.PatientProfileUncheckedCreateNestedManyWithoutPrimaryCarePhysicianInput
   PatientAllergies?: Prisma.AllergyUncheckedCreateNestedManyWithoutPatientInput
   PatientConditions?: Prisma.ChronicConditionUncheckedCreateNestedManyWithoutPatientInput
+  ProfilePhoto?: Prisma.ProfilePhotoUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutPatientPrescriptionsInput = {
@@ -1732,6 +1773,7 @@ export type UserUpdateWithoutDoctorPrescriptionsInput = {
   PCPPatients?: Prisma.PatientProfileUpdateManyWithoutPrimaryCarePhysicianNestedInput
   PatientAllergies?: Prisma.AllergyUpdateManyWithoutPatientNestedInput
   PatientConditions?: Prisma.ChronicConditionUpdateManyWithoutPatientNestedInput
+  ProfilePhoto?: Prisma.ProfilePhotoUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutDoctorPrescriptionsInput = {
@@ -1765,6 +1807,7 @@ export type UserUncheckedUpdateWithoutDoctorPrescriptionsInput = {
   PCPPatients?: Prisma.PatientProfileUncheckedUpdateManyWithoutPrimaryCarePhysicianNestedInput
   PatientAllergies?: Prisma.AllergyUncheckedUpdateManyWithoutPatientNestedInput
   PatientConditions?: Prisma.ChronicConditionUncheckedUpdateManyWithoutPatientNestedInput
+  ProfilePhoto?: Prisma.ProfilePhotoUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserUpsertWithoutPatientPrescriptionsInput = {
@@ -1809,6 +1852,7 @@ export type UserUpdateWithoutPatientPrescriptionsInput = {
   PCPPatients?: Prisma.PatientProfileUpdateManyWithoutPrimaryCarePhysicianNestedInput
   PatientAllergies?: Prisma.AllergyUpdateManyWithoutPatientNestedInput
   PatientConditions?: Prisma.ChronicConditionUpdateManyWithoutPatientNestedInput
+  ProfilePhoto?: Prisma.ProfilePhotoUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPatientPrescriptionsInput = {
@@ -1842,6 +1886,7 @@ export type UserUncheckedUpdateWithoutPatientPrescriptionsInput = {
   PCPPatients?: Prisma.PatientProfileUncheckedUpdateManyWithoutPrimaryCarePhysicianNestedInput
   PatientAllergies?: Prisma.AllergyUncheckedUpdateManyWithoutPatientNestedInput
   PatientConditions?: Prisma.ChronicConditionUncheckedUpdateManyWithoutPatientNestedInput
+  ProfilePhoto?: Prisma.ProfilePhotoUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutAuditLogsInput = {
@@ -1875,6 +1920,7 @@ export type UserCreateWithoutAuditLogsInput = {
   PCPPatients?: Prisma.PatientProfileCreateNestedManyWithoutPrimaryCarePhysicianInput
   PatientAllergies?: Prisma.AllergyCreateNestedManyWithoutPatientInput
   PatientConditions?: Prisma.ChronicConditionCreateNestedManyWithoutPatientInput
+  ProfilePhoto?: Prisma.ProfilePhotoCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAuditLogsInput = {
@@ -1908,6 +1954,7 @@ export type UserUncheckedCreateWithoutAuditLogsInput = {
   PCPPatients?: Prisma.PatientProfileUncheckedCreateNestedManyWithoutPrimaryCarePhysicianInput
   PatientAllergies?: Prisma.AllergyUncheckedCreateNestedManyWithoutPatientInput
   PatientConditions?: Prisma.ChronicConditionUncheckedCreateNestedManyWithoutPatientInput
+  ProfilePhoto?: Prisma.ProfilePhotoUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAuditLogsInput = {
@@ -1957,6 +2004,7 @@ export type UserUpdateWithoutAuditLogsInput = {
   PCPPatients?: Prisma.PatientProfileUpdateManyWithoutPrimaryCarePhysicianNestedInput
   PatientAllergies?: Prisma.AllergyUpdateManyWithoutPatientNestedInput
   PatientConditions?: Prisma.ChronicConditionUpdateManyWithoutPatientNestedInput
+  ProfilePhoto?: Prisma.ProfilePhotoUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAuditLogsInput = {
@@ -1990,6 +2038,7 @@ export type UserUncheckedUpdateWithoutAuditLogsInput = {
   PCPPatients?: Prisma.PatientProfileUncheckedUpdateManyWithoutPrimaryCarePhysicianNestedInput
   PatientAllergies?: Prisma.AllergyUncheckedUpdateManyWithoutPatientNestedInput
   PatientConditions?: Prisma.ChronicConditionUncheckedUpdateManyWithoutPatientNestedInput
+  ProfilePhoto?: Prisma.ProfilePhotoUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutInvitesCreatedInput = {
@@ -2023,6 +2072,7 @@ export type UserCreateWithoutInvitesCreatedInput = {
   PCPPatients?: Prisma.PatientProfileCreateNestedManyWithoutPrimaryCarePhysicianInput
   PatientAllergies?: Prisma.AllergyCreateNestedManyWithoutPatientInput
   PatientConditions?: Prisma.ChronicConditionCreateNestedManyWithoutPatientInput
+  ProfilePhoto?: Prisma.ProfilePhotoCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutInvitesCreatedInput = {
@@ -2056,6 +2106,7 @@ export type UserUncheckedCreateWithoutInvitesCreatedInput = {
   PCPPatients?: Prisma.PatientProfileUncheckedCreateNestedManyWithoutPrimaryCarePhysicianInput
   PatientAllergies?: Prisma.AllergyUncheckedCreateNestedManyWithoutPatientInput
   PatientConditions?: Prisma.ChronicConditionUncheckedCreateNestedManyWithoutPatientInput
+  ProfilePhoto?: Prisma.ProfilePhotoUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutInvitesCreatedInput = {
@@ -2105,6 +2156,7 @@ export type UserUpdateWithoutInvitesCreatedInput = {
   PCPPatients?: Prisma.PatientProfileUpdateManyWithoutPrimaryCarePhysicianNestedInput
   PatientAllergies?: Prisma.AllergyUpdateManyWithoutPatientNestedInput
   PatientConditions?: Prisma.ChronicConditionUpdateManyWithoutPatientNestedInput
+  ProfilePhoto?: Prisma.ProfilePhotoUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutInvitesCreatedInput = {
@@ -2138,6 +2190,7 @@ export type UserUncheckedUpdateWithoutInvitesCreatedInput = {
   PCPPatients?: Prisma.PatientProfileUncheckedUpdateManyWithoutPrimaryCarePhysicianNestedInput
   PatientAllergies?: Prisma.AllergyUncheckedUpdateManyWithoutPatientNestedInput
   PatientConditions?: Prisma.ChronicConditionUncheckedUpdateManyWithoutPatientNestedInput
+  ProfilePhoto?: Prisma.ProfilePhotoUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutDoctorProfileInput = {
@@ -2171,6 +2224,7 @@ export type UserCreateWithoutDoctorProfileInput = {
   PCPPatients?: Prisma.PatientProfileCreateNestedManyWithoutPrimaryCarePhysicianInput
   PatientAllergies?: Prisma.AllergyCreateNestedManyWithoutPatientInput
   PatientConditions?: Prisma.ChronicConditionCreateNestedManyWithoutPatientInput
+  ProfilePhoto?: Prisma.ProfilePhotoCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutDoctorProfileInput = {
@@ -2204,6 +2258,7 @@ export type UserUncheckedCreateWithoutDoctorProfileInput = {
   PCPPatients?: Prisma.PatientProfileUncheckedCreateNestedManyWithoutPrimaryCarePhysicianInput
   PatientAllergies?: Prisma.AllergyUncheckedCreateNestedManyWithoutPatientInput
   PatientConditions?: Prisma.ChronicConditionUncheckedCreateNestedManyWithoutPatientInput
+  ProfilePhoto?: Prisma.ProfilePhotoUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutDoctorProfileInput = {
@@ -2253,6 +2308,7 @@ export type UserUpdateWithoutDoctorProfileInput = {
   PCPPatients?: Prisma.PatientProfileUpdateManyWithoutPrimaryCarePhysicianNestedInput
   PatientAllergies?: Prisma.AllergyUpdateManyWithoutPatientNestedInput
   PatientConditions?: Prisma.ChronicConditionUpdateManyWithoutPatientNestedInput
+  ProfilePhoto?: Prisma.ProfilePhotoUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutDoctorProfileInput = {
@@ -2286,6 +2342,7 @@ export type UserUncheckedUpdateWithoutDoctorProfileInput = {
   PCPPatients?: Prisma.PatientProfileUncheckedUpdateManyWithoutPrimaryCarePhysicianNestedInput
   PatientAllergies?: Prisma.AllergyUncheckedUpdateManyWithoutPatientNestedInput
   PatientConditions?: Prisma.ChronicConditionUncheckedUpdateManyWithoutPatientNestedInput
+  ProfilePhoto?: Prisma.ProfilePhotoUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutPatientProfileInput = {
@@ -2319,6 +2376,7 @@ export type UserCreateWithoutPatientProfileInput = {
   PCPPatients?: Prisma.PatientProfileCreateNestedManyWithoutPrimaryCarePhysicianInput
   PatientAllergies?: Prisma.AllergyCreateNestedManyWithoutPatientInput
   PatientConditions?: Prisma.ChronicConditionCreateNestedManyWithoutPatientInput
+  ProfilePhoto?: Prisma.ProfilePhotoCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutPatientProfileInput = {
@@ -2352,6 +2410,7 @@ export type UserUncheckedCreateWithoutPatientProfileInput = {
   PCPPatients?: Prisma.PatientProfileUncheckedCreateNestedManyWithoutPrimaryCarePhysicianInput
   PatientAllergies?: Prisma.AllergyUncheckedCreateNestedManyWithoutPatientInput
   PatientConditions?: Prisma.ChronicConditionUncheckedCreateNestedManyWithoutPatientInput
+  ProfilePhoto?: Prisma.ProfilePhotoUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutPatientProfileInput = {
@@ -2390,6 +2449,7 @@ export type UserCreateWithoutPCPPatientsInput = {
   PatientProfile?: Prisma.PatientProfileCreateNestedOneWithoutUserInput
   PatientAllergies?: Prisma.AllergyCreateNestedManyWithoutPatientInput
   PatientConditions?: Prisma.ChronicConditionCreateNestedManyWithoutPatientInput
+  ProfilePhoto?: Prisma.ProfilePhotoCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutPCPPatientsInput = {
@@ -2423,6 +2483,7 @@ export type UserUncheckedCreateWithoutPCPPatientsInput = {
   PatientProfile?: Prisma.PatientProfileUncheckedCreateNestedOneWithoutUserInput
   PatientAllergies?: Prisma.AllergyUncheckedCreateNestedManyWithoutPatientInput
   PatientConditions?: Prisma.ChronicConditionUncheckedCreateNestedManyWithoutPatientInput
+  ProfilePhoto?: Prisma.ProfilePhotoUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutPCPPatientsInput = {
@@ -2472,6 +2533,7 @@ export type UserUpdateWithoutPatientProfileInput = {
   PCPPatients?: Prisma.PatientProfileUpdateManyWithoutPrimaryCarePhysicianNestedInput
   PatientAllergies?: Prisma.AllergyUpdateManyWithoutPatientNestedInput
   PatientConditions?: Prisma.ChronicConditionUpdateManyWithoutPatientNestedInput
+  ProfilePhoto?: Prisma.ProfilePhotoUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPatientProfileInput = {
@@ -2505,6 +2567,7 @@ export type UserUncheckedUpdateWithoutPatientProfileInput = {
   PCPPatients?: Prisma.PatientProfileUncheckedUpdateManyWithoutPrimaryCarePhysicianNestedInput
   PatientAllergies?: Prisma.AllergyUncheckedUpdateManyWithoutPatientNestedInput
   PatientConditions?: Prisma.ChronicConditionUncheckedUpdateManyWithoutPatientNestedInput
+  ProfilePhoto?: Prisma.ProfilePhotoUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserUpsertWithoutPCPPatientsInput = {
@@ -2549,6 +2612,7 @@ export type UserUpdateWithoutPCPPatientsInput = {
   PatientProfile?: Prisma.PatientProfileUpdateOneWithoutUserNestedInput
   PatientAllergies?: Prisma.AllergyUpdateManyWithoutPatientNestedInput
   PatientConditions?: Prisma.ChronicConditionUpdateManyWithoutPatientNestedInput
+  ProfilePhoto?: Prisma.ProfilePhotoUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPCPPatientsInput = {
@@ -2582,6 +2646,7 @@ export type UserUncheckedUpdateWithoutPCPPatientsInput = {
   PatientProfile?: Prisma.PatientProfileUncheckedUpdateOneWithoutUserNestedInput
   PatientAllergies?: Prisma.AllergyUncheckedUpdateManyWithoutPatientNestedInput
   PatientConditions?: Prisma.ChronicConditionUncheckedUpdateManyWithoutPatientNestedInput
+  ProfilePhoto?: Prisma.ProfilePhotoUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutPatientAllergiesInput = {
@@ -2615,6 +2680,7 @@ export type UserCreateWithoutPatientAllergiesInput = {
   PatientProfile?: Prisma.PatientProfileCreateNestedOneWithoutUserInput
   PCPPatients?: Prisma.PatientProfileCreateNestedManyWithoutPrimaryCarePhysicianInput
   PatientConditions?: Prisma.ChronicConditionCreateNestedManyWithoutPatientInput
+  ProfilePhoto?: Prisma.ProfilePhotoCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutPatientAllergiesInput = {
@@ -2648,6 +2714,7 @@ export type UserUncheckedCreateWithoutPatientAllergiesInput = {
   PatientProfile?: Prisma.PatientProfileUncheckedCreateNestedOneWithoutUserInput
   PCPPatients?: Prisma.PatientProfileUncheckedCreateNestedManyWithoutPrimaryCarePhysicianInput
   PatientConditions?: Prisma.ChronicConditionUncheckedCreateNestedManyWithoutPatientInput
+  ProfilePhoto?: Prisma.ProfilePhotoUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutPatientAllergiesInput = {
@@ -2697,6 +2764,7 @@ export type UserUpdateWithoutPatientAllergiesInput = {
   PatientProfile?: Prisma.PatientProfileUpdateOneWithoutUserNestedInput
   PCPPatients?: Prisma.PatientProfileUpdateManyWithoutPrimaryCarePhysicianNestedInput
   PatientConditions?: Prisma.ChronicConditionUpdateManyWithoutPatientNestedInput
+  ProfilePhoto?: Prisma.ProfilePhotoUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPatientAllergiesInput = {
@@ -2729,6 +2797,159 @@ export type UserUncheckedUpdateWithoutPatientAllergiesInput = {
   DoctorProfile?: Prisma.DoctorProfileUncheckedUpdateOneWithoutUserNestedInput
   PatientProfile?: Prisma.PatientProfileUncheckedUpdateOneWithoutUserNestedInput
   PCPPatients?: Prisma.PatientProfileUncheckedUpdateManyWithoutPrimaryCarePhysicianNestedInput
+  PatientConditions?: Prisma.ChronicConditionUncheckedUpdateManyWithoutPatientNestedInput
+  ProfilePhoto?: Prisma.ProfilePhotoUncheckedUpdateOneWithoutUserNestedInput
+}
+
+export type UserCreateWithoutProfilePhotoInput = {
+  UserID?: string
+  Email: string
+  Password?: string | null
+  FirstName: string
+  LastName: string
+  Phone?: string | null
+  SSN: string
+  Role?: $Enums.Roles
+  CreatedAt?: Date | string
+  UpdatedAt?: Date | string
+  EmailVerified?: Date | string | null
+  VerifyCode?: string | null
+  VerifyExpires?: Date | string | null
+  VerifyAttempts?: number
+  ResetToken?: string | null
+  ResetExpires?: Date | string | null
+  FailedAttempts?: number
+  LockedUntil?: Date | string | null
+  DoctorAppointments?: Prisma.AppointmentCreateNestedManyWithoutDoctorInput
+  PatientAppointments?: Prisma.AppointmentCreateNestedManyWithoutPatientInput
+  DoctorRecords?: Prisma.MedicalRecordCreateNestedManyWithoutDoctorInput
+  PatientRecords?: Prisma.MedicalRecordCreateNestedManyWithoutPatientInput
+  DoctorPrescriptions?: Prisma.PrescriptionCreateNestedManyWithoutDoctorInput
+  PatientPrescriptions?: Prisma.PrescriptionCreateNestedManyWithoutPatientInput
+  AuditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
+  InvitesCreated?: Prisma.InviteTokenCreateNestedManyWithoutCreatorInput
+  DoctorProfile?: Prisma.DoctorProfileCreateNestedOneWithoutUserInput
+  PatientProfile?: Prisma.PatientProfileCreateNestedOneWithoutUserInput
+  PCPPatients?: Prisma.PatientProfileCreateNestedManyWithoutPrimaryCarePhysicianInput
+  PatientAllergies?: Prisma.AllergyCreateNestedManyWithoutPatientInput
+  PatientConditions?: Prisma.ChronicConditionCreateNestedManyWithoutPatientInput
+}
+
+export type UserUncheckedCreateWithoutProfilePhotoInput = {
+  UserID?: string
+  Email: string
+  Password?: string | null
+  FirstName: string
+  LastName: string
+  Phone?: string | null
+  SSN: string
+  Role?: $Enums.Roles
+  CreatedAt?: Date | string
+  UpdatedAt?: Date | string
+  EmailVerified?: Date | string | null
+  VerifyCode?: string | null
+  VerifyExpires?: Date | string | null
+  VerifyAttempts?: number
+  ResetToken?: string | null
+  ResetExpires?: Date | string | null
+  FailedAttempts?: number
+  LockedUntil?: Date | string | null
+  DoctorAppointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutDoctorInput
+  PatientAppointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutPatientInput
+  DoctorRecords?: Prisma.MedicalRecordUncheckedCreateNestedManyWithoutDoctorInput
+  PatientRecords?: Prisma.MedicalRecordUncheckedCreateNestedManyWithoutPatientInput
+  DoctorPrescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutDoctorInput
+  PatientPrescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutPatientInput
+  AuditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
+  InvitesCreated?: Prisma.InviteTokenUncheckedCreateNestedManyWithoutCreatorInput
+  DoctorProfile?: Prisma.DoctorProfileUncheckedCreateNestedOneWithoutUserInput
+  PatientProfile?: Prisma.PatientProfileUncheckedCreateNestedOneWithoutUserInput
+  PCPPatients?: Prisma.PatientProfileUncheckedCreateNestedManyWithoutPrimaryCarePhysicianInput
+  PatientAllergies?: Prisma.AllergyUncheckedCreateNestedManyWithoutPatientInput
+  PatientConditions?: Prisma.ChronicConditionUncheckedCreateNestedManyWithoutPatientInput
+}
+
+export type UserCreateOrConnectWithoutProfilePhotoInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutProfilePhotoInput, Prisma.UserUncheckedCreateWithoutProfilePhotoInput>
+}
+
+export type UserUpsertWithoutProfilePhotoInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutProfilePhotoInput, Prisma.UserUncheckedUpdateWithoutProfilePhotoInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutProfilePhotoInput, Prisma.UserUncheckedCreateWithoutProfilePhotoInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutProfilePhotoInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutProfilePhotoInput, Prisma.UserUncheckedUpdateWithoutProfilePhotoInput>
+}
+
+export type UserUpdateWithoutProfilePhotoInput = {
+  UserID?: Prisma.StringFieldUpdateOperationsInput | string
+  Email?: Prisma.StringFieldUpdateOperationsInput | string
+  Password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  FirstName?: Prisma.StringFieldUpdateOperationsInput | string
+  LastName?: Prisma.StringFieldUpdateOperationsInput | string
+  Phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  SSN?: Prisma.StringFieldUpdateOperationsInput | string
+  Role?: Prisma.EnumRolesFieldUpdateOperationsInput | $Enums.Roles
+  CreatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  UpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  EmailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  VerifyCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  VerifyExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  VerifyAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  ResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  FailedAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  LockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  DoctorAppointments?: Prisma.AppointmentUpdateManyWithoutDoctorNestedInput
+  PatientAppointments?: Prisma.AppointmentUpdateManyWithoutPatientNestedInput
+  DoctorRecords?: Prisma.MedicalRecordUpdateManyWithoutDoctorNestedInput
+  PatientRecords?: Prisma.MedicalRecordUpdateManyWithoutPatientNestedInput
+  DoctorPrescriptions?: Prisma.PrescriptionUpdateManyWithoutDoctorNestedInput
+  PatientPrescriptions?: Prisma.PrescriptionUpdateManyWithoutPatientNestedInput
+  AuditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
+  InvitesCreated?: Prisma.InviteTokenUpdateManyWithoutCreatorNestedInput
+  DoctorProfile?: Prisma.DoctorProfileUpdateOneWithoutUserNestedInput
+  PatientProfile?: Prisma.PatientProfileUpdateOneWithoutUserNestedInput
+  PCPPatients?: Prisma.PatientProfileUpdateManyWithoutPrimaryCarePhysicianNestedInput
+  PatientAllergies?: Prisma.AllergyUpdateManyWithoutPatientNestedInput
+  PatientConditions?: Prisma.ChronicConditionUpdateManyWithoutPatientNestedInput
+}
+
+export type UserUncheckedUpdateWithoutProfilePhotoInput = {
+  UserID?: Prisma.StringFieldUpdateOperationsInput | string
+  Email?: Prisma.StringFieldUpdateOperationsInput | string
+  Password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  FirstName?: Prisma.StringFieldUpdateOperationsInput | string
+  LastName?: Prisma.StringFieldUpdateOperationsInput | string
+  Phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  SSN?: Prisma.StringFieldUpdateOperationsInput | string
+  Role?: Prisma.EnumRolesFieldUpdateOperationsInput | $Enums.Roles
+  CreatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  UpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  EmailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  VerifyCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  VerifyExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  VerifyAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  ResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  FailedAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  LockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  DoctorAppointments?: Prisma.AppointmentUncheckedUpdateManyWithoutDoctorNestedInput
+  PatientAppointments?: Prisma.AppointmentUncheckedUpdateManyWithoutPatientNestedInput
+  DoctorRecords?: Prisma.MedicalRecordUncheckedUpdateManyWithoutDoctorNestedInput
+  PatientRecords?: Prisma.MedicalRecordUncheckedUpdateManyWithoutPatientNestedInput
+  DoctorPrescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutDoctorNestedInput
+  PatientPrescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutPatientNestedInput
+  AuditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
+  InvitesCreated?: Prisma.InviteTokenUncheckedUpdateManyWithoutCreatorNestedInput
+  DoctorProfile?: Prisma.DoctorProfileUncheckedUpdateOneWithoutUserNestedInput
+  PatientProfile?: Prisma.PatientProfileUncheckedUpdateOneWithoutUserNestedInput
+  PCPPatients?: Prisma.PatientProfileUncheckedUpdateManyWithoutPrimaryCarePhysicianNestedInput
+  PatientAllergies?: Prisma.AllergyUncheckedUpdateManyWithoutPatientNestedInput
   PatientConditions?: Prisma.ChronicConditionUncheckedUpdateManyWithoutPatientNestedInput
 }
 
@@ -2763,6 +2984,7 @@ export type UserCreateWithoutPatientConditionsInput = {
   PatientProfile?: Prisma.PatientProfileCreateNestedOneWithoutUserInput
   PCPPatients?: Prisma.PatientProfileCreateNestedManyWithoutPrimaryCarePhysicianInput
   PatientAllergies?: Prisma.AllergyCreateNestedManyWithoutPatientInput
+  ProfilePhoto?: Prisma.ProfilePhotoCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutPatientConditionsInput = {
@@ -2796,6 +3018,7 @@ export type UserUncheckedCreateWithoutPatientConditionsInput = {
   PatientProfile?: Prisma.PatientProfileUncheckedCreateNestedOneWithoutUserInput
   PCPPatients?: Prisma.PatientProfileUncheckedCreateNestedManyWithoutPrimaryCarePhysicianInput
   PatientAllergies?: Prisma.AllergyUncheckedCreateNestedManyWithoutPatientInput
+  ProfilePhoto?: Prisma.ProfilePhotoUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutPatientConditionsInput = {
@@ -2845,6 +3068,7 @@ export type UserUpdateWithoutPatientConditionsInput = {
   PatientProfile?: Prisma.PatientProfileUpdateOneWithoutUserNestedInput
   PCPPatients?: Prisma.PatientProfileUpdateManyWithoutPrimaryCarePhysicianNestedInput
   PatientAllergies?: Prisma.AllergyUpdateManyWithoutPatientNestedInput
+  ProfilePhoto?: Prisma.ProfilePhotoUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPatientConditionsInput = {
@@ -2878,6 +3102,7 @@ export type UserUncheckedUpdateWithoutPatientConditionsInput = {
   PatientProfile?: Prisma.PatientProfileUncheckedUpdateOneWithoutUserNestedInput
   PCPPatients?: Prisma.PatientProfileUncheckedUpdateManyWithoutPrimaryCarePhysicianNestedInput
   PatientAllergies?: Prisma.AllergyUncheckedUpdateManyWithoutPatientNestedInput
+  ProfilePhoto?: Prisma.ProfilePhotoUncheckedUpdateOneWithoutUserNestedInput
 }
 
 
@@ -3033,6 +3258,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   PCPPatients?: boolean | Prisma.User$PCPPatientsArgs<ExtArgs>
   PatientAllergies?: boolean | Prisma.User$PatientAllergiesArgs<ExtArgs>
   PatientConditions?: boolean | Prisma.User$PatientConditionsArgs<ExtArgs>
+  ProfilePhoto?: boolean | Prisma.User$ProfilePhotoArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -3114,6 +3340,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   PCPPatients?: boolean | Prisma.User$PCPPatientsArgs<ExtArgs>
   PatientAllergies?: boolean | Prisma.User$PatientAllergiesArgs<ExtArgs>
   PatientConditions?: boolean | Prisma.User$PatientConditionsArgs<ExtArgs>
+  ProfilePhoto?: boolean | Prisma.User$ProfilePhotoArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -3135,6 +3362,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     PCPPatients: Prisma.$PatientProfilePayload<ExtArgs>[]
     PatientAllergies: Prisma.$AllergyPayload<ExtArgs>[]
     PatientConditions: Prisma.$ChronicConditionPayload<ExtArgs>[]
+    ProfilePhoto: Prisma.$ProfilePhotoPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     UserID: string
@@ -3562,6 +3790,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   PCPPatients<T extends Prisma.User$PCPPatientsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$PCPPatientsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PatientProfilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   PatientAllergies<T extends Prisma.User$PatientAllergiesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$PatientAllergiesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AllergyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   PatientConditions<T extends Prisma.User$PatientConditionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$PatientConditionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChronicConditionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  ProfilePhoto<T extends Prisma.User$ProfilePhotoArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$ProfilePhotoArgs<ExtArgs>>): Prisma.Prisma__ProfilePhotoClient<runtime.Types.Result.GetResult<Prisma.$ProfilePhotoPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4296,6 +4525,25 @@ export type User$PatientConditionsArgs<ExtArgs extends runtime.Types.Extensions.
   take?: number
   skip?: number
   distinct?: Prisma.ChronicConditionScalarFieldEnum | Prisma.ChronicConditionScalarFieldEnum[]
+}
+
+/**
+ * User.ProfilePhoto
+ */
+export type User$ProfilePhotoArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ProfilePhoto
+   */
+  select?: Prisma.ProfilePhotoSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ProfilePhoto
+   */
+  omit?: Prisma.ProfilePhotoOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProfilePhotoInclude<ExtArgs> | null
+  where?: Prisma.ProfilePhotoWhereInput
 }
 
 /**

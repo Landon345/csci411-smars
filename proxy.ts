@@ -82,7 +82,8 @@ export async function proxy(request: NextRequest) {
     default-src 'self';
     script-src 'self' 'nonce-${nonce}' 'strict-dynamic';
     style-src 'self' 'unsafe-inline';
-    img-src 'self' blob: data:;
+    connect-src 'self' https://*.amazonaws.com;
+    img-src 'self' blob: data: https://*.amazonaws.com;
     font-src 'self';
     object-src 'none';
     base-uri 'self';

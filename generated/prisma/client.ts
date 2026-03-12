@@ -85,6 +85,11 @@ export type PatientProfile = Prisma.PatientProfileModel
  */
 export type Allergy = Prisma.AllergyModel
 /**
+ * Model ProfilePhoto
+ * 
+ */
+export type ProfilePhoto = Prisma.ProfilePhotoModel
+/**
  * Model ChronicCondition
  * 
  */
