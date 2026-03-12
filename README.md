@@ -35,6 +35,12 @@ SSN_ENCRYPTION_KEY="your_random_thirty_two_character_secure_ssn_encryption_secre
 # Email Service (Resend.com API Key)
 RESEND_API_KEY="re_your_api_key"
 
+# AWS S3 (for medical record document attachments)
+AWS_REGION="us-east-1"
+AWS_ACCESS_KEY_ID="your_aws_access_key_id"
+AWS_SECRET_ACCESS_KEY="your_aws_secret_access_key"
+AWS_S3_BUCKET="your_s3_bucket_name"
+
 # Environment
 NODE_ENV="dev"
 ```
