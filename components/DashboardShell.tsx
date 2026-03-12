@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
-import { Badge } from "@/components/ui/badge";
+import { useState, useEffect } from "react";
 import ThemeToggle from "@/components/ThemeToggle";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { getAvatarColor, getInitials } from "@/lib/avatarColor";
 import {
   Sidebar,
   SidebarContent,
@@ -69,14 +70,20 @@ const NAV_LINKS: Record<string, NavLink[]> = {
   ],
 };
 
-const roleBadgeColors: Record<string, string> = {
-  patient: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
-  doctor: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
-  admin: "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400",
+const SETTINGS_PATH: Record<string, string> = {
+  patient: "/patient/dashboard/settings",
+  doctor: "/doctor/dashboard/settings",
+  admin: "/admin/dashboard/settings",
+};
+
+const roleTextColors: Record<string, string> = {
+  patient: "text-blue-600 dark:text-blue-400",
+  doctor: "text-green-600 dark:text-green-400",
+  admin: "text-purple-600 dark:text-purple-400",
 };
 
 interface DashboardShellProps {
-  user: { FirstName: string; LastName: string; Role: string };
+  user: { UserID: string; FirstName: string; LastName: string; Role: string };
   children: React.ReactNode;
 }
 
@@ -84,8 +91,19 @@ export default function DashboardShell({ user, children }: DashboardShellProps) 
   const pathname = usePathname();
   const router = useRouter();
   const [loggingOut, setLoggingOut] = useState(false);
+  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
 
   const navLinks = NAV_LINKS[user.Role] ?? [];
+  const settingsPath = SETTINGS_PATH[user.Role] ?? "/dashboard";
+  const avatarStyle = getAvatarColor(user.UserID);
+  const initials = getInitials(user.FirstName, user.LastName);
+
+  useEffect(() => {
+    fetch("/api/user/profile-photo")
+      .then((r) => r.json())
+      .then(({ viewUrl }) => setPhotoUrl(viewUrl ?? null))
+      .catch(() => {});
+  }, []);
 
   async function handleLogout() {
     setLoggingOut(true);
@@ -147,20 +165,37 @@ export default function DashboardShell({ user, children }: DashboardShellProps) 
         <SidebarFooter>
           <SidebarSeparator />
 
-          {/* Name + role badge — hidden in icon mode */}
-          <div className="group-data-[collapsible=icon]:hidden flex items-center justify-between gap-2 px-2 py-1">
-            <span className="text-sm font-medium truncate">
-              {user.FirstName} {user.LastName}
-            </span>
-            <Badge
-              variant="secondary"
-              className={`shrink-0 capitalize ${roleBadgeColors[user.Role] ?? ""}`}
-            >
-              {user.Role}
-            </Badge>
-          </div>
-
           <SidebarMenu>
+            {/* User avatar — avatar visible in icon mode, name+role hidden */}
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                size="lg"
+                asChild
+                tooltip={`${user.FirstName} ${user.LastName}`}
+              >
+                <Link href={settingsPath}>
+                  <Avatar className="h-8 w-8 shrink-0">
+                    <AvatarImage
+                      src={photoUrl ?? undefined}
+                      alt={`${user.FirstName} ${user.LastName}`}
+                    />
+                    <AvatarFallback style={avatarStyle} className="text-xs font-semibold">
+                      {initials}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="grid flex-1 text-left text-sm leading-tight overflow-hidden">
+                    <span className="truncate font-medium">
+                      {user.FirstName} {user.LastName}
+                    </span>
+                    <span className={`truncate text-xs capitalize ${roleTextColors[user.Role] ?? "text-muted-foreground"}`}>
+                      {user.Role}
+                    </span>
+                  </div>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+
+            {/* Logout */}
             <SidebarMenuItem>
               <SidebarMenuButton
                 onClick={handleLogout}

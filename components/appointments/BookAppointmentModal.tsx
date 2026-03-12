@@ -27,6 +27,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { getAvatarColor, getInitials } from "@/lib/avatarColor";
 
 interface DoctorProfile {
   ClinicalCategory: string | null;
@@ -43,6 +45,7 @@ interface Doctor {
   FirstName: string;
   LastName: string;
   DoctorProfile: DoctorProfile | null;
+  photoUrl?: string | null;
 }
 
 interface BookAppointmentModalProps {
@@ -140,15 +143,28 @@ export function BookAppointmentModal({ doctor, onClose, onBooked }: BookAppointm
   }
 
   const p = doctor?.DoctorProfile ?? null;
+  const avatarStyle = doctor ? getAvatarColor(doctor.UserID) : {};
+  const initials = doctor ? getInitials(doctor.FirstName, doctor.LastName) : "";
 
   return (
     <TooltipProvider>
     <Dialog open={!!doctor} onOpenChange={(open) => { if (!open) onClose(); }}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>
-            Dr. {doctor?.FirstName} {doctor?.LastName}
-          </DialogTitle>
+          <div className="flex items-center gap-4">
+            <Avatar className="h-14 w-14 shrink-0">
+              <AvatarImage
+                src={doctor?.photoUrl ?? undefined}
+                alt={doctor ? `Dr. ${doctor.FirstName} ${doctor.LastName}` : undefined}
+              />
+              <AvatarFallback style={avatarStyle} className="text-base font-semibold">
+                {initials}
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <DialogTitle>
+                Dr. {doctor?.FirstName} {doctor?.LastName}
+              </DialogTitle>
           <div className="flex flex-wrap gap-1.5 mt-1">
             {p?.Degree && (
               <Tooltip>
@@ -191,6 +207,8 @@ export function BookAppointmentModal({ doctor, onClose, onBooked }: BookAppointm
           {p?.Bio && (
             <p className="text-sm text-muted-foreground mt-1">{p.Bio}</p>
           )}
+            </div>
+          </div>
         </DialogHeader>
 
         <DialogBody className="space-y-5">
