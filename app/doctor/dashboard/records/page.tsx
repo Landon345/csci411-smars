@@ -217,6 +217,7 @@ export default function DoctorRecordsPage() {
           <Link
             href={`/doctor/dashboard/patients/${row.original.PatientID}`}
             className="font-medium hover:underline"
+            onClick={(e) => e.stopPropagation()}
           >
             {row.original.Patient.FirstName} {row.original.Patient.LastName}
           </Link>
