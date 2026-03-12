@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import {
+  PaperClipIcon,
   PencilSquareIcon,
   TrashIcon,
   XMarkIcon,
@@ -29,6 +30,7 @@ import { formatDate } from "@/lib/format";
 import { AppointmentDetail } from "@/components/details/AppointmentDetail";
 import { RecordDetail } from "@/components/details/RecordDetail";
 import { PrescriptionDetail } from "@/components/details/PrescriptionDetail";
+import { RecordDocuments } from "@/components/records/RecordDocuments";
 import PatientHealthProfileModal from "@/components/PatientHealthProfileModal";
 
 interface PatientProfile {
@@ -97,6 +99,7 @@ interface MedicalRecord {
   Height: number | null;
   FollowUp: string | null;
   Type: string;
+  _count: { Documents: number };
 }
 
 interface Prescription {
@@ -581,6 +584,25 @@ export default function PatientDetailPage() {
       cell: ({ getValue }) => (
         <span className="text-muted-foreground">{getValue() as string}</span>
       ),
+    },
+    {
+      id: "attachments",
+      accessorFn: (row) => row._count.Documents,
+      enableSorting: true,
+      enableGlobalFilter: false,
+      meta: { label: "Files" },
+      header: ({ column }) => <SortableHeader column={column} label="Files" />,
+      cell: ({ row }) => {
+        const count = row.original._count.Documents;
+        return count > 0 ? (
+          <span className="flex items-center gap-1 text-muted-foreground">
+            <PaperClipIcon className="h-3.5 w-3.5" />
+            {count}
+          </span>
+        ) : (
+          <span className="text-muted-foreground/40">—</span>
+        );
+      },
     },
     {
       id: "actions",
@@ -1334,6 +1356,22 @@ export default function PatientDetailPage() {
                 </Button>
               </div>
             </form>
+
+            <div className="mt-6 border-t pt-5">
+              <RecordDocuments
+                recordId={editingRecord.RecordID}
+                role="doctor"
+                onCountChange={(delta) =>
+                  setRecords((prev) =>
+                    prev.map((r) =>
+                      r.RecordID === editingRecord.RecordID
+                        ? { ...r, _count: { Documents: r._count.Documents + delta } }
+                        : r
+                    )
+                  )
+                }
+              />
+            </div>
           </CardContent>
         </Card>
       )}
@@ -1502,7 +1540,7 @@ export default function PatientDetailPage() {
         </CardContent>
       </Card>
       <AppointmentDetail appointment={selectedAppt} onClose={() => setSelectedAppt(null)} />
-      <RecordDetail record={selectedRecord} onClose={() => setSelectedRecord(null)} />
+      <RecordDetail record={selectedRecord} onClose={() => setSelectedRecord(null)} role="doctor" />
       <PrescriptionDetail prescription={selectedRx} onClose={() => setSelectedRx(null)} />
     </>
   );

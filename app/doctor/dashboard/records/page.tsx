@@ -13,6 +13,7 @@ import {
   XMarkIcon,
   PencilSquareIcon,
   TrashIcon,
+  PaperClipIcon,
 } from "@heroicons/react/24/outline";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -25,6 +26,7 @@ import {
 } from "@/components/ui/table";
 import { DataTable, SortableHeader } from "@/components/ui/data-table";
 import { RecordDetail } from "@/components/details/RecordDetail";
+import { RecordDocuments } from "@/components/records/RecordDocuments";
 import { formatDate } from "@/lib/format";
 
 interface Patient {
@@ -50,6 +52,7 @@ interface MedicalRecord {
   Height: number | null;
   FollowUp: string | null;
   Type: string;
+  _count: { Documents: number };
 }
 
 const TYPE_OPTIONS = [
@@ -257,6 +260,27 @@ export default function DoctorRecordsPage() {
         ),
       },
       {
+        id: "attachments",
+        accessorFn: (row) => row._count.Documents,
+        enableSorting: true,
+        enableGlobalFilter: false,
+        meta: { label: "Files" },
+        header: ({ column }) => (
+          <SortableHeader column={column} label="Files" />
+        ),
+        cell: ({ row }) => {
+          const count = row.original._count.Documents;
+          return count > 0 ? (
+            <span className="flex items-center gap-1 text-muted-foreground">
+              <PaperClipIcon className="h-3.5 w-3.5" />
+              {count}
+            </span>
+          ) : (
+            <span className="text-muted-foreground/40">—</span>
+          );
+        },
+      },
+      {
         id: "actions",
         enableSorting: false,
         enableGlobalFilter: false,
@@ -307,6 +331,7 @@ export default function DoctorRecordsPage() {
                 <TableHead>Type</TableHead>
                 <TableHead>Diagnosis</TableHead>
                 <TableHead>Chief Complaint</TableHead>
+                <TableHead>Files</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -318,6 +343,7 @@ export default function DoctorRecordsPage() {
                   <TableCell><Skeleton className="h-4 w-24" /></TableCell>
                   <TableCell><Skeleton className="h-4 w-36" /></TableCell>
                   <TableCell><Skeleton className="h-4 w-32" /></TableCell>
+                  <TableCell><Skeleton className="h-4 w-6" /></TableCell>
                   <TableCell><Skeleton className="h-7 w-28" /></TableCell>
                 </TableRow>
               ))}
@@ -547,6 +573,24 @@ export default function DoctorRecordsPage() {
                 </Button>
               </div>
             </form>
+
+            {editing && (
+              <div className="mt-6 border-t pt-5">
+                <RecordDocuments
+                  recordId={editing.RecordID}
+                  role="doctor"
+                  onCountChange={(delta) =>
+                    setRecords((prev) =>
+                      prev.map((r) =>
+                        r.RecordID === editing.RecordID
+                          ? { ...r, _count: { Documents: r._count.Documents + delta } }
+                          : r
+                      )
+                    )
+                  }
+                />
+              </div>
+            )}
           </CardContent>
         </Card>
       )}

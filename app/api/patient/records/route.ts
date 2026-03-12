@@ -23,6 +23,9 @@ export async function GET(request: NextRequest) {
       Appointment: {
         select: { Date: true, Type: true, Reason: true },
       },
+      _count: {
+        select: { Documents: true },
+      },
     },
     orderBy: { VisitDate: "desc" },
   });
