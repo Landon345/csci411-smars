@@ -75,6 +75,7 @@ export default function DoctorRecordsPage() {
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<MedicalRecord | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [creatingRecordId, setCreatingRecordId] = useState<string | null>(null);
   const [selected, setSelected] = useState<MedicalRecord | null>(null);
 
   const [form, setForm] = useState({
@@ -133,6 +134,7 @@ export default function DoctorRecordsPage() {
       followUp: "",
     });
     setEditing(null);
+    setCreatingRecordId(null);
     setShowForm(false);
   }
 
@@ -175,6 +177,9 @@ export default function DoctorRecordsPage() {
           body: JSON.stringify(form),
         });
         if (!res.ok) return;
+        const data = await res.json();
+        setCreatingRecordId(data.record.RecordID);
+        return; // stay on the card for the attachment step
       }
 
       resetForm();
@@ -182,6 +187,18 @@ export default function DoctorRecordsPage() {
     } finally {
       setSubmitting(false);
     }
+  }
+
+  async function handleCancelCreate() {
+    if (creatingRecordId) {
+      await fetch(`/api/doctor/records/${creatingRecordId}`, { method: "DELETE" });
+    }
+    resetForm();
+  }
+
+  async function handleDoneCreate() {
+    resetForm();
+    await fetchRecords();
   }
 
   const handleDelete = useCallback(async function handleDelete(id: string) {
@@ -368,7 +385,11 @@ export default function DoctorRecordsPage() {
         <Button
           onClick={() => {
             if (showForm) {
-              resetForm();
+              if (creatingRecordId) {
+                handleCancelCreate();
+              } else {
+                resetForm();
+              }
             } else {
               setShowForm(true);
             }
@@ -390,11 +411,27 @@ export default function DoctorRecordsPage() {
         <Card className="mb-6">
           <CardHeader>
             <CardTitle className="text-sm font-medium">
-              {editing ? "Edit Record" : "New Record"}
+              {editing ? "Edit Record" : creatingRecordId ? "Add Attachments" : "New Record"}
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit}>
+            {creatingRecordId && (
+              <div className="space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  Record created. Optionally attach files below.
+                </p>
+                <RecordDocuments recordId={creatingRecordId} role="doctor" />
+                <div className="flex justify-end gap-2 border-t pt-4">
+                  <Button type="button" variant="outline" onClick={handleCancelCreate}>
+                    Cancel
+                  </Button>
+                  <Button type="button" onClick={handleDoneCreate}>
+                    Done
+                  </Button>
+                </div>
+              </div>
+            )}
+            {!creatingRecordId && <form onSubmit={handleSubmit}>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <Label>Patient</Label>
@@ -572,7 +609,7 @@ export default function DoctorRecordsPage() {
                       : "Create Record"}
                 </Button>
               </div>
-            </form>
+            </form>}
 
             {editing && (
               <div className="mt-6 border-t pt-5">
