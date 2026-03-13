@@ -10,6 +10,7 @@ import {
   SheetDescription,
 } from "@/components/ui/sheet";
 import { parseLocalDate } from "@/lib/format";
+import { RecordDocuments } from "@/components/records/RecordDocuments";
 
 export interface DetailRecord {
   RecordID: string;
@@ -70,9 +71,10 @@ interface Props {
   record: DetailRecord | null;
   onClose: () => void;
   actions?: React.ReactNode;
+  role?: "doctor" | "patient";
 }
 
-export function RecordDetail({ record, onClose, actions }: Props) {
+export function RecordDetail({ record, onClose, actions, role }: Props) {
   const hasVitals =
     record &&
     (record.HeartRate != null ||
@@ -181,6 +183,12 @@ export function RecordDetail({ record, onClose, actions }: Props) {
                 />
               )}
             </dl>
+
+            {role && (
+              <div className="mt-6 border-t pt-5">
+                <RecordDocuments recordId={record.RecordID} role={role} />
+              </div>
+            )}
 
             {actions && <div className="mt-6 flex flex-col gap-2">{actions}</div>}
           </SheetBody>

@@ -11,7 +11,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { BookAppointmentModal } from "@/components/appointments/BookAppointmentModal";
+import { getAvatarColor, getInitials } from "@/lib/avatarColor";
 
 interface DoctorProfile {
   ClinicalCategory: string | null;
@@ -28,6 +30,7 @@ interface Doctor {
   FirstName: string;
   LastName: string;
   DoctorProfile: DoctorProfile | null;
+  photoUrl?: string | null;
 }
 
 type CategoryFilter = "all" | "primary_care" | "mental_health" | "surgical_specialist" | "medical_specialist" | "urgent_emergency";
@@ -120,14 +123,22 @@ export default function FindADoctorPage() {
             const bioSnippet = p?.Bio
               ? p.Bio.length > 120 ? p.Bio.slice(0, 120) + "…" : p.Bio
               : null;
+            const avatarStyle = getAvatarColor(d.UserID);
+            const initials = getInitials(d.FirstName, d.LastName);
 
             return (
               <Card key={d.UserID}>
-                <CardHeader className="pb-2">
+                <CardHeader className="pb-2 flex flex-col items-center text-center">
+                  <Avatar className="h-20 w-20 mb-3">
+                    <AvatarImage src={d.photoUrl ?? undefined} alt={`Dr. ${d.FirstName} ${d.LastName}`} />
+                    <AvatarFallback style={avatarStyle} className="text-xl font-semibold">
+                      {initials}
+                    </AvatarFallback>
+                  </Avatar>
                   <CardTitle className="text-base font-semibold">
                     Dr. {d.FirstName} {d.LastName}
                   </CardTitle>
-                  <div className="flex flex-wrap gap-1.5 mt-1">
+                  <div className="flex flex-wrap justify-center gap-1.5 mt-1">
                     {p?.Degree && (
                       <Tooltip>
                         <TooltipTrigger asChild>
@@ -156,7 +167,7 @@ export default function FindADoctorPage() {
                     )}
                   </div>
                 </CardHeader>
-                <CardContent className="space-y-2 text-sm">
+                <CardContent className="space-y-2 text-sm text-center">
                   {p?.Specialty && (
                     <p>
                       <span className="text-muted-foreground">Specialty: </span>

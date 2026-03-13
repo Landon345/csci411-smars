@@ -26,6 +26,9 @@ export async function GET(request: NextRequest) {
       Patient: {
         select: { FirstName: true, LastName: true },
       },
+      _count: {
+        select: { Documents: true },
+      },
     },
     orderBy: { VisitDate: "desc" },
   });

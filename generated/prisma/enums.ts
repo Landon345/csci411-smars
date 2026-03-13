@@ -118,7 +118,9 @@ export const AuditAction = {
   password_changed: 'password_changed',
   role_changed: 'role_changed',
   invite_created: 'invite_created',
-  invite_used: 'invite_used'
+  invite_used: 'invite_used',
+  document_uploaded: 'document_uploaded',
+  document_deleted: 'document_deleted'
 } as const
 
 export type AuditAction = (typeof AuditAction)[keyof typeof AuditAction]

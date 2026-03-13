@@ -13,6 +13,7 @@ import {
   XMarkIcon,
   PencilSquareIcon,
   TrashIcon,
+  PaperClipIcon,
 } from "@heroicons/react/24/outline";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -25,6 +26,7 @@ import {
 } from "@/components/ui/table";
 import { DataTable, SortableHeader } from "@/components/ui/data-table";
 import { RecordDetail } from "@/components/details/RecordDetail";
+import { RecordDocuments } from "@/components/records/RecordDocuments";
 import { formatDate } from "@/lib/format";
 
 interface Patient {
@@ -50,6 +52,7 @@ interface MedicalRecord {
   Height: number | null;
   FollowUp: string | null;
   Type: string;
+  _count: { Documents: number };
 }
 
 const TYPE_OPTIONS = [
@@ -72,6 +75,7 @@ export default function DoctorRecordsPage() {
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<MedicalRecord | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [creatingRecordId, setCreatingRecordId] = useState<string | null>(null);
   const [selected, setSelected] = useState<MedicalRecord | null>(null);
 
   const [form, setForm] = useState({
@@ -130,6 +134,7 @@ export default function DoctorRecordsPage() {
       followUp: "",
     });
     setEditing(null);
+    setCreatingRecordId(null);
     setShowForm(false);
   }
 
@@ -172,6 +177,9 @@ export default function DoctorRecordsPage() {
           body: JSON.stringify(form),
         });
         if (!res.ok) return;
+        const data = await res.json();
+        setCreatingRecordId(data.record.RecordID);
+        return; // stay on the card for the attachment step
       }
 
       resetForm();
@@ -179,6 +187,18 @@ export default function DoctorRecordsPage() {
     } finally {
       setSubmitting(false);
     }
+  }
+
+  async function handleCancelCreate() {
+    if (creatingRecordId) {
+      await fetch(`/api/doctor/records/${creatingRecordId}`, { method: "DELETE" });
+    }
+    resetForm();
+  }
+
+  async function handleDoneCreate() {
+    resetForm();
+    await fetchRecords();
   }
 
   const handleDelete = useCallback(async function handleDelete(id: string) {
@@ -257,6 +277,27 @@ export default function DoctorRecordsPage() {
         ),
       },
       {
+        id: "attachments",
+        accessorFn: (row) => row._count.Documents,
+        enableSorting: true,
+        enableGlobalFilter: false,
+        meta: { label: "Files" },
+        header: ({ column }) => (
+          <SortableHeader column={column} label="Files" />
+        ),
+        cell: ({ row }) => {
+          const count = row.original._count.Documents;
+          return count > 0 ? (
+            <span className="flex items-center gap-1 text-muted-foreground">
+              <PaperClipIcon className="h-3.5 w-3.5" />
+              {count}
+            </span>
+          ) : (
+            <span className="text-muted-foreground/40">—</span>
+          );
+        },
+      },
+      {
         id: "actions",
         enableSorting: false,
         enableGlobalFilter: false,
@@ -307,6 +348,7 @@ export default function DoctorRecordsPage() {
                 <TableHead>Type</TableHead>
                 <TableHead>Diagnosis</TableHead>
                 <TableHead>Chief Complaint</TableHead>
+                <TableHead>Files</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -318,6 +360,7 @@ export default function DoctorRecordsPage() {
                   <TableCell><Skeleton className="h-4 w-24" /></TableCell>
                   <TableCell><Skeleton className="h-4 w-36" /></TableCell>
                   <TableCell><Skeleton className="h-4 w-32" /></TableCell>
+                  <TableCell><Skeleton className="h-4 w-6" /></TableCell>
                   <TableCell><Skeleton className="h-7 w-28" /></TableCell>
                 </TableRow>
               ))}
@@ -342,7 +385,11 @@ export default function DoctorRecordsPage() {
         <Button
           onClick={() => {
             if (showForm) {
-              resetForm();
+              if (creatingRecordId) {
+                handleCancelCreate();
+              } else {
+                resetForm();
+              }
             } else {
               setShowForm(true);
             }
@@ -364,11 +411,27 @@ export default function DoctorRecordsPage() {
         <Card className="mb-6">
           <CardHeader>
             <CardTitle className="text-sm font-medium">
-              {editing ? "Edit Record" : "New Record"}
+              {editing ? "Edit Record" : creatingRecordId ? "Add Attachments" : "New Record"}
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit}>
+            {creatingRecordId && (
+              <div className="space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  Record created. Optionally attach files below.
+                </p>
+                <RecordDocuments recordId={creatingRecordId} role="doctor" />
+                <div className="flex justify-end gap-2 border-t pt-4">
+                  <Button type="button" variant="outline" onClick={handleCancelCreate}>
+                    Cancel
+                  </Button>
+                  <Button type="button" onClick={handleDoneCreate}>
+                    Done
+                  </Button>
+                </div>
+              </div>
+            )}
+            {!creatingRecordId && <form onSubmit={handleSubmit}>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <Label>Patient</Label>
@@ -546,7 +609,25 @@ export default function DoctorRecordsPage() {
                       : "Create Record"}
                 </Button>
               </div>
-            </form>
+            </form>}
+
+            {editing && (
+              <div className="mt-6 border-t pt-5">
+                <RecordDocuments
+                  recordId={editing.RecordID}
+                  role="doctor"
+                  onCountChange={(delta) =>
+                    setRecords((prev) =>
+                      prev.map((r) =>
+                        r.RecordID === editing.RecordID
+                          ? { ...r, _count: { Documents: r._count.Documents + delta } }
+                          : r
+                      )
+                    )
+                  }
+                />
+              </div>
+            )}
           </CardContent>
         </Card>
       )}
@@ -558,7 +639,7 @@ export default function DoctorRecordsPage() {
         onRowClick={(record) => setSelected(record)}
       />
 
-      <RecordDetail record={selected} onClose={() => setSelected(null)} />
+      <RecordDetail record={selected} onClose={() => setSelected(null)} role="doctor" />
     </>
   );
 }

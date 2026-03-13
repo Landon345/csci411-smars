@@ -15,6 +15,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { DataTable, SortableHeader } from "@/components/ui/data-table";
 import { RecordDetail } from "@/components/details/RecordDetail";
 import { formatDate } from "@/lib/format";
+import { PaperClipIcon } from "@heroicons/react/24/outline";
 
 interface MedicalRecord {
   RecordID: string;
@@ -26,6 +27,7 @@ interface MedicalRecord {
   DiagnosisDesc: string;
   TreatmentPlan: string;
   Type: string;
+  _count: { Documents: number };
 }
 
 const TYPE_OPTIONS = [
@@ -151,6 +153,27 @@ export default function PatientRecordsPage() {
           <span className="text-muted-foreground">{getValue() as string}</span>
         ),
       },
+      {
+        id: "attachments",
+        accessorFn: (row) => row._count.Documents,
+        enableSorting: true,
+        enableGlobalFilter: false,
+        meta: { label: "Files" },
+        header: ({ column }) => (
+          <SortableHeader column={column} label="Files" />
+        ),
+        cell: ({ row }) => {
+          const count = row.original._count.Documents;
+          return count > 0 ? (
+            <span className="flex items-center gap-1 text-muted-foreground">
+              <PaperClipIcon className="h-3.5 w-3.5" />
+              {count}
+            </span>
+          ) : (
+            <span className="text-muted-foreground/40">—</span>
+          );
+        },
+      },
     ],
     [],
   );
@@ -173,6 +196,7 @@ export default function PatientRecordsPage() {
                 <TableHead>Diagnosis</TableHead>
                 <TableHead>Chief Complaint</TableHead>
                 <TableHead>Treatment Plan</TableHead>
+                <TableHead>Files</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -185,6 +209,7 @@ export default function PatientRecordsPage() {
                   <TableCell><Skeleton className="h-4 w-36" /></TableCell>
                   <TableCell><Skeleton className="h-4 w-32" /></TableCell>
                   <TableCell><Skeleton className="h-4 w-40" /></TableCell>
+                  <TableCell><Skeleton className="h-4 w-6" /></TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -212,7 +237,7 @@ export default function PatientRecordsPage() {
         onRowClick={(record) => setSelected(record)}
       />
 
-      <RecordDetail record={selected} onClose={() => setSelected(null)} />
+      <RecordDetail record={selected} onClose={() => setSelected(null)} role="patient" />
     </>
   );
 }

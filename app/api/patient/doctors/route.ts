@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/session";
 import { ClinicalCategory } from "@/generated/prisma/client";
+import { getPresignedDownloadUrl } from "@/lib/s3";
 
 const VALID_CATEGORIES = Object.values(ClinicalCategory) as string[];
 
@@ -26,9 +27,25 @@ export async function GET(request: NextRequest) {
       FirstName: true,
       LastName: true,
       DoctorProfile: true,
+      ProfilePhoto: { select: { S3Key: true } },
     },
     orderBy: { LastName: "asc" },
   });
 
-  return NextResponse.json({ doctors });
+  const doctorsWithPhotos = await Promise.all(
+    doctors.map(async (d) => {
+      const photoUrl = d.ProfilePhoto?.S3Key
+        ? await getPresignedDownloadUrl(d.ProfilePhoto.S3Key).catch(() => null)
+        : null;
+      return {
+        UserID: d.UserID,
+        FirstName: d.FirstName,
+        LastName: d.LastName,
+        DoctorProfile: d.DoctorProfile,
+        photoUrl,
+      };
+    })
+  );
+
+  return NextResponse.json({ doctors: doctorsWithPhotos });
 }
