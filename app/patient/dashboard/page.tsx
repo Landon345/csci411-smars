@@ -93,7 +93,7 @@ export default async function PatientDashboard() {
       </Card>
 
       {/* Stats Row */}
-      <div className="grid grid-cols-4 gap-6 mb-6">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 mb-6">
         <Link href="/patient/dashboard/appointments?search=scheduled" className="group">
           <Card className="h-full transition-colors group-hover:bg-muted/50">
             <CardHeader>
@@ -183,7 +183,7 @@ export default async function PatientDashboard() {
       </div>
 
       {/* Medical Identity Row */}
-      <div className="grid grid-cols-3 gap-6 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-6">
         <Card>
           <CardHeader>
             <CardTitle className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
@@ -255,7 +255,7 @@ export default async function PatientDashboard() {
       </div>
 
       {/* Allergies & Medications Row */}
-      <div className="grid grid-cols-2 gap-6 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-6">
         <Card>
           <CardHeader className="border-b">
             <CardTitle className="text-sm font-medium">Allergies</CardTitle>
@@ -313,7 +313,7 @@ export default async function PatientDashboard() {
       </div>
 
       {/* Conditions & Emergency Contact Row */}
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
         <Card>
           <CardHeader className="border-b">
             <CardTitle className="text-sm font-medium">Chronic Conditions</CardTitle>

@@ -87,7 +87,8 @@ export function AppointmentCalendar({
   }
 
   return (
-    <div className="rounded-lg border bg-card">
+    <div className="overflow-x-auto">
+    <div className="rounded-lg border bg-card min-w-[560px]">
       {/* Calendar header */}
       <div className="flex items-center justify-between px-4 py-3 border-b">
         <div className="flex items-center gap-1">
@@ -202,6 +203,7 @@ export function AppointmentCalendar({
           })}
         </div>
       </div>
+    </div>
     </div>
   );
 }
