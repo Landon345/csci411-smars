@@ -6,7 +6,6 @@ import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -35,8 +34,6 @@ export default function SignIn() {
   const [attemptsRemaining, setAttemptsRemaining] = useState<number | null>(null);
   const [secondsLeft, setSecondsLeft] = useState<number | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const router = useRouter();
-
   useEffect(() => {
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
@@ -96,9 +93,9 @@ export default function SignIn() {
         throw new Error(errorData.error || "Invalid email or password");
       }
 
-      // Success! Redirect to dashboard
-      router.push("/dashboard");
-      router.refresh(); // Refresh to ensure middleware detects the new cookie
+      // Success! Hard-navigate to dashboard so the browser sends the new cookie
+      // in a fresh HTTP request — avoids a race between router.push and router.refresh.
+      window.location.href = "/dashboard";
     } catch (err) {
       if (err instanceof Error) {
         console.log(err);
