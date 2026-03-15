@@ -152,7 +152,6 @@ function ResetPasswordForm() {
                     {...register("Password")}
                     id="password"
                     type="password"
-                    placeholder="••••••••"
                     aria-invalid={!!errors.Password}
                   />
                   {errors.Password && (
@@ -168,7 +167,6 @@ function ResetPasswordForm() {
                     {...register("ConfirmPassword")}
                     id="confirm-password"
                     type="password"
-                    placeholder="••••••••"
                     aria-invalid={!!errors.ConfirmPassword}
                   />
                   {errors.ConfirmPassword && (

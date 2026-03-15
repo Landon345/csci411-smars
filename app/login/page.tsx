@@ -174,7 +174,6 @@ export default function SignIn() {
                 {...register("Password")}
                 id="password"
                 type="password"
-                placeholder="••••••••"
                 aria-invalid={!!errors.Password}
               />
               {errors.Password && (
