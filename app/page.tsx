@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { getSession } from "@/lib/session";
 import { Button } from "@/components/ui/button";
 import {
   UserPlusIcon,
@@ -6,7 +8,9 @@ import {
   Squares2X2Icon,
 } from "@heroicons/react/24/outline";
 
-export default function Home() {
+export default async function Home() {
+  const user = await getSession();
+  if (user) redirect("/dashboard");
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans selection:bg-zinc-200 dark:bg-black dark:selection:bg-zinc-800">
       <div className="w-full max-w-md p-8">

@@ -239,7 +239,7 @@ model InviteToken {
   ExpiresAt DateTime
   CreatedBy String
   CreatedAt DateTime @default(now()) @db.Timestamp(6)
-  Creator   User     @relation("InviteCreator", fields: [CreatedBy], references: [UserID])
+  Creator   User     @relation("InviteCreator", fields: [CreatedBy], references: [UserID], onDelete: Cascade)
 }
 
 model DoctorProfile {

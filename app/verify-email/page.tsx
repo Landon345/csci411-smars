@@ -114,8 +114,7 @@ export default function VerifyEmail() {
                 id="code"
                 type="text"
                 maxLength={6}
-                placeholder="123456"
-                className="text-center text-2xl font-bold tracking-[0.5em] placeholder:tracking-normal"
+                className="text-center text-2xl font-bold tracking-[0.5em]"
                 aria-invalid={!!errors.code}
               />
               {errors.code && (
