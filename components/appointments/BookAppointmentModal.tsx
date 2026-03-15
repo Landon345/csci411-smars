@@ -149,7 +149,7 @@ export function BookAppointmentModal({ doctor, onClose, onBooked }: BookAppointm
   return (
     <TooltipProvider>
     <Dialog open={!!doctor} onOpenChange={(open) => { if (!open) onClose(); }}>
-      <DialogContent>
+      <DialogContent className="w-[calc(100vw-2rem)] max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <div className="flex items-center gap-4">
             <Avatar className="h-14 w-14 shrink-0">

@@ -76,7 +76,7 @@ export default async function DoctorDashboard() {
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
         {/* Today's Appointments */}
         <Link href="/doctor/dashboard/appointments?filter=today" className="group">
           <Card className="h-full transition-colors group-hover:bg-muted/50">

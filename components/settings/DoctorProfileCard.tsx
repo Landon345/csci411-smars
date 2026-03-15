@@ -115,7 +115,7 @@ export default function DoctorProfileCard() {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1.5">
               <Label>Clinical Category</Label>
               <select
@@ -163,7 +163,7 @@ export default function DoctorProfileCard() {
               <p className="text-xs text-muted-foreground">Comma-separated</p>
             </div>
 
-            <div className="col-span-2 space-y-1.5">
+            <div className="sm:col-span-2 space-y-1.5">
               <Label>Bio</Label>
               <textarea
                 value={form.Bio}
