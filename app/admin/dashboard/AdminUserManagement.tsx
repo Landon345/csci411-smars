@@ -38,20 +38,6 @@ export default function AdminUserManagement() {
     }
   }
 
-  async function handleRoleChange(userId: string, newRole: string) {
-    const res = await fetch("/api/admin/users", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId, newRole }),
-    });
-
-    if (res.ok) {
-      setUsers((prev) =>
-        prev.map((u) => (u.UserID === userId ? { ...u, Role: newRole } : u)),
-      );
-    }
-  }
-
   const columns = useMemo<ColumnDef<UserRow, unknown>[]>(
     () => [
       {
@@ -85,20 +71,8 @@ export default function AdminUserManagement() {
         header: ({ column }) => (
           <SortableHeader column={column} label="Role" />
         ),
-        cell: ({ row }) => (
-          <div onClick={(e) => e.stopPropagation()}>
-            <select
-              value={row.original.Role}
-              onChange={(e) =>
-                handleRoleChange(row.original.UserID, e.target.value)
-              }
-              className="rounded-md border border-input bg-background px-3 py-1.5 text-sm outline-none"
-            >
-              <option value="patient">Patient</option>
-              <option value="doctor">Doctor</option>
-              <option value="admin">Admin</option>
-            </select>
-          </div>
+        cell: ({ getValue }) => (
+          <span className="capitalize text-sm">{getValue() as string}</span>
         ),
       },
       {
