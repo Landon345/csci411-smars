@@ -17,7 +17,7 @@ import {
 
 const resetSchema = z
   .object({
-    Password: z.string().min(8, "Password must be at least 8 characters"),
+    Password: z.string().min(8, "Password must be at least 8 characters").regex(/\d/, "Password must contain at least one number"),
     ConfirmPassword: z.string().min(1, "Please confirm your password"),
   })
   .refine((data) => data.Password === data.ConfirmPassword, {

@@ -22,7 +22,7 @@ const registerSchema = z.object({
     .optional()
     .or(z.literal("")),
   SSN: z.string().regex(/^\d{3}-\d{2}-\d{4}$/, "Must be in XXX-XX-XXXX format"),
-  Password: z.string().min(8, "Password must be at least 8 characters"),
+  Password: z.string().min(8, "Password must be at least 8 characters").regex(/\d/, "Password must contain at least one number"),
   Role: z.enum(["patient", "doctor"]),
   inviteToken: z.string().optional(),
 });
