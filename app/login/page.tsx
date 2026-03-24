@@ -107,14 +107,14 @@ export default function SignIn() {
     }
   };
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans selection:bg-zinc-200 dark:bg-black dark:selection:bg-zinc-800">
+    <div className="flex min-h-screen items-center justify-center bg-background font-sans selection:bg-secondary">
       <div className="w-full max-w-sm p-8">
         <div className="space-y-8">
           <div className="flex flex-col items-center space-y-2 text-center">
-            <div className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black">
+            <div className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-foreground text-background">
               <span className="text-lg font-bold italic">S</span>
             </div>
-            <h1 className="text-2xl font-medium tracking-tight text-zinc-900 dark:text-zinc-50">
+            <h1 className="text-2xl font-medium tracking-tight text-foreground">
               Welcome back
             </h1>
           </div>
@@ -198,7 +198,7 @@ export default function SignIn() {
               <Separator />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-zinc-50 px-2 text-muted-foreground dark:bg-black">
+              <span className="bg-background px-2 text-muted-foreground">
                 New to S.M.A.R.S?
               </span>
             </div>
