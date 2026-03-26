@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
@@ -127,9 +128,7 @@ export default function DashboardShell({ user, children }: DashboardShellProps) 
             <SidebarMenuItem>
               <SidebarMenuButton size="lg" asChild tooltip="S.M.A.R.S">
                 <Link href="/">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-zinc-900 dark:bg-zinc-100">
-                    <span className="font-bold italic text-white dark:text-black">S</span>
-                  </div>
+                  <Image src="/logo.svg" alt="S.M.A.R.S" width={48} height={32} className="shrink-0" />
                   <span className="font-medium">S.M.A.R.S</span>
                 </Link>
               </SidebarMenuButton>

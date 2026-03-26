@@ -16,6 +16,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "SMARS",
   description: "Secure Medical Appointment & Record System",
+  icons: {
+    icon: "/favicon-logo.svg",
+  },
 };
 
 export default function RootLayout({

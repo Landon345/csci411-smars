@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import {
   Tooltip,
   TooltipContent,
@@ -12,6 +12,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Skeleton } from "@/components/ui/skeleton";
 import { BookAppointmentModal } from "@/components/appointments/BookAppointmentModal";
 import { getAvatarColor, getInitials } from "@/lib/avatarColor";
 
@@ -113,7 +114,46 @@ export default function FindADoctorPage() {
       </div>
 
       {loading ? (
-        <p className="text-sm text-muted-foreground">Loading...</p>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <Card key={i} className="flex flex-col overflow-hidden py-0 bg-gradient-to-br from-primary to-accent border-0">
+              {/* Name */}
+              <div className="px-6 pt-5 pb-16 flex justify-center">
+                <Skeleton className="h-5 w-36 bg-white/20" />
+              </div>
+              {/* Avatar */}
+              <div className="-mt-16 flex justify-center">
+                <div className="p-[3px] rounded-full bg-gradient-to-tl from-primary to-accent">
+                  <Skeleton className="h-32 w-32 rounded-full bg-white/20" />
+                </div>
+              </div>
+              {/* Body */}
+              <div className="flex-1 flex flex-col items-center pt-1">
+                <Skeleton className="h-4 w-32 mb-1 bg-white/20" />
+                <Skeleton className="h-3 w-24 bg-white/20" />
+                <div className="flex w-full divide-x divide-white/20 border-t border-b border-white/20 mt-4 py-3 px-0">
+                  <div className="flex-1 flex flex-col items-center gap-1">
+                    <Skeleton className="h-4 w-8 bg-white/20" />
+                    <Skeleton className="h-3 w-12 bg-white/20" />
+                  </div>
+                  <div className="flex-1 flex flex-col items-center gap-1">
+                    <Skeleton className="h-4 w-8 bg-white/20" />
+                    <Skeleton className="h-3 w-16 bg-white/20" />
+                  </div>
+                  <div className="flex-1 flex flex-col items-center gap-1">
+                    <Skeleton className="h-4 w-8 bg-white/20" />
+                    <Skeleton className="h-3 w-14 bg-white/20" />
+                  </div>
+                </div>
+                <div className="flex flex-col items-center gap-2 px-6 py-4 w-full">
+                  <Skeleton className="h-3 w-full bg-white/20" />
+                  <Skeleton className="h-3 w-5/6 bg-white/20" />
+                  <Skeleton className="h-3 w-4/6 bg-white/20" />
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
       ) : filtered.length === 0 ? (
         <p className="text-sm text-muted-foreground">No doctors found.</p>
       ) : (
@@ -127,71 +167,70 @@ export default function FindADoctorPage() {
             const initials = getInitials(d.FirstName, d.LastName);
 
             return (
-              <Card key={d.UserID}>
-                <CardHeader className="pb-2 flex flex-col items-center text-center">
-                  <Avatar className="h-20 w-20 mb-3">
-                    <AvatarImage src={d.photoUrl ?? undefined} alt={`Dr. ${d.FirstName} ${d.LastName}`} />
-                    <AvatarFallback style={avatarStyle} className="text-xl font-semibold">
-                      {initials}
-                    </AvatarFallback>
-                  </Avatar>
-                  <CardTitle className="text-base font-semibold">
+              <Card
+                key={d.UserID}
+                className="relative flex flex-col overflow-hidden py-0 cursor-pointer group bg-gradient-to-br from-primary to-accent border-0"
+                onClick={() => setBookingDoctor(d)}
+              >
+                {/* Name */}
+                <div className="px-6 pt-5 pb-16 text-center">
+                  <h3 className="text-base font-semibold text-white">
                     Dr. {d.FirstName} {d.LastName}
-                  </CardTitle>
-                  <div className="flex flex-wrap justify-center gap-1.5 mt-1">
-                    {p?.Degree && (
+                  </h3>
+                </div>
+
+                {/* Avatar — gradient border wrapper goes opposite direction to card */}
+                <div className="-mt-16 flex justify-center">
+                  <div className="p-[3px] rounded-full bg-gradient-to-tl from-primary to-accent shadow-md">
+                    <Avatar className="h-32 w-32">
+                      <AvatarImage src={d.photoUrl ?? undefined} alt={`Dr. ${d.FirstName} ${d.LastName}`} />
+                      <AvatarFallback style={avatarStyle} className="text-2xl font-semibold">
+                        {initials}
+                      </AvatarFallback>
+                    </Avatar>
+                  </div>
+                </div>
+
+                {/* Body */}
+                <div className="flex-1 flex flex-col text-center pt-1">
+                  <p className="font-semibold text-sm px-6 text-white">
+                    {p?.Specialty ?? "General Practice"}
+                  </p>
+                  <p className="text-xs px-6 mt-0.5 text-white/70">
+                    {p?.SubSpecialties?.length ? p.SubSpecialties.join(" · ") : "General Focus"}
+                  </p>
+
+                  {/* Stats row */}
+                  <div className="flex divide-x divide-white/20 border-t border-b border-white/20 mt-4 py-3">
+                    <div className="flex-1 flex flex-col items-center gap-0.5">
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <Badge variant="secondary" className={degreeBadgeClass(p.Degree)}>
-                            {p.Degree}
-                          </Badge>
+                          <span className="text-sm font-bold text-white">{p?.Degree ?? "—"}</span>
                         </TooltipTrigger>
-                        <TooltipContent>{DEGREE_LABELS[p.Degree] ?? p.Degree}</TooltipContent>
+                        <TooltipContent>{p?.Degree ? (DEGREE_LABELS[p.Degree] ?? p.Degree) : "No degree on file"}</TooltipContent>
                       </Tooltip>
-                    )}
-                    {p?.BoardCertified && (
-                      <Badge
-                        variant="secondary"
-                        className="bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                      >
-                        Board Certified
-                      </Badge>
-                    )}
-                    {p?.Telehealth && (
-                      <Badge
-                        variant="secondary"
-                        className="bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
-                      >
-                        Telehealth
-                      </Badge>
-                    )}
+                      <span className="text-xs text-white/70">Degree</span>
+                    </div>
+                    <div className="flex-1 flex flex-col items-center gap-0.5">
+                      <span className="text-sm font-bold text-white">{p?.BoardCertified ? "Yes" : "No"}</span>
+                      <span className="text-xs text-white/70">Board Cert.</span>
+                    </div>
+                    <div className="flex-1 flex flex-col items-center gap-0.5">
+                      <span className="text-sm font-bold text-white">{p?.Telehealth ? "Yes" : "No"}</span>
+                      <span className="text-xs text-white/70">Telehealth</span>
+                    </div>
                   </div>
-                </CardHeader>
-                <CardContent className="space-y-2 text-sm text-center">
-                  {p?.Specialty && (
-                    <p>
-                      <span className="text-muted-foreground">Specialty: </span>
-                      {p.Specialty}
-                    </p>
-                  )}
-                  {p?.SubSpecialties && p.SubSpecialties.length > 0 && (
-                    <p>
-                      <span className="text-muted-foreground">Focus: </span>
-                      {p.SubSpecialties.join(" · ")}
-                    </p>
-                  )}
-                  {bioSnippet && (
-                    <p className="text-muted-foreground">{bioSnippet}</p>
-                  )}
-                  <div className="pt-2">
-                    <Button
-                      size="sm"
-                      onClick={() => setBookingDoctor(d)}
-                    >
-                      Book Appointment →
-                    </Button>
-                  </div>
-                </CardContent>
+
+                  {/* Bio */}
+                  <p className="flex-1 text-sm text-white/70 px-6 py-4">
+                    {bioSnippet ?? "No bio available."}
+                  </p>
+                </div>
+
+                {/* Hover overlay — gradient shadow animates up from bottom */}
+                <div className="absolute inset-x-0 bottom-0 h-1/2 translate-y-full group-hover:translate-y-0 transition-transform duration-300 bg-gradient-to-t from-black/80 to-transparent flex items-end justify-center pb-4">
+                  <span className="text-sm font-semibold text-white">Book Appointment →</span>
+                </div>
               </Card>
             );
           })}

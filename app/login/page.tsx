@@ -1,6 +1,7 @@
 "use client";
 export const dynamic = "force-dynamic";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
@@ -111,9 +112,7 @@ export default function SignIn() {
       <div className="w-full max-w-sm p-8">
         <div className="space-y-8">
           <div className="flex flex-col items-center space-y-2 text-center">
-            <div className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-foreground text-background">
-              <span className="text-lg font-bold italic">S</span>
-            </div>
+            <Image src="/logo.svg" alt="S.M.A.R.S" width={90} height={60} />
             <h1 className="text-2xl font-medium tracking-tight text-foreground">
               Welcome back
             </h1>
