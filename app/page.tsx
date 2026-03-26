@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/session";
@@ -5,23 +6,20 @@ import { Button } from "@/components/ui/button";
 import {
   UserPlusIcon,
   ArrowRightIcon,
-  Squares2X2Icon,
 } from "@heroicons/react/24/outline";
 
 export default async function Home() {
   const user = await getSession();
   if (user) redirect("/dashboard");
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans selection:bg-zinc-200 dark:bg-black dark:selection:bg-zinc-800">
+    <div className="flex min-h-screen items-center justify-center bg-background font-sans selection:bg-secondary">
       <div className="w-full max-w-md p-8">
         <div className="space-y-6 text-center">
           {/* Logo / Brand */}
-          <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black">
-            <span className="text-xl font-bold">S</span>
-          </div>
+          <Image src="/logo.svg" alt="S.M.A.R.S" width={120} height={80} className="mx-auto" />
 
           <div className="space-y-2">
-            <h1 className="text-3xl font-medium tracking-tight text-zinc-900 dark:text-zinc-50">
+            <h1 className="text-3xl font-medium tracking-tight text-foreground">
               S.M.A.R.S
             </h1>
             <p className="text-sm text-muted-foreground">
@@ -40,12 +38,6 @@ export default async function Home() {
               <Link href="/login">
                 <ArrowRightIcon className="h-4 w-4" />
                 Get Started
-              </Link>
-            </Button>
-            <Button variant="outline" className="h-11 w-full" asChild>
-              <Link href="/dashboard">
-                <Squares2X2Icon className="h-4 w-4" />
-                View Dashboard
               </Link>
             </Button>
           </div>

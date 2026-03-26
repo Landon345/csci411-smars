@@ -112,8 +112,12 @@ export function BookAppointmentModal({ doctor, onClose, onBooked }: BookAppointm
     setSelectedSlot(null);
     const dateStr = date.toISOString().split("T")[0];
     fetch(`/api/patient/doctors/${doctor.UserID}/availability?date=${dateStr}`)
-      .then((r) => r.json())
-      .then(({ booked }) => setBookedSlots(booked ?? []))
+      .then(async (r) => {
+        if (!r.ok) return;
+        const data = await r.json();
+        setBookedSlots(data.booked ?? []);
+      })
+      .catch(() => setBookedSlots([]))
       .finally(() => setLoadingSlots(false));
   }, [doctor, date]);
 

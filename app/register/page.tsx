@@ -104,11 +104,11 @@ function RegisterForm() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans selection:bg-zinc-200 dark:bg-black dark:selection:bg-zinc-800">
+    <div className="flex min-h-screen items-center justify-center bg-background font-sans selection:bg-secondary">
       <div className="w-full max-w-xl p-8">
         <div className="space-y-8">
           <div className="space-y-2 text-center md:text-left">
-            <h1 className="text-3xl font-medium tracking-tight text-zinc-900 dark:text-zinc-50">
+            <h1 className="text-3xl font-medium tracking-tight text-foreground">
               Create Account
             </h1>
             <p className="text-sm text-muted-foreground">
@@ -217,13 +217,13 @@ function RegisterForm() {
               <div className="space-y-1.5">
                 <Label>I am a...</Label>
                 <div className="flex gap-4">
-                  <label className="flex items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300 cursor-pointer">
+                  <label className="flex items-center gap-2 text-sm text-foreground cursor-pointer">
                     <input
                       type="radio"
                       value="patient"
                       {...register("Role")}
                       defaultChecked
-                      className="accent-zinc-900 dark:accent-zinc-50"
+                      className="accent-primary"
                     />
                     Patient
                   </label>

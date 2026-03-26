@@ -10,6 +10,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const CATEGORY_OPTIONS = [
   { value: "", label: "Select category..." },
@@ -177,23 +178,19 @@ export default function DoctorProfileCard() {
             </div>
 
             <div className="flex items-center gap-2">
-              <input
+              <Checkbox
                 id="board-certified"
-                type="checkbox"
                 checked={form.BoardCertified}
-                onChange={(e) => setForm({ ...form, BoardCertified: e.target.checked })}
-                className="h-4 w-4 rounded border-input"
+                onCheckedChange={(checked) => setForm({ ...form, BoardCertified: checked === true })}
               />
               <Label htmlFor="board-certified">Board Certified</Label>
             </div>
 
             <div className="flex items-center gap-2">
-              <input
+              <Checkbox
                 id="telehealth"
-                type="checkbox"
                 checked={form.Telehealth}
-                onChange={(e) => setForm({ ...form, Telehealth: e.target.checked })}
-                className="h-4 w-4 rounded border-input"
+                onCheckedChange={(checked) => setForm({ ...form, Telehealth: checked === true })}
               />
               <Label htmlFor="telehealth">Telehealth Available</Label>
             </div>
