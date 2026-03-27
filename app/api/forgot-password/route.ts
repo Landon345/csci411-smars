@@ -41,13 +41,17 @@ export async function POST(request: Request) {
 
     // Send email in production, log in development
     if (process.env.NODE_ENV === "production") {
-      const resetUrl = `${request.headers.get("origin")}/reset-password?token=${resetToken}`;
+      const origin = request.headers.get("origin") ?? process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+      const resetUrl = `${origin}/reset-password?token=${resetToken}`;
       await resend.emails.send({
         from: "Smars <onboarding@resend.dev>",
         to: email,
         subject: "Reset your Smars Password",
         html: `
-          <div style="font-family: sans-serif; padding: 20px;">
+          <div style="font-family: sans-serif; max-width: 520px; margin: 0 auto; padding: 24px; color: #111;">
+            <div style="text-align: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #e5e5e5;">
+              <img src="${origin}/logo.svg" alt="S.M.A.R.S" width="90" height="60" style="display: inline-block;" />
+            </div>
             <h1>Password Reset</h1>
             <p>You requested a password reset for your S.M.A.R.S account.</p>
             <p>Click the link below to reset your password:</p>

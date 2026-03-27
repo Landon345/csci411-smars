@@ -54,7 +54,10 @@ export async function POST(request: NextRequest) {
       to: email,
       subject: "You've been invited to join Smars as a Doctor",
       html: `
-        <div style="font-family: sans-serif; padding: 20px;">
+        <div style="font-family: sans-serif; max-width: 520px; margin: 0 auto; padding: 24px; color: #111;">
+          <div style="text-align: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #e5e5e5;">
+            <img src="${appUrl}/logo.svg" alt="S.M.A.R.S" width="90" height="60" style="display: inline-block;" />
+          </div>
           <h1>Doctor Invitation</h1>
           <p>You have been invited to register as a doctor on S.M.A.R.S.</p>
           <p>Click the link below to complete your registration. This link expires in 48 hours.</p>

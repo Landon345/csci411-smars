@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 
 export async function GET(request: NextRequest) {
   const authHeader = request.headers.get("authorization");
@@ -114,6 +115,9 @@ function buildReminderEmail({
 }) {
   return `
     <div style="font-family: sans-serif; max-width: 520px; margin: 0 auto; padding: 24px; color: #111;">
+      <div style="text-align: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #e5e5e5;">
+        <img src="${APP_URL}/logo.svg" alt="S.M.A.R.S" width="90" height="60" style="display: inline-block;" />
+      </div>
       <h2 style="margin-bottom: 4px;">Appointment Reminder</h2>
       <p style="color: #555; margin-top: 0;">Hi ${patientFirstName},</p>
       <p style="color: #555;">
