@@ -129,13 +129,17 @@ export async function POST(request: NextRequest) {
     }
 
     // 5. Send Email via Resend (Production Only)
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
     if (process.env.NODE_ENV === "production") {
       await resend.emails.send({
         from: "Smars <onboarding@resend.dev>",
         to: Email,
         subject: "Verify your Smars Account",
         html: `
-          <div style="font-family: sans-serif; padding: 20px;">
+          <div style="font-family: sans-serif; max-width: 520px; margin: 0 auto; padding: 24px; color: #111;">
+            <div style="text-align: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #e5e5e5;">
+              <img src="${appUrl}/logo.svg" alt="S.M.A.R.S" width="90" height="60" style="display: inline-block;" />
+            </div>
             <h1>Welcome, ${FirstName}!</h1>
             <p>Please use the code below to verify your account:</p>
             <div style="background: #f4f4f5; padding: 15px; border-radius: 8px; font-size: 24px; font-weight: bold; letter-spacing: 5px; text-align: center; margin: 20px 0;">

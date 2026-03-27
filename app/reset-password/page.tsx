@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Suspense, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -31,7 +32,7 @@ export default function ResetPassword() {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-black">
+        <div className="flex min-h-screen items-center justify-center bg-background">
           <p className="text-sm text-muted-foreground">Loading...</p>
         </div>
       }
@@ -83,7 +84,7 @@ function ResetPasswordForm() {
 
   if (!token) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans selection:bg-zinc-200 dark:bg-black dark:selection:bg-zinc-800">
+      <div className="flex min-h-screen items-center justify-center bg-background font-sans">
         <div className="w-full max-w-sm p-8 text-center space-y-4">
           <div className="rounded-lg bg-destructive/10 p-4 text-sm text-destructive">
             Invalid reset link. No token provided.
@@ -100,14 +101,12 @@ function ResetPasswordForm() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans selection:bg-zinc-200 dark:bg-black dark:selection:bg-zinc-800">
+    <div className="flex min-h-screen items-center justify-center bg-background font-sans">
       <div className="w-full max-w-sm p-8">
         <div className="space-y-8">
           <div className="flex flex-col items-center space-y-2 text-center">
-            <div className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black">
-              <span className="text-lg font-bold italic">S</span>
-            </div>
-            <h1 className="text-2xl font-medium tracking-tight text-zinc-900 dark:text-zinc-50">
+            <Image src="/logo.svg" alt="S.M.A.R.S" width={90} height={60} />
+            <h1 className="text-2xl font-medium tracking-tight">
               Set new password
             </h1>
             <p className="text-sm text-muted-foreground">

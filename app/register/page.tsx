@@ -109,10 +109,10 @@ function RegisterForm() {
         <div className="space-y-8">
           <div className="space-y-2 text-center md:text-left">
             <h1 className="text-3xl font-medium tracking-tight text-foreground">
-              Create Account
+              Create Patient Account
             </h1>
             <p className="text-sm text-muted-foreground">
-              Secure your Smars medical profile.
+              Register as a patient to manage your secure medical records.
             </p>
           </div>
 
@@ -204,35 +204,14 @@ function RegisterForm() {
               </div>
             </div>
 
-            {/* Role selection — locked when valid invite present */}
-            {inviteState.status === "valid" ? (
+            {/* Role — locked to Doctor when a valid invite is present */}
+            {inviteState.status === "valid" && (
               <div className="space-y-1.5">
                 <Label>Role</Label>
                 <div className="flex items-center gap-2 rounded-md border px-3 py-2 bg-muted text-sm">
                   <span className="font-medium">Doctor</span>
                   <span className="text-xs text-muted-foreground">(locked by invite)</span>
                 </div>
-              </div>
-            ) : (
-              <div className="space-y-1.5">
-                <Label>I am a...</Label>
-                <div className="flex gap-4">
-                  <label className="flex items-center gap-2 text-sm text-foreground cursor-pointer">
-                    <input
-                      type="radio"
-                      value="patient"
-                      {...register("Role")}
-                      defaultChecked
-                      className="accent-primary"
-                    />
-                    Patient
-                  </label>
-                </div>
-                {errors.Role && (
-                  <p className="text-[10px] text-destructive">
-                    {errors.Role.message}
-                  </p>
-                )}
               </div>
             )}
 
