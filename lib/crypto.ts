@@ -42,3 +42,23 @@ export function decryptSSN(cipherHex: string): string {
   ]);
   return decrypted.toString("utf8");
 }
+
+// Decrypt an SSN that was RSA-OAEP encrypted by the client for transport.
+// The private key is stored in SSN_PRIVATE_KEY (PEM, \n-escaped for .env).
+export function decryptTransportSSN(base64Ciphertext: string): string {
+  const rawPrivateKey = process.env.SSN_PRIVATE_KEY;
+  if (!rawPrivateKey) {
+    throw new Error("SSN_PRIVATE_KEY is not configured");
+  }
+  const privateKey = rawPrivateKey.replace(/\\n/g, "\n");
+  const buffer = Buffer.from(base64Ciphertext, "base64");
+  const decrypted = crypto.privateDecrypt(
+    {
+      key: privateKey,
+      padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
+      oaepHash: "sha256",
+    },
+    buffer,
+  );
+  return decrypted.toString("utf8");
+}

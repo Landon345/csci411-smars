@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { login } from "@/lib/auth";
-import { encryptSSN } from "@/lib/crypto";
+import { encryptSSN, decryptTransportSSN } from "@/lib/crypto";
 import { writeAuditLog } from "@/lib/auditLog";
 import { Resend } from "resend";
 
@@ -16,7 +16,13 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { FirstName, LastName, Email, Password, Phone, SSN, Role, InviteToken } = body;
+    const { FirstName, LastName, Email, Password, Phone, Role, InviteToken, ssnEncrypted } = body;
+
+    // Decrypt SSN if the client encrypted it for transport (RSA-OAEP)
+    let SSN: string = body.SSN;
+    if (ssnEncrypted) {
+      SSN = decryptTransportSSN(body.SSN);
+    }
 
     // --- Input Validation ---
     const missing = ["FirstName", "LastName", "Email", "Password", "SSN"].filter(
@@ -96,6 +102,15 @@ export async function POST(request: NextRequest) {
     // 3. Hash Password & Encrypt SSN
     const hashedPassword = await bcrypt.hash(Password, 10);
     const encryptedSSN = encryptSSN(ssnDigits);
+
+    // 3b. Check for duplicate SSN
+    const existingSSN = await prisma.user.findUnique({ where: { SSN: encryptedSSN } });
+    if (existingSSN) {
+      return NextResponse.json(
+        { error: "An account with this SSN already exists" },
+        { status: 409 },
+      );
+    }
 
     // 4. Create User (Unverified)
     const newUser = await prisma.user.create({
