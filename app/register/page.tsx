@@ -34,9 +34,31 @@ type InviteState =
   | { status: "valid"; email: string }
   | { status: "invalid"; reason: string };
 
+async function encryptSSNForTransport(ssn: string, publicKeyPem: string): Promise<string> {
+  const pemBody = publicKeyPem
+    .replace("-----BEGIN PUBLIC KEY-----", "")
+    .replace("-----END PUBLIC KEY-----", "")
+    .replace(/\s/g, "");
+  const keyBuffer = Uint8Array.from(atob(pemBody), (c) => c.charCodeAt(0));
+  const publicKey = await window.crypto.subtle.importKey(
+    "spki",
+    keyBuffer,
+    { name: "RSA-OAEP", hash: "SHA-256" },
+    false,
+    ["encrypt"],
+  );
+  const encrypted = await window.crypto.subtle.encrypt(
+    { name: "RSA-OAEP" },
+    publicKey,
+    new TextEncoder().encode(ssn),
+  );
+  return btoa(String.fromCharCode(...new Uint8Array(encrypted)));
+}
+
 function RegisterForm() {
   const [serverError, setServerError] = useState<string | null>(null);
   const [inviteState, setInviteState] = useState<InviteState>({ status: "idle" });
+  const [ssnPublicKey, setSsnPublicKey] = useState<string | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
   const inviteParam = searchParams.get("invite");
@@ -52,7 +74,15 @@ function RegisterForm() {
     defaultValues: { Role: "patient" },
   });
 
-  // 3. Validate invite token on mount
+  // 3a. Fetch RSA public key for SSN transport encryption
+  useEffect(() => {
+    fetch("/api/ssn-public-key")
+      .then((r) => r.json())
+      .then((d) => { if (d.publicKey) setSsnPublicKey(d.publicKey); })
+      .catch(() => { /* non-fatal — server will reject if key missing */ });
+  }, []);
+
+  // 3b. Validate invite token on mount
   useEffect(() => {
     if (!inviteParam) return;
 
@@ -77,8 +107,14 @@ function RegisterForm() {
   const onSubmit = async (data: RegisterInput) => {
     setServerError(null);
     try {
+      if (!ssnPublicKey) {
+        throw new Error("Encryption key not loaded yet. Please try again.");
+      }
+      const encryptedSSN = await encryptSSNForTransport(data.SSN, ssnPublicKey);
       const payload = {
         ...data,
+        SSN: encryptedSSN,
+        ssnEncrypted: true,
         ...(inviteParam ? { InviteToken: inviteParam } : {}),
       };
 
