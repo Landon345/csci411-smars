@@ -145,19 +145,15 @@ function RegisterForm() {
         <div className="space-y-8">
           <div className="space-y-2 text-center md:text-left">
             <h1 className="text-3xl font-medium tracking-tight text-foreground">
-              Create Patient Account
+              {inviteState.status === "valid" ? "Create Doctor Account" : "Create Patient Account"}
             </h1>
             <p className="text-sm text-muted-foreground">
-              Register as a patient to manage your secure medical records.
+              {inviteState.status === "valid"
+                ? "You have been invited to join as a doctor."
+                : "Register as a patient to manage your secure medical records."}
             </p>
           </div>
 
-          {/* Invite banners */}
-          {inviteState.status === "valid" && (
-            <div className="rounded-lg bg-green-50 border border-green-200 p-3 text-sm text-green-800 dark:bg-green-900/20 dark:border-green-800 dark:text-green-300">
-              You&apos;ve been invited as a doctor. Your email and role have been pre-filled.
-            </div>
-          )}
           {inviteState.status === "invalid" && (
             <div className="rounded-lg bg-destructive/10 border border-destructive/20 p-3 text-sm text-destructive">
               This invite link is invalid or expired: {inviteState.reason}
