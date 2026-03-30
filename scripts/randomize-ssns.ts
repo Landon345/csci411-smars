@@ -2,6 +2,7 @@
  * Dev-only script: assigns a fresh random encrypted SSN to every user.
  * Run with: pnpm exec tsx scripts/randomize-ssns.ts
  */
+import "dotenv/config";
 import { encryptSSN } from "../lib/crypto";
 import { prisma } from "../lib/prisma";
 

@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTable, SortableHeader } from "@/components/ui/data-table";
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 
 interface UserRow {
   UserID: string;
@@ -12,6 +13,55 @@ interface UserRow {
   Email: string;
   Role: string;
   CreatedAt: string;
+}
+
+function SSNCell({ userId }: { userId: string }) {
+  const [ssn, setSsn] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
+
+  async function toggle() {
+    if (ssn !== null) {
+      setSsn(null);
+      return;
+    }
+    setLoading(true);
+    setError(false);
+    try {
+      const res = await fetch(`/api/admin/users/${userId}/ssn`);
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      setSsn(data.ssn);
+    } catch {
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <button
+      onClick={toggle}
+      disabled={loading}
+      className="flex items-center gap-1.5 font-mono text-sm text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
+    >
+      {loading ? (
+        <span>Loading…</span>
+      ) : error ? (
+        <span className="text-destructive text-xs">Error</span>
+      ) : ssn !== null ? (
+        <>
+          <span>{ssn}</span>
+          <EyeSlashIcon className="h-3.5 w-3.5 shrink-0" />
+        </>
+      ) : (
+        <>
+          <span>***-**-****</span>
+          <EyeIcon className="h-3.5 w-3.5 shrink-0" />
+        </>
+      )}
+    </button>
+  );
 }
 
 export default function AdminUserManagement() {
@@ -28,9 +78,7 @@ export default function AdminUserManagement() {
   async function fetchUsers() {
     try {
       const res = await fetch("/api/admin/users");
-      if (!res.ok) {
-        return;
-      }
+      if (!res.ok) return;
       const data = await res.json();
       setUsers(data.users);
     } finally {
@@ -76,6 +124,14 @@ export default function AdminUserManagement() {
         ),
       },
       {
+        id: "ssn",
+        enableSorting: false,
+        enableGlobalFilter: false,
+        meta: { label: "SSN" },
+        header: () => <span className="text-sm font-medium">SSN</span>,
+        cell: ({ row }) => <SSNCell userId={row.original.UserID} />,
+      },
+      {
         id: "createdAt",
         accessorFn: (row) => row.CreatedAt,
         sortingFn: "datetime",
@@ -105,9 +161,7 @@ export default function AdminUserManagement() {
   return (
     <>
       <header className="mb-4">
-        <h2 className="text-xl font-medium tracking-tight">
-          User Management
-        </h2>
+        <h2 className="text-xl font-medium tracking-tight">User Management</h2>
         <p className="text-sm text-muted-foreground">
           Manage user accounts and roles.
         </p>

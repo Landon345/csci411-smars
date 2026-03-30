@@ -99,6 +99,7 @@ enum AuditAction {
   document_uploaded
   document_deleted
   pcp_assigned
+  ssn_viewed
 }
 
 model User {
