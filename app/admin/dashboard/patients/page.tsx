@@ -8,20 +8,35 @@ export default async function AdminPatientsPage() {
   if (!user) redirect("/login");
   if (user.Role !== "admin") redirect("/dashboard");
 
-  const patients = await prisma.user.findMany({
-    where: { Role: "patient" },
-    select: {
-      UserID: true,
-      FirstName: true,
-      LastName: true,
-      Email: true,
-      Phone: true,
-      CreatedAt: true,
-    },
-    orderBy: { CreatedAt: "desc" },
-  });
+  const [patients, doctors] = await Promise.all([
+    prisma.user.findMany({
+      where: { Role: "patient" },
+      select: {
+        UserID: true,
+        FirstName: true,
+        LastName: true,
+        Email: true,
+        Phone: true,
+        CreatedAt: true,
+        PatientProfile: {
+          select: {
+            PrimaryCarePhysicianID: true,
+            PrimaryCarePhysician: {
+              select: { FirstName: true, LastName: true },
+            },
+          },
+        },
+      },
+      orderBy: { CreatedAt: "desc" },
+    }),
+    prisma.user.findMany({
+      where: { Role: "doctor" },
+      select: { UserID: true, FirstName: true, LastName: true },
+      orderBy: { LastName: "asc" },
+    }),
+  ]);
 
-  const serialized = patients.map((p) => ({
+  const serializedPatients = patients.map((p) => ({
     ...p,
     CreatedAt: p.CreatedAt.toISOString(),
   }));
@@ -31,11 +46,11 @@ export default async function AdminPatientsPage() {
       <header className="mb-8">
         <h1 className="text-2xl font-medium tracking-tight">Patient List</h1>
         <p className="text-sm text-muted-foreground">
-          View all registered patients.
+          View all registered patients and manage primary care assignments.
         </p>
       </header>
 
-      <PatientsTable patients={serialized} />
+      <PatientsTable patients={serializedPatients} doctors={doctors} />
     </>
   );
 }

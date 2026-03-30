@@ -98,6 +98,7 @@ enum AuditAction {
   invite_used
   document_uploaded
   document_deleted
+  pcp_assigned
 }
 
 model User {
