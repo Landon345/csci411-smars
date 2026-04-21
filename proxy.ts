@@ -21,10 +21,13 @@ export async function proxy(request: NextRequest) {
         headers: {
           "Content-Type": "application/json",
           "Retry-After": "60",
+          "X-Content-Type-Options": "nosniff",
         },
       });
     }
-    return NextResponse.next();
+    const apiResponse = NextResponse.next();
+    apiResponse.headers.set("X-Content-Type-Options", "nosniff");
+    return apiResponse;
   }
 
   // --- 2. AUTHENTICATION LOGIC ---
@@ -105,16 +108,14 @@ export async function proxy(request: NextRequest) {
   });
 
   response.headers.set("Content-Security-Policy", cspHeader);
+  response.headers.set("X-Content-Type-Options", "nosniff");
+  response.headers.set("X-Frame-Options", "DENY");
 
   return response;
 }
 
 export const config = {
   matcher: [
-    "/api/:path*",
-    "/dashboard/:path*",
-    "/patient/:path*",
-    "/doctor/:path*",
-    "/admin/:path*",
+    "/((?!_next/static|_next/image|favicon\\.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };
