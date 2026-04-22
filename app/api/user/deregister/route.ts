@@ -62,12 +62,13 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // 4. Delete user data in FK-safe order:
-    //    - Prescriptions: only where user is the patient (preserves other patients' data)
-    //    - Medical records: only where user is the patient
-    //    - Appointments: all where user is involved (records linked via optional FK get AppointmentID nulled by DB)
-    //    - Sessions and User must be last
+    // 4. Delete user data in FK-safe order.
+    //    RecordDocument.UploadedBy and DoctorProfile/ProfilePhoto have required FKs
+    //    with no cascade, so they must be removed before the User row can be deleted.
     await prisma.$transaction([
+      prisma.recordDocument.deleteMany({
+        where: { UploadedBy: session.UserID },
+      }),
       prisma.prescription.deleteMany({
         where: { PatientID: session.UserID },
       }),
@@ -76,6 +77,21 @@ export async function POST(request: NextRequest) {
       }),
       prisma.appointment.deleteMany({
         where: { OR: [{ DoctorID: session.UserID }, { PatientID: session.UserID }] },
+      }),
+      prisma.allergy.deleteMany({
+        where: { PatientID: session.UserID },
+      }),
+      prisma.chronicCondition.deleteMany({
+        where: { PatientID: session.UserID },
+      }),
+      prisma.doctorProfile.deleteMany({
+        where: { UserID: session.UserID },
+      }),
+      prisma.patientProfile.deleteMany({
+        where: { UserID: session.UserID },
+      }),
+      prisma.profilePhoto.deleteMany({
+        where: { UserID: session.UserID },
       }),
       prisma.user.delete({ where: { UserID: session.UserID } }),
     ]);
